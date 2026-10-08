@@ -2,4 +2,4 @@
 
 Static website for the ParMA research team at Inria Saclay, CNRS and Université Paris-Saclay.
 
-Live site: **https://mattiagaratti.github.io/parma-website/**
+Live site: **https://parma-inria.github.io/**
