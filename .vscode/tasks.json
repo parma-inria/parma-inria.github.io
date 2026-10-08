@@ -1,0 +1,7 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {"label": "Build ParMA website", "type": "process", "command": "python", "args": ["scripts/build.py"], "group": {"kind": "build", "isDefault": true}, "problemMatcher": []},
+    {"label": "Preview ParMA website", "type": "process", "command": "python", "args": ["-m", "http.server", "8765", "--bind", "127.0.0.1"], "isBackground": true, "problemMatcher": []}
+  ]
+}
