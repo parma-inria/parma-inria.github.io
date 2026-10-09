@@ -15,7 +15,7 @@ Website for the ParMA research team at Inria Saclay, CNRS and Université Paris-
 | Email addresses, postal address and contacts | `content/contact.json` |
 | Banner titles, menu and footer | `content/site.json` |
 | Colours, banner dimensions and page layout | `assets/css/site.css` |
-| Banner photograph, logo and member portraits | `assets/images/` |
+| Banner photograph and logo | `assets/images/` |
 | A page's HTML structure | `templates/pages/` |
 | Shared elements and cards | `templates/partials/` |
 | Member search and mobile menu | `assets/js/site.js` |
@@ -60,7 +60,9 @@ In `content/team.json`, find the appropriate group and add an object to its `mem
 
 Use `"url": null` if the person has no website. If a URL is provided, their name automatically becomes a clickable link. Groups and members appear in the order used in the file; **Former members** remains visible at all times, using the same format as the other sections.
 
-Store a member's portrait in `assets/images/members/` and set `photo` to its path, for example `"photo": "assets/images/members/firstname-lastname.jpg"`. Use `"photo": null` when no photograph is available: the card displays the member's initials. Photographs are stored with the project, so visitors do not need to load them from personal websites.
+Set `photo` to the direct HTTPS address of the image on the member's personal website, for example `"photo": "https://example.org/photo.jpg"`. Use the image address, rather than the address of the page containing it. The browser loads portraits directly from those websites; the build does not download or copy them into the project.
+
+If the person replaces the image at the same address, their updated photograph appears on ParMA once the browser's cached copy expires or is refreshed. If the image address changes, update `photo` in this file. Use `"photo": null` when no suitable image is available. While a photograph loads, or if the external website cannot serve it, the card displays the member's initials.
 
 In JSON files, keep the quotation marks and commas: commas separate items, but there must be no comma after the last item in a list. Use `[]` for an empty list.
 
@@ -111,7 +113,7 @@ parma-site/
 ├── assets/
 │   ├── css/site.css          ← styling
 │   ├── js/site.js            ← menu and search
-│   └── images/               ← banner, logo, icon and member portraits
+│   └── images/               ← banner, logo and icon
 ├── tools/
 │   ├── build.py              ← generates public/
 │   ├── check.py              ← checks local files and links

@@ -44,6 +44,20 @@
     return value.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
   }
 
+  // Le foto arrivano dai siti personali: se non sono disponibili restano le iniziali.
+  function initializeMemberPortraits() {
+    document.querySelectorAll(".member-portrait").forEach((image) => {
+      function updatePortrait() {
+        image.classList.toggle("is-loaded", image.complete && image.naturalWidth > 0);
+      }
+
+      image.addEventListener("load", updatePortrait);
+      image.addEventListener("error", () => image.classList.remove("is-loaded"));
+      // Le immagini già presenti nella cache possono aver completato il caricamento.
+      updatePortrait();
+    });
+  }
+
   // La ricerca esiste solo nella pagina dei membri: le altre pagine non vengono modificate.
   function initializeMemberSearch() {
     const searchInput = document.getElementById("member-search");
@@ -96,5 +110,6 @@
 
   // Lo script viene caricato con "defer": il documento è già pronto.
   initializeNavigation();
+  initializeMemberPortraits();
   initializeMemberSearch();
 })();

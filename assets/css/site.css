@@ -607,6 +607,7 @@ ul, ol {
 }
 
 .member-photo {
+  position: relative;
   display: block;
   width: 64px;
   height: 64px;
@@ -617,35 +618,45 @@ ul, ol {
 }
 
 .member-portrait {
+  position: absolute;
+  inset: 0;
   display: block;
   width: 100%;
   height: 100%;
   object-fit: cover;
   object-position: center;
+  opacity: 0;
+}
+
+.member-portrait.is-loaded {
+  opacity: 1;
 }
 
 /* Frame faces in photographs that also show their surroundings. */
-.member-portrait[src$="yann-brenier.jpg"] {
+.member-portrait[data-member-portrait="Yann Brenier"] {
   object-position: 75% center;
 }
 
-.member-portrait[src$="cyril-letrouit.jpg"] {
+.member-portrait[data-member-portrait="Cyril Letrouit"] {
   object-position: center top;
   transform: scale(2.1) translateY(7%);
 }
 
-.member-portrait[src$="quentin-giton.jpg"] {
+.member-portrait[data-member-portrait="Quentin Giton"] {
   transform: scale(2.6) translate(23%, 4%);
 }
 
 .member-initials {
   display: inline-flex;
+  width: 100%;
+  height: 100%;
   align-items: center;
   justify-content: center;
   color: var(--muted);
   font-size: 1.1rem;
   font-weight: 650;
   border: 1px solid var(--line);
+  border-radius: 50%;
 }
 
 .member-details {

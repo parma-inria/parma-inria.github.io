@@ -169,20 +169,23 @@ def validate_content(sources):
 
 
 def validate_member_photo(member):
-    """Portraits are optional and live beside the site's other image assets."""
+    """Use live portraits from personal websites, without copying image files."""
     photo = member.get("photo")
     location = f"content/team.json → {member['name']}.photo"
     if photo is None:
         return
-    if not isinstance(photo, str):
-        raise BuildError(f"{location}: usa un percorso relativo o null.")
-    path = PurePosixPath(photo)
-    if (not photo.startswith("assets/images/members/") or ".." in path.parts
-            or "\\" in photo or ":" in photo
-            or path.suffix.lower() not in {".jpg", ".jpeg", ".png", ".webp", ".gif"}):
-        raise BuildError(f"{location}: usa un'immagine in assets/images/members/.")
-    if not (ROOT / path).is_file():
-        raise BuildError(f"{location}: immagine non trovata: {photo}")
+    message = f"{location}: usa un indirizzo completo https:// senza credenziali, oppure null."
+    if not isinstance(photo, str) or re.search(r"\s", photo) or "\\" in photo:
+        raise BuildError(message)
+    try:
+        parts = urlsplit(photo)
+        valid = (parts.scheme == "https" and parts.hostname
+                 and parts.username is None and parts.password is None)
+        parts.port  # Reject malformed or out-of-range ports as well.
+    except ValueError as error:
+        raise BuildError(message) from error
+    if not valid:
+        raise BuildError(message)
 
 
 def parse_session_date(value, location):
@@ -494,17 +497,19 @@ def render_team(prefix, team):
             name = escape(member["name"])
             if member["url"]:
                 name = f'<a href="{escape(member["url"])}">{name}</a>'
+            name_parts = member["name"].split()
+            initials = (name_parts[0][0] + (name_parts[-1][0] if len(name_parts) > 1 else "")).upper() if name_parts else ""
+            portrait = (
+                '<span class="member-photo" aria-hidden="true">'
+                f'<span class="member-initials">{escape(initials)}</span>'
+            )
             if member.get("photo"):
-                portrait = (
-                    '<span class="member-photo">'
-                    f'<img class="member-portrait" src="{escape(prefix + member["photo"])}" '
-                    'alt="" width="64" height="64" loading="lazy" decoding="async">'
-                    '</span>'
+                portrait += (
+                    f'<img class="member-portrait" data-member-portrait="{escape(member["name"])}" '
+                    f'src="{escape(member["photo"])}" '
+                    'alt="" width="64" height="64" loading="lazy" decoding="async" referrerpolicy="no-referrer">'
                 )
-            else:
-                name_parts = member["name"].split()
-                initials = (name_parts[0][0] + (name_parts[-1][0] if len(name_parts) > 1 else "")).upper() if name_parts else ""
-                portrait = f'<span class="member-photo member-initials" aria-hidden="true">{escape(initials)}</span>'
+            portrait += '</span>'
             search_text = " ".join([member["name"], member["affiliation"], section["title"]])
             cards.append(render_template(
                 "partials/member-card.html", name=name,

@@ -13,55 +13,55 @@
           "affiliation": "CNRS, DR",
           "name": "Yann Brenier",
           "url": "https://www.math.ens.psl.eu/~brenier/",
-          "photo": "assets/images/members/yann-brenier.jpg"
+          "photo": "https://www.math.ens.psl.eu/~brenier/Brenier_files/Photo-YB-2011.jpg"
         },
         {
           "affiliation": "Inria, CR",
           "name": "Katharina Eichinger",
           "url": "https://sites.google.com/view/katharinaeichinger/home",
-          "photo": "assets/images/members/katharina-eichinger.png"
+          "photo": null
         },
         {
           "affiliation": "Inria, CR, team leader",
           "name": "Thomas Gallouët",
           "url": "http://gallouet.github.io/",
-          "photo": "assets/images/members/thomas-gallouet.jpg"
+          "photo": "https://gallouet.github.io/images/ToUMPA.jpeg"
         },
         {
           "affiliation": "CNRS, CR",
           "name": "Cyril Letrouit",
           "url": "https://www.imo.universite-paris-saclay.fr/~cyril.letrouit/",
-          "photo": "assets/images/members/cyril-letrouit.jpg"
+          "photo": "https://www.imo.universite-paris-saclay.fr/~cyril.letrouit/Oci.jpeg"
         },
         {
           "affiliation": "Inria, DR",
           "name": "Bruno Lévy",
           "url": "https://brunolevy.github.io/",
-          "photo": "assets/images/members/bruno-levy.jpg"
+          "photo": "https://brunolevy.github.io/images/Bruno/bruno_2022_small.jpg"
         },
         {
           "affiliation": "Université Paris-Saclay, LMO, PR",
           "name": "Betrand Maury",
           "url": "https://www.imo.universite-paris-saclay.fr/~bertrand.maury/",
-          "photo": "assets/images/members/bertrand-maury.png"
+          "photo": "https://www.imo.universite-paris-saclay.fr/~bertrand.maury/bm_photo.png"
         },
         {
           "affiliation": "Université Paris-Saclay, LMO, PR",
           "name": "Quentin Mérigot",
           "url": "http://quentin.mrgt.fr/",
-          "photo": "assets/images/members/quentin-merigot.jpg"
+          "photo": null
         },
         {
           "affiliation": "Inria, CR",
           "name": "Andrea Natale",
           "url": "https://andnatale.github.io/",
-          "photo": "assets/images/members/andrea-natale.png"
+          "photo": "https://andnatale.github.io/photo.png"
         },
         {
           "affiliation": "Université Paris-Saclay, LMO, MCF",
           "name": "Luca Nenna",
           "url": "https://lucanenna.github.io/",
-          "photo": "assets/images/members/luca-nenna.jpg"
+          "photo": "https://lucanenna.github.io/photo.jpg"
         }
       ],
       "title": "Permanent researchers",
@@ -79,7 +79,7 @@
           "affiliation": "CNRS",
           "name": "Sylvain Faure",
           "url": "https://www.imo.universite-paris-saclay.fr/~sylvain.faure/",
-          "photo": "assets/images/members/sylvain-faure.png"
+          "photo": "https://www.imo.universite-paris-saclay.fr/~sylvain.faure/images/SF2018.png"
         }
       ],
       "title": "Research engineers",
@@ -91,13 +91,13 @@
           "affiliation": "Université Paris-Saclay",
           "name": "Alessandro Cosenza",
           "url": "https://sites.google.com/view/alessandrocosenza/home?pli=1&authuser=0",
-          "photo": "assets/images/members/alessandro-cosenza.jpg"
+          "photo": null
         },
         {
           "affiliation": "Université Paris-Saclay",
           "name": "Filippo Quattrocchi",
           "url": "https://sites.google.com/view/filippoquattrocchi/",
-          "photo": "assets/images/members/filippo-quattrocchi.jpg"
+          "photo": null
         }
       ],
       "title": "Postdoctoral researchers",
@@ -109,7 +109,7 @@
           "affiliation": "École nationale des ponts et chaussées",
           "name": "Elise Bonnet-Weill",
           "url": "https://elisebonnetweill.github.io/",
-          "photo": "assets/images/members/elise-bonnet-weill.png"
+          "photo": "https://elisebonnetweill.github.io/profile.png"
         },
         {
           "affiliation": "Université Paris-Saclay",
@@ -121,7 +121,7 @@
           "affiliation": "Université Paris-Saclay, École Polytechnique",
           "name": "William Ford",
           "url": "https://vvillford.github.io/",
-          "photo": "assets/images/members/william-ford.jpg"
+          "photo": "https://vvillford.github.io/assets/profile-450.jpg"
         },
         {
           "affiliation": "Université Paris-Saclay",
@@ -133,13 +133,13 @@
           "affiliation": "Université Paris-Saclay",
           "name": "Quentin Giton",
           "url": "https://quentingiton.github.io/",
-          "photo": "assets/images/members/quentin-giton.jpg"
+          "photo": "https://quentingiton.github.io/assets/quentin_profile-CStDwA8_.jpg"
         },
         {
           "affiliation": "Université Paris-Saclay",
           "name": "Louis Tocquec",
           "url": "https://l-tocquec.github.io/",
-          "photo": "assets/images/members/louis-tocquec.jpg"
+          "photo": "https://l-tocquec.github.io/photo.jpg"
         },
         {
           "affiliation": "Université Paris-Saclay",
@@ -157,7 +157,7 @@
           "affiliation": "Université Paris-Saclay, LMO, MCF",
           "name": "Anna Kazeykina",
           "url": "https://www.imo.universite-paris-saclay.fr/~anna.kazeykina/",
-          "photo": "assets/images/members/anna-kazeykina.png"
+          "photo": "https://www.imo.universite-paris-saclay.fr/~anna.kazeykina/files/sp.png"
         }
       ],
       "title": "Delegation",
@@ -169,7 +169,7 @@
           "affiliation": "Post-doctorant",
           "name": "Adrien Cances",
           "url": "https://www.imo.universite-paris-saclay.fr/fr/perso/adrien-cances/",
-          "photo": "assets/images/members/adrien-cances.jpg"
+          "photo": "https://www.imo.universite-paris-saclay.fr/media/filer_public_thumbnails/filer_public/d1/aa/d1aa304a-707e-4d64-b163-13cc2836a94e/photo_bureauewen.jpg__1450x1934_q85_subsampling-2.jpg"
         },
         {
           "affiliation": "Post-doctorant",

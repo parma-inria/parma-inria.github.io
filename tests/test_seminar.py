@@ -5,12 +5,10 @@ Run from the project folder: python -m unittest discover -s tests
 
 import copy
 import sys
-import tempfile
 import unittest
 from datetime import date
 from html.parser import HTMLParser
 from pathlib import Path
-from unittest.mock import patch
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "tools"))
 import build
@@ -172,30 +170,41 @@ class SeminarTests(unittest.TestCase):
             with self.subTest(field=field, value=invalid), self.assertRaises(build.BuildError):
                 build.validate_seminar(bad)
 
-    def test_portrait_validation_fallback_and_nested_route_prefix(self):
-        photo = "assets/images/members/sample.jpg"
+    def test_portrait_url_validation(self):
+        member = {"name": "Sample Person", "photo": "https://example.org/photo.jpg?version=1&size=large"}
+        build.validate_member_photo(member)
+        build.validate_member_photo(dict(member, photo=None))
+        build.validate_member_photo({"name": "Sample Person"})
+        for invalid in (
+            42, "", "assets/images/members/sample.jpg", "//example.org/photo.jpg",
+            "http://example.org/photo.jpg", "javascript:alert(1)", "https:///photo.jpg",
+            "https://user:password@example.org/photo.jpg", "https://user@example.org/photo.jpg",
+            "https://example.org:invalid/photo.jpg", "https://example.org:65536/photo.jpg",
+            "https://example.org/ photo.jpg", "https://example.org\\photo.jpg", "https://[broken/photo.jpg",
+        ):
+            with self.subTest(photo=invalid), self.assertRaises(build.BuildError):
+                build.validate_member_photo(dict(member, photo=invalid))
+
+    def test_remote_portraits_and_initials_on_both_team_routes(self):
+        photo = "https://example.org/photo.jpg?version=1&size=large"
         member = {"name": "Sample Person", "affiliation": "Sample institute", "url": "https://example.org/", "photo": photo}
-        with tempfile.TemporaryDirectory() as directory, patch.object(build, "ROOT", Path(directory)):
-            image = Path(directory) / photo
-            image.parent.mkdir(parents=True)
-            image.write_bytes(b"fixture")  # Validation checks local path/existence, not image decoding.
-            build.validate_member_photo(member)
-            for invalid in (42, "https://example.org/photo.jpg", "assets/images/members/../../missing.jpg", "assets/images/members/missing.jpg"):
-                with self.subTest(photo=invalid), self.assertRaises(build.BuildError):
-                    build.validate_member_photo(dict(member, photo=invalid))
-            team = {
-                "introduction": "Sample team.",
-                "search": {"label": "Search", "placeholder": "Name", "count_label": "members", "empty_message": "No result"},
-                "sections": [{"id": "sample", "title": "Sample section", "members": [member, dict(member, name="Another Person", photo=None)]}],
-            }
-            for prefix in ("../", "../../"):
+        team = {
+            "introduction": "Sample team.",
+            "search": {"label": "Search", "placeholder": "Name", "count_label": "members", "empty_message": "No result"},
+            "sections": [{"id": "sample", "title": "Sample section", "members": [member, dict(member, name="Another Person", photo=None)]}],
+        }
+        for prefix in ("../", "../../"):
+            with self.subTest(prefix=prefix):
                 document = build.render_team(prefix, team)
-                portraits = [attributes for tag, attributes in RenderedElements(document).elements if tag == "img"]
+                elements = RenderedElements(document).elements
+                portraits = [attributes for tag, attributes in elements if tag == "img"]
                 self.assertEqual(len(portraits), 1)
-                self.assertEqual(portraits[0]["src"], prefix + photo)
+                self.assertEqual(portraits[0]["src"], photo)
+                self.assertEqual(portraits[0]["data-member-portrait"], "Sample Person")
                 self.assertEqual(portraits[0]["alt"], "")
                 self.assertEqual(portraits[0]["loading"], "lazy")
-                self.assertIn("member-initials", document)
+                self.assertEqual(sum(attributes.get("class") == "member-initials" for _, attributes in elements), 2)
+                self.assertIn(">SP</span>", document)
                 self.assertIn(">AP</span>", document)
 
 
