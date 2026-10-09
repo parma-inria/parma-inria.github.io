@@ -44,7 +44,7 @@
       <div class="container hero-content">
         <p class="eyebrow">{{ page.hero.eyebrow }}</p>
         <h1 id="page-title">{% for line in page.hero.title_lines %}{{ line }}{% if loop.last %}{% else %}<br>{% endif %}{% endfor %}</h1>
-        <p class="hero-lead">{{ page.hero.lead }}</p>
+        <p class="hero-lead prose">{{ page.hero.lead }}</p>
 
         <!-- Shortcuts to the team and the seminar -->
         <div class="hero-actions">
@@ -62,7 +62,7 @@
           <p class="eyebrow">{{ home.about_eyebrow }}</p>
           <h2 id="about-title">{% for line in home.about_title_lines %}{{ line }}{% if loop.last %}{% else %}<br>{% endif %}{% endfor %}</h2>
           {% for paragraph in home.introduction %}
-            <p{% if loop.first %} class="lead"{% endif %}>{{ paragraph }}</p>
+            <p class="prose{% if loop.first %} lead{% endif %}">{{ paragraph }}</p>
           {% endfor %}
         </div>
 
@@ -72,20 +72,28 @@
         </div>
       </section>
 
-      <!-- Research topics: entries without a title are hidden. -->
-      <section aria-labelledby="research-title">
-        <h2 id="research-title" class="section-heading">{{ home.research_title }}</h2>
-        <div class="feature-grid">
-          {% for feature in home.research %}
-            {% if feature.title %}
-              <article class="feature-card">
-                <span class="feature-number">{{ feature.number }}</span>
-                <h3>{{ feature.title }}</h3>
-                <p>{{ feature.text }}</p>
-              </article>
-            {% endif %}
-          {% endfor %}
+      <!-- Latest HAL records, including preprints: saved in content/publications.json. -->
+      <section aria-labelledby="publications-title">
+        <div class="section-header">
+          <h2 id="publications-title" class="section-heading">{{ publications.title }}</h2>
+          <a class="section-source" href="{{ publications.source_url }}">{{ publications.source_name }}</a>
         </div>
+
+        {% if publications.items %}
+          <div class="publication-grid">
+            {% for paper in publications.items %}
+              <article class="publication-card">
+                <p class="publication-date">{{ paper.date_label }}</p>
+                <h3><a href="{{ paper.url }}">{{ paper.title }}</a></h3>
+                <p class="publication-authors" title="{{ paper.authors_full }}">{{ paper.authors_short }}</p>
+                <p class="publication-venue">{{ paper.venue }}</p>
+                <a class="publication-link" href="{{ paper.url }}">{{ publications.link_label }} <span aria-hidden="true">↗</span></a>
+              </article>
+            {% endfor %}
+          </div>
+        {% else %}
+          <p>{{ publications.empty_message }}</p>
+        {% endif %}
       </section>
 
       <!-- Next seminar: calculated from the dates in content/seminar.json. -->
@@ -93,7 +101,7 @@
         <div>
           <p class="eyebrow">{{ home.seminar.eyebrow }}</p>
           <h2 id="home-seminar-title">{{ home.seminar.title }}</h2>
-          <p>{{ home.seminar.description }}</p>
+          <p class="prose">{{ home.seminar.description }}</p>
           <a class="button" href="{{ prefix }}francais-gdt-edp-ot-ml/">{{ home.seminar.link_label }}</a>
         </div>
 

@@ -15,6 +15,8 @@ from pathlib import Path, PurePosixPath
 from datetime import date
 from urllib.parse import urlsplit
 
+import update_publications
+
 # Source folders and shared date labels
 ROOT = Path(__file__).resolve().parents[1]
 CONTENT = ROOT / "content"
@@ -89,7 +91,7 @@ def validate_content(sources):
     require_fields(site, "content/site.json", {
         "name": str, "language": str, "theme_color": str, "brand_caption": str,
         "skip_label": str, "menu_label": str, "navigation_label": str,
-        "pages": list, "footer": dict,
+        "pages": list, "footer": dict, "map": dict,
     })
     page_ids = []
     for index, page in enumerate(site["pages"]):
@@ -116,26 +118,33 @@ def validate_content(sources):
         require_fields(link, "content/site.json → footer.links", {"label": str, "url": str})
         require_web_url(link["url"], "content/site.json → footer.links.url")
 
-    # Home introduction, research topics and seminar summary
+    # Shared institute map for the seminar and contact pages
+    require_fields(site["map"], "content/site.json → map", {
+        "title": str, "embed_url": str, "url": str, "link_label": str,
+    })
+    require_web_url(site["map"]["url"], "content/site.json → map.url")
+    map_url = urlsplit(site["map"]["embed_url"])
+    if map_url.scheme != "https" or map_url.netloc != "www.google.com" or map_url.path != "/maps/embed":
+        raise BuildError("content/site.json → map.embed_url: use a Google Maps sharing embed URL.")
+
+    # Home introduction and seminar summary
     require_fields(home, "content/home.json", {
         "hero_actions": dict, "about_eyebrow": str, "about_title_lines": list,
         "introduction": list, "logo_alt": str, "logo_caption": str,
-        "research_title": str, "research": list, "seminar": dict,
+        "seminar": dict,
     })
     require_text_list(home["about_title_lines"], "content/home.json → about_title_lines")
     require_text_list(home["introduction"], "content/home.json → introduction")
     require_fields(home["hero_actions"], "content/home.json → hero_actions", {
         "team_label": str, "seminar_label": str,
     })
-    for feature in home["research"]:
-        require_fields(feature, "content/home.json → research", {"title": str, "text": str})
     require_fields(home["seminar"], "content/home.json → seminar", {
         "eyebrow": str, "title": str, "description": str, "link_label": str,
     })
 
     # Member groups, personal websites and optional portraits
     require_fields(team, "content/team.json", {
-        "introduction": str, "search": dict, "sections": list,
+        "search": dict, "sections": list,
     })
     require_fields(team["search"], "content/team.json → search", {
         "label": str, "placeholder": str, "count_label": str, "empty_message": str,
@@ -158,7 +167,7 @@ def validate_content(sources):
 
     # Contact cards and the postal address
     require_fields(contact, "content/contact.json", {
-        "introduction": str, "contacts": list, "location": dict,
+        "contacts": list, "location": dict,
     })
     for person in contact["contacts"]:
         require_fields(person, "content/contact.json → contacts", {
@@ -172,6 +181,12 @@ def validate_content(sources):
     require_text_list(contact["location"]["address_lines"], "content/contact.json → location.address_lines")
     require_web_url(contact["location"]["url"], "content/contact.json → location.url")
     validate_seminar(sources["seminar"])
+
+    # The saved publication snapshot is valid even when a preview is offline.
+    try:
+        update_publications.validate_data(sources["publications"])
+    except (ValueError, TypeError, KeyError) as error:
+        raise BuildError(f"content/publications.json: {error}") from error
 
 
 def validate_member_photo(member):
@@ -228,7 +243,7 @@ def validate_seminar(seminar):
     """Keep the calendar, home summary and archive on one validated source."""
     location = "content/seminar.json"
     require_fields(seminar, location, {
-        "introduction": str, "organizers": list, "mailing_list_note": str,
+        "organizers": list, "mailing_list_note": str,
         "venue": dict, "labels": dict, "sessions": list,
     })
     require_fields(seminar["venue"], location + " → venue", {
@@ -484,6 +499,20 @@ def prepare_team(team, prefix):
             "member_count": sum(len(section["members"]) for section in sections)}
 
 
+def prepare_publications(publications):
+    """Prepare readable dates and citations; the card markup stays in home.html."""
+    items = []
+    for paper in publications["items"]:
+        authors = paper["authors"]
+        items.append({
+            **paper,
+            "date_label": update_publications.date_label(paper["date"]),
+            "authors_full": ", ".join(authors),
+            "authors_short": ", ".join(authors[:3]) + (", et al." if len(authors) > 3 else ""),
+        })
+    return {**publications, "items": items}
+
+
 def page_context(page, prefix, sources, seminar_plan):
     """Collect page data; all HTML markup remains in pages/."""
     site = sources["site"]
@@ -496,10 +525,8 @@ def page_context(page, prefix, sources, seminar_plan):
              "is_current": item["id"] == page["id"]}
             for item in site["pages"]
         ],
-        "home": {**home, "research": [
-            {**feature, "number": f"{index:02}"}
-            for index, feature in enumerate(home["research"], start=1)
-        ]},
+        "home": home,
+        "publications": prepare_publications(sources["publications"]),
         "team": prepare_team(sources["team"], prefix),
         "programme": prepare_programme(sources["seminar"], seminar_plan),
     }
@@ -526,7 +553,7 @@ def build(output=DEFAULT_OUTPUT, today=None):
         raise BuildError("Output must be separate from the source files, for example public/.")
 
     # Validate all data before generating any files.
-    sources = {name: read_json(name) for name in ("site", "home", "team", "contact", "seminar")}
+    sources = {name: read_json(name) for name in ("site", "home", "team", "contact", "seminar", "publications")}
     validate_content(sources)
     seminar_plan = plan_seminar(sources["seminar"], today)
     if not (ROOT / "assets").is_dir():

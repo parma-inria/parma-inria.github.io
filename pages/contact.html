@@ -44,15 +44,12 @@
       <div class="container hero-content">
         <p class="eyebrow">{{ page.hero.eyebrow }}</p>
         <h1 id="page-title">{% for line in page.hero.title_lines %}{{ line }}{% if loop.last %}{% else %}<br>{% endif %}{% endfor %}</h1>
-        <p class="hero-lead">{{ page.hero.lead }}</p>
+        <p class="hero-lead prose">{{ page.hero.lead }}</p>
       </div>
     </section>
 
     <!-- Page content -->
     <main id="main" class="container content-container">
-      <!-- Contact introduction -->
-      <div class="intro-callout"><p class="lead">{{ contact.introduction }}</p></div>
-
       <!-- Contact cards: names, roles and email addresses from content/contact.json. -->
       <div class="info-grid">
         {% for person in contact.contacts %}
@@ -71,12 +68,18 @@
           <h2 id="location-title">{{ contact.location.title }}</h2>
           <address>{% for line in contact.location.address_lines %}{{ line }}{% if loop.last %}{% else %}<br>{% endif %}{% endfor %}</address>
           <a class="address-link" href="{{ contact.location.url }}">{{ contact.location.link_label }}</a>
+
+          <div class="location-note">
+            <h3>{{ contact.location.seminar_venue_title }}</h3>
+            <p>{{ contact.location.seminar_venue }}</p>
+            <a href="{{ prefix }}francais-gdt-edp-ot-ml/">{{ contact.location.seminar_link_label }}</a>
+          </div>
         </div>
 
-        <div class="location-note">
-          <h3>{{ contact.location.seminar_venue_title }}</h3>
-          <p>{{ contact.location.seminar_venue }}</p>
-          <a href="{{ prefix }}francais-gdt-edp-ot-ml/">{{ contact.location.seminar_link_label }}</a>
+        <!-- The same institute map is also shown on the seminar page. -->
+        <div class="map-panel">
+          <iframe class="location-map" src="{{ site.map.embed_url }}" title="{{ site.map.title }}" width="600" height="320" loading="lazy" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+          <a class="map-link" href="{{ site.map.url }}">{{ site.map.link_label }}</a>
         </div>
       </section>
     </main>

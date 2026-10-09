@@ -8,12 +8,14 @@ Website for the ParMA research team at Inria Saclay, CNRS and Université Paris-
 
 | I want to change… | Open… |
 | --- | --- |
-| Home page introduction and research topics | `content/home.json` |
+| Home introduction and seminar summary | `content/home.json` |
+| Recent papers and HAL settings | `content/publications.json` (updated automatically) |
 | Members' names, roles, institutions, personal websites and photographs | `content/team.json` |
 | Seminar dates, programme, abstracts and archive | `content/seminar.json` |
 | Summary of the next session on the home page | `content/seminar.json` → `sessions` (generated automatically) |
 | Email addresses, postal address and contacts | `content/contact.json` |
-| Banner titles, menu and footer | `content/site.json` |
+| Banner titles, introduction paragraphs, menu and footer | `content/site.json` |
+| Shared Google Maps location | `content/site.json` → `map` |
 | Colours, banner dimensions and page layout | `assets/css/site.css` |
 | Banner photograph and logo | `assets/images/` |
 | Complete HTML for each page | `pages/home.html`, `team.html`, `seminar.html`, `contact.html` |
@@ -74,6 +76,22 @@ Remote photographs update when the person replaces the image at the same address
 
 In JSON files, keep the quotation marks and commas: commas separate items, but there must be no comma after the last item in a list. Use `[]` for an empty list.
 
+### Recent publications
+
+The home page displays the three newest unique ParMA records from the linked HAL search, including preprints. The settings and saved cards are in `content/publications.json`. The source uses ParMA structure ID **1184761** and the same `publicationDate_tdate desc` ordering as the full HAL list. Records with a date after today are excluded. HAL affiliation defines the team source, so adding a new author does not require changing a second author list.
+
+GitHub checks HAL every day at **05:17 UTC**, and whenever the site is published. It saves new cards to the repository and records a successful check once a month, so the snapshot stays useful and a monthly successful check records repository activity. The workflow does not create a new commit for an unchanged daily check. GitHub may delay scheduled jobs.
+
+Dates retain HAL's precision: a record containing only a year is shown as a year. The order returned by HAL is preserved, including ties. HAL's search date may represent the publication, writing or deposit date according to the document type; it does not always mean publication in a journal. Preprints without a journal or conference are labelled **Preprint**. Versions and records sharing a DOI count once. The source covers records affiliated with ParMA; a member's paper that omits this affiliation in HAL will not appear automatically.
+
+If HAL is temporarily unavailable or returns fewer than three eligible papers, the previously saved cards remain available. Local builds and previews read this saved JSON and do not need a network connection. To refresh it manually, run `python tools/update_publications.py`.
+
+### Introductions and maps
+
+The paragraph under each page title is edited in `content/site.json` → `pages` → `hero.lead`. The repeated introduction boxes have been removed. The unique, longer home introduction remains in `content/home.json`.
+
+The seminar and contact pages share one Google Maps configuration in `content/site.json` → `map`. Both point to **Building 307, rue Michel Magat, Orsay**. The iframe uses the institute's public Google Maps sharing URL, without an API key. The HTML and map dimensions remain editable in the two page files and shared stylesheet.
+
 ### Updating the seminar
 
 **Only edit `content/seminar.json`.** It contains the organisers, venue, labels and a single `sessions` list. Each date appears once, using the `YYYY-MM-DD` format. The same entry supplies the programme page, yearly calendar, archive and next-session announcement on the home page.
@@ -104,7 +122,7 @@ Archive years are collapsible: click a year to open or close its sessions. Forme
 
 The build automatically selects the earliest session on or after its date, including planned sessions whose programme has not yet been announced. It derives the calendar and September-to-August academic years from the dates, and groups completed sessions with talks into the archive. The file is arranged with recent dates first for convenience; the build sorts dates itself.
 
-These selections are calculated **when the site is generated**, using that day's date. The published pages update when you regenerate and publish the site; time passing by itself does not rebuild them. You do not need to move old sessions manually or edit `content/home.json` when the programme changes.
+These selections are calculated **when the site is generated**, using that day's date. GitHub's daily workflow regenerates the published site, and every pushed change also rebuilds it. You do not need to move old sessions manually or edit `content/home.json` when the programme changes.
 
 ### Changing the banner image and logo
 
@@ -131,7 +149,8 @@ parma-site/
 ├── tools/
 │   ├── build.py              ← generates public/
 │   ├── check.py              ← checks local files and links
-│   └── preview.py            ← starts the preview
+│   ├── preview.py            ← starts the preview
+│   └── update_publications.py ← refreshes the three recent HAL papers
 ├── docs/sources/             ← original imported materials
 ├── tests/                    ← checks for pages, seminar data and portraits
 ├── public/                   ← generated site, excluded from Git
@@ -167,6 +186,8 @@ The local check verifies pages, images and site sections; when you change links 
 
 The migration preserves the scientific texts, personal links and materials from the [original Inria site](https://team.inria.fr/parma/). Their sources are documented in `docs/sources/`; that folder does not supply content to the site. Photographs, the logo and texts remain subject to their original terms of use.
 
-The site uses HTML, CSS, JavaScript and Python's standard library. It includes no analytics, external fonts or tracking tools.
+The site uses HTML, CSS, JavaScript and Python's standard library. Publication data is fetched from HAL during publishing. The seminar and contact pages embed Google Maps; no analytics or external fonts are added.
 
 Technical references: [publishing with GitHub Pages](https://docs.github.com/en/pages/getting-started-with-github-pages/configuring-a-publishing-source-for-your-github-pages-site), [uploading generated pages](https://github.com/actions/upload-pages-artifact), [deploying the artifact](https://github.com/actions/deploy-pages).
+
+Publication source: [HAL search API](https://api.archives-ouvertes.fr/docs/search/). Map location and sharing URL: [IMO directions](https://www.imo.universite-paris-saclay.fr/en/acces/).

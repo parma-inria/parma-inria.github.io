@@ -12,21 +12,6 @@
   ],
   "logo_alt": "ParMA logo formed by a cloud of particles",
   "logo_caption": "A cloud of particles forming our logo",
-  "research_title": "Our engagement in research",
-  "research": [
-    {
-      "title": "Optimal transport",
-      "text": " "
-    },
-    {
-      "title": "",
-      "text": " "
-    },
-    {
-      "title": "",
-      "text": " "
-    }
-  ],
   "seminar": {
     "eyebrow": "OUR RESEARCH SEMINAR",
     "title": "GdT OT–PDE–ML",

@@ -44,15 +44,12 @@
       <div class="container hero-content">
         <p class="eyebrow">{{ page.hero.eyebrow }}</p>
         <h1 id="page-title">{% for line in page.hero.title_lines %}{{ line }}{% if loop.last %}{% else %}<br>{% endif %}{% endfor %}</h1>
-        <p class="hero-lead">{{ page.hero.lead }}</p>
+        <p class="hero-lead prose">{{ page.hero.lead }}</p>
       </div>
     </section>
 
     <!-- Page content -->
     <main id="main" class="container content-container">
-      <!-- Team introduction -->
-      <div class="intro-callout"><p class="lead">{{ team.introduction }}</p></div>
-
       <!-- Search becomes visible when assets/js/site.js is ready. -->
       <div class="members-toolbar" hidden>
         <div>

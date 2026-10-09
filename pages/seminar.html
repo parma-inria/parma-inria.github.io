@@ -44,17 +44,14 @@
       <div class="container hero-content">
         <p class="eyebrow">{{ page.hero.eyebrow }}</p>
         <h1 id="page-title">{% for line in page.hero.title_lines %}{{ line }}{% if loop.last %}{% else %}<br>{% endif %}{% endfor %}</h1>
-        <p class="hero-lead">{{ page.hero.lead }}</p>
+        <p class="hero-lead prose">{{ page.hero.lead }}</p>
       </div>
     </section>
 
     <!-- Page content -->
     <main id="main" class="container content-container">
-      <!-- Seminar introduction -->
-      <div class="intro-callout"><p class="lead">{{ seminar.introduction }}</p></div>
-
       <!-- Organizers, mailing list and venue -->
-      <div class="info-grid">
+      <div class="info-grid seminar-info-grid">
         <section class="info-card" aria-labelledby="organizers-title">
           <h2 id="organizers-title">{{ seminar.labels.organizers }}</h2>
           <ul class="organizer-list">
@@ -64,7 +61,6 @@
               </li>
             {% endfor %}
           </ul>
-          <p>{{ seminar.mailing_list_note }}</p>
         </section>
 
         <section class="info-card" aria-labelledby="venue-title">
@@ -72,6 +68,15 @@
           <p><a href="{{ seminar.venue.url }}">{{ seminar.venue.name }}</a></p>
           <p>{{ seminar.venue.building }} · {{ seminar.labels.room }} {{ seminar.venue.room }}</p>
         </section>
+      </div>
+
+      <!-- Mailing-list invitation belongs below both information cards. -->
+      <p class="mailing-list-note">{{ seminar.mailing_list_note }}</p>
+
+      <!-- Google Maps uses the shared location in content/site.json. -->
+      <div class="seminar-map map-panel">
+        <iframe class="location-map" src="{{ site.map.embed_url }}" title="{{ site.map.title }}" width="960" height="320" loading="lazy" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+        <a class="map-link" href="{{ site.map.url }}">{{ site.map.link_label }}</a>
       </div>
 
       <!-- Upcoming sessions: dates, speakers and abstracts from content/seminar.json. -->

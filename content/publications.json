@@ -1,0 +1,51 @@
+{
+  "title": "Recent publications",
+  "source_name": "HAL",
+  "source_url": "https://hal.science/search/index/?q=%2A&rows=30&structId_i=1184761&sort=publicationDate_tdate+desc",
+  "link_label": "Read the paper",
+  "empty_message": "Recent publications will appear here after the next update.",
+  "hal_structure_id": 1184761,
+  "updated_on": "2026-10-09",
+  "items": [
+    {
+      "id": "hal-05774627",
+      "title": "First-order Γ-expansion for entropic optimal transport with non-degenerate costs",
+      "authors": [
+        "Luca Nenna",
+        "Brendan Pass",
+        "Paul Pegon",
+        "Louis Tocquec"
+      ],
+      "venue": "Preprint",
+      "date": "2026-10-01",
+      "url": "https://hal.science/hal-05774627",
+      "doi": ""
+    },
+    {
+      "id": "hal-05751291",
+      "title": "Toland duality and particle approximations for signed Wasserstein barycenters",
+      "authors": [
+        "Thomas O. Gallouët",
+        "Andrea Natale",
+        "Gabriele Todeschi"
+      ],
+      "venue": "Preprint",
+      "date": "2026-09-15",
+      "url": "https://hal.science/hal-05751291",
+      "doi": ""
+    },
+    {
+      "id": "hal-05704415",
+      "title": "Quantitative stability of classical, entropic, and doubly entropic Wasserstein barycenters",
+      "authors": [
+        "Guillaume Carlier",
+        "Julien Guérin",
+        "Quentin Mérigot"
+      ],
+      "venue": "Preprint",
+      "date": "2026-07-26",
+      "url": "https://hal.science/hal-05704415",
+      "doi": ""
+    }
+  ]
+}

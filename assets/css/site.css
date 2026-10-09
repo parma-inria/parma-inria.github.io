@@ -53,18 +53,9 @@
   margin-bottom: 20px;
 }
 
-.feature-number {
-  display: block;
-  color: var(--blue);
-  font-weight: 700;
-  font-size: .8rem;
-  letter-spacing: .08em;
-  margin-bottom: 14px;
-}
-
 .address-card {
   display: grid;
-  grid-template-columns: 1.3fr 1fr;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1.15fr);
   gap: 40px;
   background: var(--surface);
   border: 1px solid var(--line);
@@ -79,9 +70,9 @@
 }
 
 .location-note {
-  align-self: center;
-  padding-left: 36px;
-  border-left: 1px solid var(--line);
+  margin-top: 24px;
+  padding-top: 20px;
+  border-top: 1px solid var(--line);
 }
 
 @media (max-width: 760px) {
@@ -98,6 +89,15 @@
     border-left: 0;
     border-top: 1px solid var(--line);
   }
+}
+
+
+/* Long body paragraphs, banner descriptions and seminar abstracts. */
+.prose,
+.abstract-text {
+  text-align: justify;
+  hyphens: auto;
+  overflow-wrap: break-word;
 }
 
 
@@ -416,18 +416,6 @@ ul, ol {
   line-height: 1.75;
 }
 
-.intro-callout {
-  padding: 23px 27px;
-  margin-bottom: 40px;
-  border-left: 4px solid var(--blue);
-  border-radius: 0 8px 8px 0;
-  background: var(--surface);
-}
-
-.intro-callout p:last-child {
-  margin-bottom: 0;
-}
-
 .home-grid {
   display: grid;
   grid-template-columns: 1.5fr .8fr;
@@ -463,36 +451,81 @@ ul, ol {
   margin-bottom: 23px;
 }
 
-.feature-grid {
+/* Recent publications are rendered entirely in pages/home.html. */
+.section-header {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 20px;
+}
+
+.section-source {
+  flex-shrink: 0;
+  font-size: .87rem;
+}
+
+.publication-grid {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 22px;
 }
 
-.feature-card {
-  padding: 28px;
+.publication-card {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  padding: 27px;
   border: 1px solid var(--line);
   border-top: 3px solid var(--blue);
   border-radius: 0 0 var(--radius) var(--radius);
   background: var(--white);
 }
 
-.feature-card h3 {
-  margin-bottom: 13px;
+.publication-date {
+  margin-bottom: 14px;
+  color: var(--blue);
+  font-size: .83rem;
+  font-weight: 700;
 }
 
-.feature-card p {
+.publication-card h3 {
+  margin-bottom: 18px;
+  font-size: 1.08rem;
+  line-height: 1.5;
+}
+
+.publication-card h3 a {
+  color: var(--blue-deep);
+  text-decoration: none;
+}
+
+.publication-card h3 a:hover {
+  text-decoration: underline;
+}
+
+.publication-authors,
+.publication-venue {
   color: var(--muted);
-  font-size: .97rem;
+  font-size: .88rem;
+  line-height: 1.6;
 }
 
-.feature-card p:last-child {
-  margin-bottom: 0;
+.publication-authors {
+  margin-bottom: 10px;
 }
 
-.feature-card a {
-  font-weight: 600;
+.publication-venue {
+  margin-bottom: 22px;
+  font-style: italic;
 }
+
+.publication-link {
+  align-self: flex-start;
+  margin-top: auto;
+  font-size: .88rem;
+  font-weight: 650;
+}
+
 
 .jump-nav {
   display: flex;
@@ -705,12 +738,52 @@ ul, ol {
 }
 
 
+/* Responsive Google Maps embeds, shared by seminar and contact pages. */
+.map-panel {
+  min-width: 0;
+}
+
+.location-map {
+  display: block;
+  width: 100%;
+  height: 320px;
+  border: 0;
+  border-radius: 8px;
+  background: var(--surface);
+}
+
+.map-link {
+  display: inline-block;
+  margin-top: 12px;
+  font-size: .9rem;
+}
+
+.seminar-map {
+  margin-bottom: 46px;
+}
+
+
 /* Contacts, seminar programme and talk archive */
 .info-grid {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 25px;
   margin-bottom: 37px;
+}
+
+.seminar-info-grid {
+  grid-template-columns: minmax(0, 1.7fr) minmax(0, 1fr);
+  margin-bottom: 18px;
+}
+
+.mailing-list-note {
+  margin-bottom: 24px;
+  color: var(--muted);
+}
+
+.organizer-list p,
+.info-card a {
+  overflow-wrap: anywhere;
 }
 
 .info-card {
@@ -966,7 +1039,7 @@ ul, ol {
   .home-grid {
     gap: 38px;
   }
-  .feature-card {
+  .publication-card {
     padding: 23px;
   }
 }
@@ -1034,7 +1107,7 @@ ul, ol {
   .parma-logo {
     max-height: 160px;
   }
-  .feature-grid {
+  .publication-grid {
     grid-template-columns: 1fr;
     gap: 17px;
   }
@@ -1051,6 +1124,9 @@ ul, ol {
   }
   .info-grid {
     gap: 18px;
+  }
+  .seminar-info-grid {
+    grid-template-columns: 1fr;
   }
   .info-card {
     padding: 23px;
@@ -1100,10 +1176,6 @@ ul, ol {
   }
   .button {
     padding-inline: 17px;
-  }
-  .intro-callout {
-    padding: 19px 20px;
-    margin-bottom: 30px;
   }
   .lead {
     font-size: 1.08rem;
@@ -1197,11 +1269,14 @@ ul, ol {
   .hero-content, .content-container {
     padding-block: 22px;
   }
-  .member-card, .session-card, .info-card {
+  .member-card, .session-card, .info-card, .publication-card {
     break-inside: avoid;
   }
   .container {
     width: 100%;
+  }
+  .location-map {
+    display: none;
   }
 }
 
