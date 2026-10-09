@@ -26,6 +26,10 @@ For data updates, start with **`content/`**. For page layout and HTML, start wit
 
 Open this folder as your project. You only need **Python 3.10 or later**; no npm, additional Python packages or extensions are required.
 
+For the quickest local preview on Windows, double-click `Open local preview.cmd` in this folder. It builds the site and opens your browser. Keep its terminal window open while using the preview; closing it stops the local server. If this project's preview is already running, the launcher reopens it.
+
+The files in `pages/` are editable source documents. To view the rendered site, use the local preview rather than opening those source files directly.
+
 1. Open the file listed in the table and save your changes.
 2. From **Terminal → Run Task**, choose **ParMA: anteprima locale** (local preview).
 3. Open [the preview in your browser](http://127.0.0.1:8765/). After saving further changes, refresh the page: the site is regenerated automatically.
@@ -113,6 +117,7 @@ The original team logo is `assets/images/parma-logo.png`. It is used in the head
 ```text
 parma-site/
 ├── README.md                 ← this guide
+├── Open local preview.cmd    ← double-click to preview on Windows
 ├── pages/                    ← four complete, editable HTML documents
 │   ├── home.html
 │   ├── team.html
