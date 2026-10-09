@@ -1,0 +1,203 @@
+"""Check generated views with fixtures, independently of editable site content.
+
+Run from the project folder: python -m unittest discover -s tests
+"""
+
+import copy
+import sys
+import tempfile
+import unittest
+from datetime import date
+from html.parser import HTMLParser
+from pathlib import Path
+from unittest.mock import patch
+
+sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "tools"))
+import build
+
+
+def talk(speaker="Sample speaker", title="Sample talk"):
+    return {"time": "10:00", "speaker": speaker, "title": title, "abstract": ["First paragraph."]}
+
+
+def seminar_fixture():
+    return {
+        "introduction": "A sample research seminar.",
+        "organizers": [{"name": "Sample organizer", "email": "organizer@example.org", "url": None}],
+        "mailing_list_note": "Contact the organizers.",
+        "venue": {"name": "Sample institute", "url": "https://example.org/", "building": "1", "room": "A"},
+        "labels": {
+            "organizers": "Organizers", "location": "Location", "next_session": "Next Session",
+            "schedule": "Schedule", "history": "History", "academic_year": "Academic Year",
+            "abstract": "Abstract", "room": "Room", "home_next_session": "Next session",
+            "empty_next_session": "No upcoming session.", "empty_programme": "Programme to be announced.",
+        },
+        # Deliberately unordered: rendering must sort dates rather than trust file order.
+        "sessions": [
+            {"date": "2027-04-05", "room": "A", "talks": []},
+            {"date": "2026-10-12", "room": "A", "talks": [talk("Alpha speaker", "Current programme")]},
+            {"date": "2026-06-15", "room": "A", "talks": [talk("Earlier speaker")]},
+            {"date": "2026-12-14", "room": "A", "talks": [talk("Beta speaker", "Later programme")]},
+            {"date": "2026-09-01", "room": "A", "talks": [talk("September speaker")]},
+            {"date": "2026-11-16", "room": "A", "talks": []},
+            {"date": "2026-08-31", "room": "A", "talks": [talk("August speaker")]},
+        ],
+    }
+
+
+def home_fixture():
+    return {
+        "about_eyebrow": "Research", "about_title_lines": ["Sample team"],
+        "introduction": ["Sample introduction."], "logo_alt": "Team logo", "logo_caption": "Sample caption.",
+        "research_title": "Research", "research": [],
+        "seminar": {"eyebrow": "Seminar", "title": "Sample GdT", "description": "Sample description.", "link_label": "Programme"},
+    }
+
+
+class RenderedElements(HTMLParser):
+    """Read output attributes and calendar cells without relying on indentation."""
+
+    def __init__(self, document):
+        super().__init__()
+        self.elements = []
+        self.calendar_cells = []
+        self.in_calendar = False
+        self.cell_text = None
+        self.feed(document)
+
+    def handle_starttag(self, tag, attributes):
+        attributes = dict(attributes)
+        self.elements.append((tag, attributes))
+        if tag == "table" and attributes.get("class") == "schedule-table":
+            self.in_calendar = True
+        if tag == "td" and self.in_calendar:
+            self.cell_text = ""
+
+    def handle_data(self, text):
+        if self.cell_text is not None:
+            self.cell_text += text
+
+    def handle_endtag(self, tag):
+        if tag == "td" and self.cell_text is not None:
+            self.calendar_cells.append(self.cell_text.strip())
+            self.cell_text = None
+        if tag == "table":
+            self.in_calendar = False
+
+
+class SeminarTests(unittest.TestCase):
+    def setUp(self):
+        self.seminar = seminar_fixture()
+        self.home = home_fixture()
+
+    def render(self, day):
+        plan = build.plan_seminar(self.seminar, day)
+        return (
+            plan,
+            build.render_home("./", self.home, self.seminar, plan),
+            build.render_seminar(self.seminar, plan),
+        )
+
+    def test_session_moves_from_next_to_archive_on_following_day(self):
+        on_day, home, _ = self.render(date(2026, 10, 12))
+        self.assertEqual(on_day["next"]["date"], "2026-10-12")
+        self.assertNotIn("2026-10-12", [session["date"] for session in on_day["history"][2026]])
+        self.assertIn("12 October 2026", home)
+        self.assertIn("Current programme", home)
+        after, home, page = self.render(date(2026, 10, 13))
+        self.assertEqual(after["next"]["date"], "2026-11-16")
+        self.assertEqual(after["history"][2026][0]["date"], "2026-10-12")
+        self.assertIn("16 November 2026", home)
+        self.assertNotIn("Current programme", home)
+        self.assertIn("Current programme", page)
+
+    def test_academic_year_changes_on_first_of_september(self):
+        august = build.plan_seminar(self.seminar, date(2026, 8, 31))
+        september = build.plan_seminar(self.seminar, date(2026, 9, 1))
+        self.assertEqual(august["academic_year"], 2025)
+        self.assertEqual(september["academic_year"], 2026)
+        self.assertEqual([session["date"] for session in august["calendar"]], ["2026-06-15", "2026-08-31"])
+        self.assertEqual(september["calendar"][0]["date"], "2026-09-01")
+        self.assertEqual(september["history"][2025][0]["date"], "2026-08-31")
+
+    def test_planned_session_and_no_future_have_clear_messages(self):
+        planned, home, page = self.render(date(2026, 10, 13))
+        self.assertEqual(planned["next"]["talks"], [])
+        self.assertIn("Programme to be announced.", home)
+        self.assertIn("Programme to be announced.", page)
+        future, home, page = self.render(date(2030, 9, 1))
+        self.assertIsNone(future["next"])
+        self.assertEqual(future["calendar"], [])
+        self.assertIn("No upcoming session.", home)
+        self.assertIn("No upcoming session.", page)
+        self.assertNotIn('<p class="session-date"></p>', home)
+
+    def test_all_announced_future_talks_and_calendar_dates_stay_visible(self):
+        plan, home, page = self.render(date(2026, 10, 9))
+        self.assertEqual(plan["next"]["date"], "2026-10-12")
+        self.assertIn("Later programme", page)
+        self.assertNotIn("Later programme", home)
+        elements = RenderedElements(page)
+        self.assertEqual(sum(attributes.get("data-upcoming") == "true" for _, attributes in elements.elements), 2)
+        expected_dates = [date.fromisoformat(session["date"]).strftime("%d/%m/%Y") for session in plan["calendar"]]
+        self.assertEqual(sorted(cell for cell in elements.calendar_cells if cell), sorted(expected_dates))
+        self.assertEqual(elements.calendar_cells, ["01/09/2026", "14/12/2026", "12/10/2026", "05/04/2027", "16/11/2026", ""])
+
+    def test_editable_text_is_escaped_and_abstract_paragraphs_remain_separate(self):
+        current = next(session for session in self.seminar["sessions"] if session["date"] == "2026-10-12")
+        current["talks"][0] = {
+            "time": "", "speaker": '<img src=x onerror="bad">',
+            "title": "A & B", "abstract": ["x < y", "second & third"],
+        }
+        build.validate_seminar(self.seminar)
+        _, home, page = self.render(date(2026, 10, 9))
+        self.assertNotIn('<img src=x', page)
+        self.assertIn("&lt;img src=x onerror=&quot;bad&quot;&gt;", page)
+        self.assertIn("x &lt; y<br><br>second &amp; third", page)
+        self.assertIn("A &amp; B", home)
+        self.assertNotIn(" · &lt;img", home)
+
+    def test_invalid_dates_duplicates_times_and_types_are_rejected(self):
+        build.validate_seminar(self.seminar)
+        for invalid in ("2026-2-01", "2026-02-30", "2026-13-01", "not-a-date", 42):
+            with self.subTest(date=invalid), self.assertRaises(build.BuildError):
+                build.parse_session_date(invalid, "test.date")
+        duplicate = copy.deepcopy(self.seminar)
+        duplicate["sessions"].append(copy.deepcopy(duplicate["sessions"][0]))
+        with self.assertRaises(build.BuildError):
+            build.validate_seminar(duplicate)
+        for field, invalid in (("time", "24:00"), ("time", "10:60"), ("time", "9:00"), ("speaker", 42), ("abstract", [42])):
+            bad = copy.deepcopy(self.seminar)
+            next(session for session in bad["sessions"] if session["talks"])["talks"][0][field] = invalid
+            with self.subTest(field=field, value=invalid), self.assertRaises(build.BuildError):
+                build.validate_seminar(bad)
+
+    def test_portrait_validation_fallback_and_nested_route_prefix(self):
+        photo = "assets/images/members/sample.jpg"
+        member = {"name": "Sample Person", "affiliation": "Sample institute", "url": "https://example.org/", "photo": photo}
+        with tempfile.TemporaryDirectory() as directory, patch.object(build, "ROOT", Path(directory)):
+            image = Path(directory) / photo
+            image.parent.mkdir(parents=True)
+            image.write_bytes(b"fixture")  # Validation checks local path/existence, not image decoding.
+            build.validate_member_photo(member)
+            for invalid in (42, "https://example.org/photo.jpg", "assets/images/members/../../missing.jpg", "assets/images/members/missing.jpg"):
+                with self.subTest(photo=invalid), self.assertRaises(build.BuildError):
+                    build.validate_member_photo(dict(member, photo=invalid))
+            team = {
+                "introduction": "Sample team.",
+                "search": {"label": "Search", "placeholder": "Name", "count_label": "members", "empty_message": "No result"},
+                "sections": [{"id": "sample", "title": "Sample section", "members": [member, dict(member, name="Another Person", photo=None)]}],
+            }
+            for prefix in ("../", "../../"):
+                document = build.render_team(prefix, team)
+                portraits = [attributes for tag, attributes in RenderedElements(document).elements if tag == "img"]
+                self.assertEqual(len(portraits), 1)
+                self.assertEqual(portraits[0]["src"], prefix + photo)
+                self.assertEqual(portraits[0]["alt"], "")
+                self.assertEqual(portraits[0]["loading"], "lazy")
+                self.assertIn("member-initials", document)
+                self.assertIn(">AP</span>", document)
+
+
+if __name__ == "__main__":
+    unittest.main()

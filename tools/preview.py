@@ -4,6 +4,7 @@ import argparse
 import functools
 import subprocess
 import sys
+from datetime import date
 from http.server import SimpleHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
 from threading import Lock
@@ -21,7 +22,10 @@ def source_signature():
     files = [BUILD_SCRIPT]
     for folder in ('content', 'templates', 'assets'):
         files.extend(path for path in (ROOT / folder).rglob('*') if path.is_file())
-    return tuple((str(path), path.stat().st_mtime_ns, path.stat().st_size) for path in sorted(files))
+    return (date.today().isoformat(), tuple(
+        (str(path), path.stat().st_mtime_ns, path.stat().st_size)
+        for path in sorted(files)
+    ))
 
 
 def rebuild_if_needed():

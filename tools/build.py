@@ -5,15 +5,17 @@ Uses Python's standard library only. Run from any folder:
     python tools/build.py --output path/to/preview
 
 Templates use string.Template placeholders ($name or ${name}). JSON text is
-escaped before insertion; only rendered HTML fragments and seminar.html are raw.
+escaped before insertion; only generated HTML fragments are inserted as HTML.
 """
 
 import argparse
 import html
 import json
+import re
 import shutil
 import sys
 from pathlib import Path, PurePosixPath
+from datetime import date
 from string import Template
 from textwrap import indent
 from urllib.parse import urlsplit
@@ -24,6 +26,10 @@ CONTENT = ROOT / "content"
 TEMPLATES = ROOT / "templates"
 DEFAULT_OUTPUT = ROOT / "public"
 PAGE_IDS = {"home", "team", "seminar", "contact"}
+MONTH_NAMES = (
+    "January", "February", "March", "April", "May", "June", "July", "August",
+    "September", "October", "November", "December",
+)
 
 
 class BuildError(Exception):
@@ -111,7 +117,7 @@ def validate_content(sources):
     require_fields(home, "content/home.json", {
         "hero_actions": dict, "about_eyebrow": str, "about_title_lines": list,
         "introduction": list, "logo_alt": str, "logo_caption": str,
-        "research_title": str, "research": list, "seminar": dict, "next_session": dict,
+        "research_title": str, "research": list, "seminar": dict,
     })
     require_text_list(home["about_title_lines"], "content/home.json → about_title_lines")
     require_text_list(home["introduction"], "content/home.json → introduction")
@@ -123,14 +129,6 @@ def validate_content(sources):
     require_fields(home["seminar"], "content/home.json → seminar", {
         "eyebrow": str, "title": str, "description": str, "link_label": str,
     })
-    require_fields(home["next_session"], "content/home.json → next_session", {
-        "date": str, "title": str, "talks": list,
-    })
-    for talk in home["next_session"]["talks"]:
-        require_fields(talk, "content/home.json → next_session.talks", {
-            "time": str, "speaker": str, "title": str,
-        })
-
     require_fields(team, "content/team.json", {
         "introduction": str, "search": dict, "sections": list,
     })
@@ -149,6 +147,7 @@ def validate_content(sources):
             })
             if member["url"]:
                 require_web_url(member["url"], f"content/team.json → {member['name']}.url")
+            validate_member_photo(member)
     if len(set(section_ids)) != len(section_ids):
         raise BuildError("content/team.json: gli id delle sezioni devono essere diversi.")
 
@@ -166,6 +165,78 @@ def validate_content(sources):
     })
     require_text_list(contact["location"]["address_lines"], "content/contact.json → location.address_lines")
     require_web_url(contact["location"]["url"], "content/contact.json → location.url")
+    validate_seminar(sources["seminar"])
+
+
+def validate_member_photo(member):
+    """Portraits are optional and live beside the site's other image assets."""
+    photo = member.get("photo")
+    location = f"content/team.json → {member['name']}.photo"
+    if photo is None:
+        return
+    if not isinstance(photo, str):
+        raise BuildError(f"{location}: usa un percorso relativo o null.")
+    path = PurePosixPath(photo)
+    if (not photo.startswith("assets/images/members/") or ".." in path.parts
+            or "\\" in photo or ":" in photo
+            or path.suffix.lower() not in {".jpg", ".jpeg", ".png", ".webp", ".gif"}):
+        raise BuildError(f"{location}: usa un'immagine in assets/images/members/.")
+    if not (ROOT / path).is_file():
+        raise BuildError(f"{location}: immagine non trovata: {photo}")
+
+
+def parse_session_date(value, location):
+    """Require an unambiguous, valid calendar date such as 2026-10-12."""
+    if not isinstance(value, str) or not re.fullmatch(r"\d{4}-\d{2}-\d{2}", value):
+        raise BuildError(f"{location}: usa il formato YYYY-MM-DD, per esempio 2026-10-12.")
+    try:
+        return date.fromisoformat(value)
+    except ValueError as error:
+        raise BuildError(f"{location}: la data '{value}' non esiste nel calendario.") from error
+
+
+def validate_seminar(seminar):
+    """Keep the calendar, home summary and archive on one validated source."""
+    location = "content/seminar.json"
+    require_fields(seminar, location, {
+        "introduction": str, "organizers": list, "mailing_list_note": str,
+        "venue": dict, "labels": dict, "sessions": list,
+    })
+    require_fields(seminar["venue"], location + " → venue", {
+        "name": str, "url": str, "building": str, "room": str,
+    })
+    require_web_url(seminar["venue"]["url"], location + " → venue.url")
+    require_fields(seminar["labels"], location + " → labels", dict.fromkeys((
+        "organizers", "location", "next_session", "schedule", "history",
+        "academic_year", "abstract", "room", "home_next_session",
+        "empty_next_session", "empty_programme",
+    ), str))
+    for index, organizer in enumerate(seminar["organizers"]):
+        where = f"{location} → organizers[{index}]"
+        require_fields(organizer, where, {
+            "name": str, "email": str, "url": (str, type(None)),
+        })
+        if not re.fullmatch(r"[^\s@]+@[^\s@]+\.[^\s@]+", organizer["email"]):
+            raise BuildError(f"{where}.email: inserisci un indirizzo email valido.")
+        if organizer["url"]:
+            require_web_url(organizer["url"], where + ".url")
+    seen_dates = set()
+    for index, session in enumerate(seminar["sessions"]):
+        where = f"{location} → sessions[{index}]"
+        require_fields(session, where, {"date": str, "room": str, "talks": list})
+        session_date = parse_session_date(session["date"], where + ".date")
+        if session_date in seen_dates:
+            raise BuildError(f"{where}.date: la data {session['date']} è già presente; aggiungi gli interventi alla stessa sessione.")
+        seen_dates.add(session_date)
+        for talk_index, talk in enumerate(session["talks"]):
+            talk_where = f"{where} → talks[{talk_index}]"
+            require_fields(talk, talk_where, {
+                "time": str, "speaker": str, "title": str, "abstract": list,
+            })
+            if talk["time"] and not re.fullmatch(r"(?:[01]\d|2[0-3]):[0-5]\d", talk["time"]):
+                raise BuildError(f"{talk_where}.time: usa un orario HH:MM, per esempio 10:00, oppure un testo vuoto.")
+            if not all(isinstance(paragraph, str) for paragraph in talk["abstract"]):
+                raise BuildError(f"{talk_where}.abstract: usa un elenco di paragrafi di testo, oppure [].")
 
 
 def escape(value):
@@ -240,7 +311,49 @@ def render_footer(prefix, site):
     )
 
 
-def render_home(prefix, home):
+def academic_year_start(day):
+    """An academic year runs from 1 September through 31 August."""
+    return day.year if day.month >= 9 else day.year - 1
+
+
+def plan_seminar(seminar, today=None):
+    """Derive every view from the same dates; an explicit date makes checks repeatable."""
+    today = today or date.today()
+    sessions = sorted(seminar["sessions"], key=lambda session: session["date"])
+    upcoming = [session for session in sessions if date.fromisoformat(session["date"]) >= today]
+    year = academic_year_start(today)
+    calendar = [
+        session for session in sessions
+        if academic_year_start(date.fromisoformat(session["date"])) == year
+    ]
+    history = {}
+    for session in reversed(sessions):
+        session_day = date.fromisoformat(session["date"])
+        if session_day < today and session["talks"]:
+            history.setdefault(academic_year_start(session_day), []).append(session)
+    return {
+        "next": upcoming[0] if upcoming else None,
+        "upcoming": upcoming,
+        "calendar": calendar,
+        "academic_year": year,
+        "history": history,
+    }
+
+
+def session_date_label(session, labels, home=False):
+    day = date.fromisoformat(session["date"])
+    if home:
+        text = f"{day.day} {MONTH_NAMES[day.month - 1]} {day.year}"
+        separator = " · "
+    else:
+        text = day.strftime("%d/%m/%Y")
+        separator = " — "
+    if session["room"]:
+        text += separator + labels["room"] + " " + session["room"]
+    return text
+
+
+def render_home(prefix, home, seminar, plan):
     paragraphs = []
     for index, paragraph in enumerate(home["introduction"]):
         style = ' class="lead"' if index == 0 else ""
@@ -249,12 +362,25 @@ def render_home(prefix, home):
         render_template("partials/research-card.html", number=f"{index:02}", **escaped_fields(feature))
         for index, feature in enumerate(home["research"], start=1)
     ]
-    talks = [
-        render_template("partials/next-session-talk.html", **escaped_fields(talk))
-        for talk in home["next_session"]["talks"]
-    ]
-    seminar = home["seminar"]
-    next_session = home["next_session"]
+    next_session = plan["next"]
+    labels = seminar["labels"]
+    talks = []
+    if next_session:
+        for talk in next_session["talks"]:
+            meta = " · ".join(value for value in (talk["time"], talk["speaker"]) if value)
+            talks.append(render_template(
+                "partials/next-session-talk.html", meta=escape(meta),
+                title="<br>" + escape(talk["title"]) if talk["title"] else "",
+            ))
+        if not talks:
+            talks.append(f'<p>{escape(labels["empty_programme"])}</p>')
+    else:
+        talks.append(f'<p>{escape(labels["empty_next_session"])}</p>')
+    next_session_date = (
+        f'<p class="session-date">{escape(session_date_label(next_session, labels, home=True))}</p>'
+        if next_session else ""
+    )
+    home_seminar = home["seminar"]
     return render_template(
         "pages/home.html",
         prefix=prefix,
@@ -264,16 +390,103 @@ def render_home(prefix, home):
         logo_alt=escape(home["logo_alt"]), logo_caption=escape(home["logo_caption"]),
         research_title=escape(home["research_title"]),
         research_cards=indent("\n".join(cards), "    "),
-        seminar_eyebrow=escape(seminar["eyebrow"]), seminar_title=escape(seminar["title"]),
-        seminar_description=escape(seminar["description"]),
-        seminar_link_label=escape(seminar["link_label"]),
-        next_session_date=escape(next_session["date"]),
-        next_session_title=escape(next_session["title"]),
+        seminar_eyebrow=escape(home_seminar["eyebrow"]), seminar_title=escape(home_seminar["title"]),
+        seminar_description=escape(home_seminar["description"]),
+        seminar_link_label=escape(home_seminar["link_label"]),
+        next_session_date=indent(next_session_date, "    "),
+        next_session_title=escape(labels["home_next_session"]),
         next_session_talks=indent("\n".join(talks), "    "),
     )
 
 
-def render_team(team):
+def render_seminar_talk(talk, labels):
+    meta_parts = []
+    if talk["time"]:
+        meta_parts.append(f'<strong>{escape(talk["time"])}</strong>')
+    if talk["speaker"]:
+        meta_parts.append(f'<span>{escape(talk["speaker"])}</span>')
+    meta = f'<p class="talk-meta">{" ".join(meta_parts)}</p>' if meta_parts else ""
+    title = f'<p class="talk-title">{escape(talk["title"])}</p>' if talk["title"] else ""
+    abstract = ""
+    if talk["abstract"]:
+        paragraphs = "<br><br>".join(escape(paragraph) for paragraph in talk["abstract"])
+        abstract = (
+            f'<span class="abstract-label">{escape(labels["abstract"])}</span>\n'
+            f'<div class="abstract-text">{paragraphs}</div>'
+        )
+    return render_template(
+        "partials/seminar-talk.html", meta=indent(meta, "  "),
+        title=indent(title, "  "), abstract=indent(abstract, "  "),
+    )
+
+
+def render_seminar_session(session, labels, upcoming=False):
+    talks = [render_seminar_talk(talk, labels) for talk in session["talks"]]
+    if not talks:
+        talks.append(f'<p>{escape(labels["empty_programme"])}</p>')
+    return render_template(
+        "partials/seminar-session.html",
+        upcoming=' data-upcoming="true"' if upcoming else "",
+        heading_level=3 if upcoming else 4,
+        date=escape(session_date_label(session, labels)),
+        talks=indent("\n".join(talks), "  "),
+    )
+
+
+def render_seminar(seminar, plan):
+    labels = seminar["labels"]
+    organizers = []
+    for organizer in seminar["organizers"]:
+        name = escape(organizer["name"])
+        if organizer["url"]:
+            name = f'<a href="{escape(organizer["url"])}" target="_blank" rel="noopener noreferrer">{name}</a>'
+        organizers.append(render_template(
+            "partials/seminar-organizer.html", name=name, email=escape(organizer["email"]),
+        ))
+    # Show later announced talks too, even when an earlier date has no programme yet.
+    upcoming = [
+        render_seminar_session(session, labels, upcoming=True)
+        for session in plan["upcoming"]
+        if session is plan["next"] or session["talks"]
+    ]
+    if not upcoming:
+        upcoming.append(f'<p>{escape(labels["empty_next_session"])}</p>')
+    # Two chronological columns keep the established compact calendar layout.
+    dates = [date.fromisoformat(session["date"]).strftime("%d/%m/%Y") for session in plan["calendar"]]
+    midpoint = (len(dates) + 1) // 2
+    rows = []
+    for index in range(midpoint):
+        right = dates[midpoint + index] if midpoint + index < len(dates) else ""
+        rows.append(f"<tr><td>{dates[index]}</td><td>{right}</td></tr>")
+    if not rows:
+        rows.append(f'<tr><td colspan="2">{escape(labels["empty_next_session"])}</td></tr>')
+    years = []
+    for index, (year, sessions) in enumerate(plan["history"].items()):
+        years.append(render_template(
+            "partials/seminar-archive-year.html", archive_id=f"seminar-archive-{index}",
+            title=escape(f"{labels['academic_year']} {year} – {year + 1}"),
+            sessions=indent("\n\n".join(render_seminar_session(session, labels) for session in sessions), "  "),
+        ))
+    venue = seminar["venue"]
+    year = plan["academic_year"]
+    return render_template(
+        "pages/seminar.html", introduction=escape(seminar["introduction"]),
+        organizers_label=escape(labels["organizers"]),
+        organizers=indent("\n".join(organizers), "      "),
+        mailing_list_note=escape(seminar["mailing_list_note"]),
+        location_label=escape(labels["location"]), venue_name=escape(venue["name"]),
+        venue_url=escape(venue["url"]), building=escape(venue["building"]),
+        room_label=escape(labels["room"]), room=escape(venue["room"]),
+        next_session_label=escape(labels["next_session"]),
+        next_sessions=indent("\n\n".join(upcoming), "  "),
+        schedule_label=escape(labels["schedule"]),
+        schedule_description=escape(f"Seminar dates for academic year {year}–{year + 1}"),
+        calendar_rows=indent("\n".join(rows), "      "),
+        history_label=escape(labels["history"]), archive_years=indent("\n\n".join(years), "  "),
+    )
+
+
+def render_team(prefix, team):
     sections = []
     for section in team["sections"]:
         cards = []
@@ -281,9 +494,21 @@ def render_team(team):
             name = escape(member["name"])
             if member["url"]:
                 name = f'<a href="{escape(member["url"])}">{name}</a>'
+            if member.get("photo"):
+                portrait = (
+                    '<span class="member-photo">'
+                    f'<img class="member-portrait" src="{escape(prefix + member["photo"])}" '
+                    'alt="" width="64" height="64" loading="lazy" decoding="async">'
+                    '</span>'
+                )
+            else:
+                name_parts = member["name"].split()
+                initials = (name_parts[0][0] + (name_parts[-1][0] if len(name_parts) > 1 else "")).upper() if name_parts else ""
+                portrait = f'<span class="member-photo member-initials" aria-hidden="true">{escape(initials)}</span>'
             search_text = " ".join([member["name"], member["affiliation"], section["title"]])
             cards.append(render_template(
                 "partials/member-card.html", name=name,
+                portrait=portrait,
                 affiliation=escape(member["affiliation"]), search_text=escape(search_text),
             ))
         # Former members use the same visible section as every other category.
@@ -320,12 +545,12 @@ def render_contact(prefix, contact):
     )
 
 
-def render_document(page, prefix, sources, seminar_html):
+def render_document(page, prefix, sources, seminar_html, seminar_plan):
     page_id = page["id"]
     if page_id == "home":
-        body = render_home(prefix, sources["home"])
+        body = render_home(prefix, sources["home"], sources["seminar"], seminar_plan)
     elif page_id == "team":
-        body = render_team(sources["team"])
+        body = render_team(prefix, sources["team"])
     elif page_id == "contact":
         body = render_contact(prefix, sources["contact"])
     else:
@@ -342,15 +567,16 @@ def render_document(page, prefix, sources, seminar_html):
     ) + "\n"
 
 
-def build(output=DEFAULT_OUTPUT):
+def build(output=DEFAULT_OUTPUT, today=None):
     """Build eight entry points. Existing files are overwritten, never deleted."""
     output = Path(output).resolve()
     protected = [ROOT, CONTENT, TEMPLATES, ROOT / "tools", ROOT / "assets"]
     if output == ROOT or any(output.is_relative_to(path) for path in protected[1:]):
         raise BuildError("La cartella di output deve essere separata dai file sorgente, per esempio public/.")
-    sources = {name: read_json(name) for name in ("site", "home", "team", "contact")}
+    sources = {name: read_json(name) for name in ("site", "home", "team", "contact", "seminar")}
     validate_content(sources)
-    seminar_html = read_text(CONTENT / "seminar.html")
+    seminar_plan = plan_seminar(sources["seminar"], today)
+    seminar_html = render_seminar(sources["seminar"], seminar_plan)
     if not (ROOT / "assets").is_dir():
         raise BuildError(f"Cartella sorgente mancante: {ROOT / 'assets'}")
 
@@ -360,9 +586,9 @@ def build(output=DEFAULT_OUTPUT):
         path = page["path"]
         depth = len(PurePosixPath(path).parts)
         prefix = "../" * depth if depth else "./"
-        documents.append((Path(path) / "index.html", render_document(page, prefix, sources, seminar_html)))
+        documents.append((Path(path) / "index.html", render_document(page, prefix, sources, seminar_html, seminar_plan)))
         english_prefix = "../" * (depth + 1)
-        documents.append((Path("en") / path / "index.html", render_document(page, english_prefix, sources, seminar_html)))
+        documents.append((Path("en") / path / "index.html", render_document(page, english_prefix, sources, seminar_html, seminar_plan)))
 
     output.mkdir(parents=True, exist_ok=True)
     shutil.copytree(ROOT / "assets", output / "assets", dirs_exist_ok=True)

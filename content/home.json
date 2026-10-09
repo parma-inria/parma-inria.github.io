@@ -34,21 +34,5 @@
     "title": "GdT OT–PDE–ML",
     "description": "Recent theoretical and numerical developments in optimal transport, partial differential equations and machine learning.",
     "link_label": "Program and session archive"
-  },
-  "next_session": {
-    "date": "12 October 2026 · Room 3L15",
-    "title": "Next session",
-    "talks": [
-      {
-        "time": "10:00",
-        "speaker": "Hugo Koubbi",
-        "title": "Homogenized Transformers"
-      },
-      {
-        "time": "11:00",
-        "speaker": "Alice Le Brigant",
-        "title": "On the Wasserstein Geodesic Principal Component Analysis of probability measures"
-      }
-    ]
   }
 }

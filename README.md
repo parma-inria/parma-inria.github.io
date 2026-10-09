@@ -1,39 +1,39 @@
-# ParMA — guida al progetto
+# ParMA — project guide
 
-Sito del gruppo di ricerca ParMA, Inria Saclay, CNRS e Université Paris-Saclay.
+Website for the ParMA research team at Inria Saclay, CNRS and Université Paris-Saclay.
 
-**Sito online:** [parma-inria.github.io](https://parma-inria.github.io/) · **Progetto:** [GitHub](https://github.com/parma-inria/parma-inria.github.io)
+**Live site:** [parma-inria.github.io](https://parma-inria.github.io/) · **Project:** [GitHub](https://github.com/parma-inria/parma-inria.github.io)
 
-## Da quale file comincio?
+## Which file should I start with?
 
-| Voglio modificare… | Apro… |
+| I want to change… | Open… |
 | --- | --- |
-| Introduzione e temi di ricerca della home | `content/home.json` |
-| Nomi, ruoli, istituzioni e siti personali dei membri | `content/team.json` |
-| Programma, abstract e archivio del seminario | `content/seminar.html` |
-| Riassunto della prossima sessione nella home | `content/home.json` → `next_session` |
-| Email, indirizzo e contatti | `content/contact.json` |
-| Titoli dei banner, menu e piè di pagina | `content/site.json` |
-| Colori, dimensioni del banner e impaginazione | `assets/css/site.css` |
-| Fotografia del banner e logo | `assets/images/` |
-| Struttura HTML di una pagina | `templates/pages/` |
-| Elementi comuni e schede | `templates/partials/` |
-| Ricerca dei membri e menu mobile | `assets/js/site.js` |
+| Home page introduction and research topics | `content/home.json` |
+| Members' names, roles, institutions, personal websites and photographs | `content/team.json` |
+| Seminar dates, programme, abstracts and archive | `content/seminar.json` |
+| Summary of the next session on the home page | `content/seminar.json` → `sessions` (generated automatically) |
+| Email addresses, postal address and contacts | `content/contact.json` |
+| Banner titles, menu and footer | `content/site.json` |
+| Colours, banner dimensions and page layout | `assets/css/site.css` |
+| Banner photograph, logo and member portraits | `assets/images/` |
+| A page's HTML structure | `templates/pages/` |
+| Shared elements and cards | `templates/partials/` |
+| Member search and mobile menu | `assets/js/site.js` |
 
-Per le modifiche quotidiane inizia da **`content/`**. Le pagine in **`public/`** sono create automaticamente: una modifica fatta lì viene sovrascritta alla generazione successiva.
+For everyday updates, start with **`content/`**. Pages in **`public/`** are generated automatically: any changes made there will be overwritten the next time the site is generated.
 
-## Lavorare da VS Code
+## Working in VS Code
 
-Apri questa cartella come progetto. È sufficiente **Python 3.10 o successivo**; non servono npm, pacchetti Python o estensioni aggiuntive.
+Open this folder as your project. You only need **Python 3.10 or later**; no npm, additional Python packages or extensions are required.
 
-1. Apri il file indicato nella tabella e salva le modifiche.
-2. Dal menu **Terminale → Esegui attività**, scegli **ParMA: anteprima locale**.
-3. Apri [l'anteprima nel browser](http://127.0.0.1:8765/). Quando salvi altri cambiamenti, aggiorna la pagina: il sito viene rigenerato automaticamente.
-4. Prima di pubblicare, esegui l'attività **ParMA: controlla il sito**. Genera le pagine e segnala eventuali collegamenti o immagini locali mancanti.
+1. Open the file listed in the table and save your changes.
+2. From **Terminal → Run Task**, choose **ParMA: anteprima locale** (local preview).
+3. Open [the preview in your browser](http://127.0.0.1:8765/). After saving further changes, refresh the page: the site is regenerated automatically.
+4. Before publishing, run **ParMA: controlla il sito** (check the site). This generates the pages and reports any missing local links or images.
 
-Per fermare l'anteprima premi **Ctrl+C** nel suo terminale. **Ctrl+Maiusc+B** esegue l'attività **ParMA: genera il sito** senza avviare il browser.
+To stop the preview, press **Ctrl+C** in its terminal. **Ctrl+Shift+B** runs **ParMA: genera il sito** (generate the site) without opening the browser.
 
-Gli stessi strumenti si possono avviare dal terminale del progetto:
+You can also run the same tools from the project terminal:
 
 ```sh
 python tools/build.py
@@ -41,76 +41,104 @@ python tools/check.py
 python tools/preview.py
 ```
 
-Se la porta dell'anteprima è già occupata, usa `python tools/preview.py --port 8770` e apri `http://127.0.0.1:8770/`.
+If the preview port is already in use, run `python tools/preview.py --port 8770` and open `http://127.0.0.1:8770/`.
 
-## Esempi di modifica
+## Examples of common changes
 
-### Aggiungere un membro o il suo sito personale
+### Adding a member or their personal website
 
-In `content/team.json`, individua il gruppo corretto e aggiungi un oggetto nella sua lista `members`:
+In `content/team.json`, find the appropriate group and add an object to its `members` list:
 
 ```json
 {
-  "name": "Nome Cognome",
+  "name": "Firstname Lastname",
   "affiliation": "Inria, CR",
-  "url": "https://esempio.fr/"
+  "url": "https://esempio.fr/",
+  "photo": null
 }
 ```
 
-Usa `"url": null` se la persona non ha un sito. Se ha un indirizzo, il nome diventa automaticamente cliccabile. I gruppi e i membri appaiono nell'ordine del file; **Former members** resta una sezione sempre visibile, con lo stesso formato delle altre.
+Use `"url": null` if the person has no website. If a URL is provided, their name automatically becomes a clickable link. Groups and members appear in the order used in the file; **Former members** remains visible at all times, using the same format as the other sections.
 
-Nei file JSON conserva virgolette e virgole: una virgola separa due elementi, ma non va dopo l'ultimo elemento di una lista. Per un elenco vuoto usa `[]`.
+Store a member's portrait in `assets/images/members/` and set `photo` to its path, for example `"photo": "assets/images/members/firstname-lastname.jpg"`. Use `"photo": null` when no photograph is available: the card displays the member's initials. Photographs are stored with the project, so visitors do not need to load them from personal websites.
 
-### Aggiornare il seminario
+In JSON files, keep the quotation marks and commas: commas separate items, but there must be no comma after the last item in a list. Use `[]` for an empty list.
 
-`content/seminar.html` contiene sezioni commentate per organizzatori, sede, prossima sessione, calendario e archivio. Copia una scheda `session-card` per aggiungere una sessione; conserva la struttura `talk` per ciascun intervento. Quando una sessione è passata, sposta la scheda nell'anno corrispondente dell'archivio.
+### Updating the seminar
 
-Aggiorna anche `next_session` in `content/home.json`: è il breve annuncio della home, senza abstract. La pagina completa del seminario è generata da `content/seminar.html`.
+**Only edit `content/seminar.json`.** It contains the organisers, venue, labels and a single `sessions` list. Each date appears once, using the `YYYY-MM-DD` format. The same entry supplies the programme page, yearly calendar, archive and next-session announcement on the home page.
 
-### Cambiare immagine e altezza del banner
+To add a session, insert an object into `sessions`:
 
-Sostituisci `assets/images/mountains.jpg` con la nuova fotografia mantenendo il nome. In `assets/css/site.css`, cerca la sezione **Banner**: `.hero-home` regola l'altezza della home, `.hero` quella delle altre pagine. `background-position` regola quale parte dell'immagine viene mostrata. Più avanti trovi le regole per tablet, telefono e stampa.
+```json
+{
+  "date": "2027-07-05",
+  "room": "3L15",
+  "talks": [
+    {
+      "time": "10:00",
+      "speaker": "Firstname Lastname",
+      "title": "Presentation title",
+      "abstract": [
+        "First paragraph of the abstract.",
+        "Second paragraph, if needed."
+      ]
+    }
+  ]
+}
+```
 
-## Come sono organizzate le cartelle?
+Add another object to `talks` for a second presentation. Keep `abstract` as a list of paragraphs; use `[]` if no abstract has been provided. To reserve a date before the programme is ready, use `"talks": []` in the session. Update that same entry when the speakers are confirmed, rather than adding the date again. An empty `room` omits the room from that session's heading.
+
+The build automatically selects the earliest session on or after its date, including planned sessions whose programme has not yet been announced. It derives the calendar and September-to-August academic years from the dates, and groups completed sessions with talks into the archive. The file is arranged with recent dates first for convenience; the build sorts dates itself.
+
+These selections are calculated **when the site is generated**, using that day's date. The published pages update when you regenerate and publish the site; time passing by itself does not rebuild them. You do not need to move old sessions manually or edit `content/home.json` when the programme changes.
+
+### Changing the banner image and height
+
+Replace `assets/images/mountains.jpg` with the new photograph, keeping the same filename. In `assets/css/site.css`, find the **Banner** section: `.hero-home` controls the home page banner height, while `.hero` controls the banner height on other pages. `background-position` determines which part of the image is shown. Further down, you will find rules for tablets, phones and printing.
+
+## How are the folders organised?
 
 ```text
 parma-site/
-├── README.md                 ← questa guida
-├── content/                  ← contenuti da aggiornare
+├── README.md                 ← this guide
+├── content/                  ← content to update
 ├── templates/
-│   ├── layout.html           ← documento HTML comune
-│   ├── pages/                ← home, membri e contatti
-│   └── partials/             ← menu, banner, footer e schede
+│   ├── layout.html           ← shared HTML document
+│   ├── pages/                ← home, members, seminar and contacts
+│   └── partials/             ← menu, banner, footer and cards
 ├── assets/
-│   ├── css/site.css          ← stile
-│   ├── js/site.js            ← menu e ricerca
-│   └── images/               ← fotografia, logo e icona
+│   ├── css/site.css          ← styling
+│   ├── js/site.js            ← menu and search
+│   └── images/               ← banner, logo, icon and member portraits
 ├── tools/
-│   ├── build.py              ← genera public/
-│   ├── check.py              ← controlla file e link locali
-│   └── preview.py            ← avvia l'anteprima
-├── docs/sources/             ← provenienza dei materiali importati
-├── public/                   ← sito generato, escluso da Git
-├── .vscode/                  ← attività e impostazioni del progetto
-└── .github/workflows/        ← pubblicazione automatica
+│   ├── build.py              ← generates public/
+│   ├── check.py              ← checks local files and links
+│   └── preview.py            ← starts the preview
+├── docs/sources/             ← sources of imported materials
+├── tests/                    ← automatic seminar and portrait checks
+├── public/                   ← generated site, excluded from Git
+├── .vscode/                  ← project tasks and settings
+└── .github/workflows/        ← automatic publishing
 ```
 
-I modelli usano segnaposto come `$introduction` e `${prefix}`. Lo strumento di generazione inserisce i contenuti e calcola i percorsi relativi. `content/seminar.html` è già il corpo HTML del seminario e viene inserito nel documento comune.
+Templates use placeholders such as `$introduction` and `${prefix}`. The build tool inserts the JSON content and calculates relative paths. Seminar dates and scientific texts come from `content/seminar.json`; the HTML structure is in `templates/pages/` and `templates/partials/`.
 
-Le quattro pagine conservano gli indirizzi `/`, `/team-members/`, `/francais-gdt-edp-ot-ml/` e `/contact/`. Le varianti `/en/` sono generate dagli stessi contenuti.
+The four pages retain the URLs `/`, `/team-members/`, `/francais-gdt-edp-ot-ml/` and `/contact/`. The `/en/` versions are generated from the same content.
 
-## Pubblicare una modifica
+## Publishing a change
 
-Nel pannello **Controllo del codice sorgente** di VS Code, verifica le modifiche, scrivi una breve descrizione, crea il commit e usa **Push**. Al caricamento su `main`, GitHub genera il sito, controlla i collegamenti e pubblica **soltanto `public/`**. Non devi caricare a mano le pagine generate.
+In VS Code's **Source Control** panel, review your changes, write a short description, create the commit and use **Push**. When changes are pushed to `main`, GitHub generates the site, checks its links and publishes **only `public/`**. You do not need to upload the generated pages manually.
 
-Su GitHub la scheda **Actions** mostra il risultato dell'attività **Pubblica il sito ParMA**. La sorgente in **Settings → Pages** deve essere **GitHub Actions**. Una proposta di modifica in un altro branch viene controllata prima della pubblicazione su `main`.
+On GitHub, the **Actions** tab shows the result of the **Pubblica il sito ParMA** workflow (publish the ParMA site). The source in **Settings → Pages** must be **GitHub Actions**. A proposed change on another branch is checked before it is published on `main`.
 
-Il controllo locale verifica pagine, immagini e sezioni del sito; i collegamenti a siti esterni restano da verificare nel browser quando li modifichi.
+The local check verifies pages, images and site sections; when you change links to external websites, check them in your browser. GitHub also runs the checks in `tests/` before publishing. These use example data, so you can update the programme freely.
 
-## Materiali originali e documentazione
+## Original materials and documentation
 
-La migrazione mantiene i testi scientifici, i collegamenti personali e i materiali del [sito Inria originale](https://team.inria.fr/parma/). La loro provenienza è documentata in `docs/sources/`; quella cartella non alimenta il sito. Fotografie, logo e testi mantengono le condizioni d'uso originali.
+The migration preserves the scientific texts, personal links and materials from the [original Inria site](https://team.inria.fr/parma/). Their sources are documented in `docs/sources/`; that folder does not supply content to the site. Photographs, the logo and texts remain subject to their original terms of use.
 
-Il sito usa HTML, CSS, JavaScript e la libreria standard di Python. Non include analytics, font esterni o strumenti di tracciamento.
+The site uses HTML, CSS, JavaScript and Python's standard library. It includes no analytics, external fonts or tracking tools.
 
-Riferimenti tecnici: [pubblicazione con GitHub Pages](https://docs.github.com/en/pages/getting-started-with-github-pages/configuring-a-publishing-source-for-your-github-pages-site), [caricamento delle pagine generate](https://github.com/actions/upload-pages-artifact), [pubblicazione dell'artefatto](https://github.com/actions/deploy-pages).
+Technical references: [publishing with GitHub Pages](https://docs.github.com/en/pages/getting-started-with-github-pages/configuring-a-publishing-source-for-your-github-pages-site), [uploading generated pages](https://github.com/actions/upload-pages-artifact), [deploying the artifact](https://github.com/actions/deploy-pages).

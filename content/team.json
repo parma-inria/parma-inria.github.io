@@ -12,47 +12,56 @@
         {
           "affiliation": "CNRS, DR",
           "name": "Yann Brenier",
-          "url": "https://www.math.ens.psl.eu/~brenier/"
+          "url": "https://www.math.ens.psl.eu/~brenier/",
+          "photo": "assets/images/members/yann-brenier.jpg"
         },
         {
           "affiliation": "Inria, CR",
           "name": "Katharina Eichinger",
-          "url": "https://sites.google.com/view/katharinaeichinger/home"
+          "url": "https://sites.google.com/view/katharinaeichinger/home",
+          "photo": "assets/images/members/katharina-eichinger.png"
         },
         {
           "affiliation": "Inria, CR, team leader",
           "name": "Thomas Gallouët",
-          "url": "http://gallouet.github.io/"
+          "url": "http://gallouet.github.io/",
+          "photo": "assets/images/members/thomas-gallouet.jpg"
         },
         {
           "affiliation": "CNRS, CR",
           "name": "Cyril Letrouit",
-          "url": "https://www.imo.universite-paris-saclay.fr/~cyril.letrouit/"
+          "url": "https://www.imo.universite-paris-saclay.fr/~cyril.letrouit/",
+          "photo": "assets/images/members/cyril-letrouit.jpg"
         },
         {
           "affiliation": "Inria, DR",
           "name": "Bruno Lévy",
-          "url": "https://brunolevy.github.io/"
+          "url": "https://brunolevy.github.io/",
+          "photo": "assets/images/members/bruno-levy.jpg"
         },
         {
           "affiliation": "Université Paris-Saclay, LMO, PR",
           "name": "Betrand Maury",
-          "url": "https://www.imo.universite-paris-saclay.fr/~bertrand.maury/"
+          "url": "https://www.imo.universite-paris-saclay.fr/~bertrand.maury/",
+          "photo": "assets/images/members/bertrand-maury.png"
         },
         {
           "affiliation": "Université Paris-Saclay, LMO, PR",
           "name": "Quentin Mérigot",
-          "url": "http://quentin.mrgt.fr/"
+          "url": "http://quentin.mrgt.fr/",
+          "photo": "assets/images/members/quentin-merigot.jpg"
         },
         {
           "affiliation": "Inria, CR",
           "name": "Andrea Natale",
-          "url": "https://andnatale.github.io/"
+          "url": "https://andnatale.github.io/",
+          "photo": "assets/images/members/andrea-natale.png"
         },
         {
           "affiliation": "Université Paris-Saclay, LMO, MCF",
           "name": "Luca Nenna",
-          "url": "https://lucanenna.github.io/"
+          "url": "https://lucanenna.github.io/",
+          "photo": "assets/images/members/luca-nenna.jpg"
         }
       ],
       "title": "Permanent researchers",
@@ -63,12 +72,14 @@
         {
           "affiliation": "CNRS",
           "name": "Hugo Leclerc",
-          "url": "https://fr.linkedin.com/in/hleclerc"
+          "url": "https://fr.linkedin.com/in/hleclerc",
+          "photo": null
         },
         {
           "affiliation": "CNRS",
           "name": "Sylvain Faure",
-          "url": "https://www.imo.universite-paris-saclay.fr/~sylvain.faure/"
+          "url": "https://www.imo.universite-paris-saclay.fr/~sylvain.faure/",
+          "photo": "assets/images/members/sylvain-faure.png"
         }
       ],
       "title": "Research engineers",
@@ -79,12 +90,14 @@
         {
           "affiliation": "Université Paris-Saclay",
           "name": "Alessandro Cosenza",
-          "url": "https://sites.google.com/view/alessandrocosenza/home?pli=1&authuser=0"
+          "url": "https://sites.google.com/view/alessandrocosenza/home?pli=1&authuser=0",
+          "photo": "assets/images/members/alessandro-cosenza.jpg"
         },
         {
           "affiliation": "Université Paris-Saclay",
           "name": "Filippo Quattrocchi",
-          "url": "https://sites.google.com/view/filippoquattrocchi/"
+          "url": "https://sites.google.com/view/filippoquattrocchi/",
+          "photo": "assets/images/members/filippo-quattrocchi.jpg"
         }
       ],
       "title": "Postdoctoral researchers",
@@ -95,37 +108,44 @@
         {
           "affiliation": "École nationale des ponts et chaussées",
           "name": "Elise Bonnet-Weill",
-          "url": "https://elisebonnetweill.github.io/"
+          "url": "https://elisebonnetweill.github.io/",
+          "photo": "assets/images/members/elise-bonnet-weill.png"
         },
         {
           "affiliation": "Université Paris-Saclay",
           "name": "Benjamin Capdeville",
-          "url": null
+          "url": null,
+          "photo": null
         },
         {
           "affiliation": "Université Paris-Saclay, École Polytechnique",
-          "name": "Will Ford",
-          "url": "https://vvillford.github.io/"
+          "name": "William Ford",
+          "url": "https://vvillford.github.io/",
+          "photo": "assets/images/members/william-ford.jpg"
         },
         {
           "affiliation": "Université Paris-Saclay",
           "name": "Mattia Garatti",
-          "url": "https://mattiagaratti.github.io/"
+          "url": "https://mattiagaratti.github.io/",
+          "photo": null
         },
         {
           "affiliation": "Université Paris-Saclay",
           "name": "Quentin Giton",
-          "url": "https://quentingiton.github.io/"
+          "url": "https://quentingiton.github.io/",
+          "photo": "assets/images/members/quentin-giton.jpg"
         },
         {
           "affiliation": "Université Paris-Saclay",
           "name": "Louis Tocquec",
-          "url": "https://l-tocquec.github.io/"
+          "url": "https://l-tocquec.github.io/",
+          "photo": "assets/images/members/louis-tocquec.jpg"
         },
         {
           "affiliation": "Université Paris-Saclay",
           "name": "Christophe Vauthier",
-          "url": null
+          "url": null,
+          "photo": null
         }
       ],
       "title": "PhD students",
@@ -136,7 +156,8 @@
         {
           "affiliation": "Université Paris-Saclay, LMO, MCF",
           "name": "Anna Kazeykina",
-          "url": "https://www.imo.universite-paris-saclay.fr/~anna.kazeykina/"
+          "url": "https://www.imo.universite-paris-saclay.fr/~anna.kazeykina/",
+          "photo": "assets/images/members/anna-kazeykina.png"
         }
       ],
       "title": "Delegation",
@@ -147,22 +168,26 @@
         {
           "affiliation": "Post-doctorant",
           "name": "Adrien Cances",
-          "url": "https://www.imo.universite-paris-saclay.fr/fr/perso/adrien-cances/"
+          "url": "https://www.imo.universite-paris-saclay.fr/fr/perso/adrien-cances/",
+          "photo": "assets/images/members/adrien-cances.jpg"
         },
         {
           "affiliation": "Post-doctorant",
           "name": "Erwan Stämpfli",
-          "url": null
+          "url": null,
+          "photo": null
         },
         {
           "affiliation": "Post-doctorant",
           "name": "Philippe Anjolras",
-          "url": "https://www.imo.universite-paris-saclay.fr/~philippe.anjolras/index.html"
+          "url": "https://www.imo.universite-paris-saclay.fr/~philippe.anjolras/index.html",
+          "photo": null
         },
         {
           "affiliation": "Post-doctorant",
           "name": "Siwan Boufadene",
-          "url": null
+          "url": null,
+          "photo": null
         }
       ],
       "title": "Former members",
