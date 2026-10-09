@@ -13,6 +13,7 @@ PAGE_PATHS = (
     'index.html',
     'team-members/index.html',
     'francais-gdt-edp-ot-ml/index.html',
+    'resources/index.html',
     'contact/index.html',
 )
 

@@ -54,7 +54,7 @@ def home_fixture():
 
 
 def fixture_sources(home=None, seminar=None, team=None):
-    sources = {name: build.read_json(name) for name in ("site", "home", "team", "contact", "seminar", "publications")}
+    sources = {name: build.read_json(name) for name in ("site", "home", "team", "contact", "seminar", "publications", "resources")}
     if home is not None:
         sources["home"] = {**sources["home"], **home}
     if seminar is not None:

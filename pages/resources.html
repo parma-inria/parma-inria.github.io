@@ -1,0 +1,129 @@
+<!doctype html>
+<!-- Resources page: edit the layout here and the links in content/resources.json. -->
+<!-- Shared navigation, banner text and footer: content/site.json. -->
+
+<html lang="{{ site.language }}">
+  <head>
+    <!-- Browser metadata -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>{{ page.title }} · {{ site.name }}</title>
+    <meta name="description" content="{{ page.description }}">
+    <meta name="theme-color" content="{{ site.theme_color }}">
+
+    <!-- Team logo, shared styles and page interactions -->
+    <link rel="icon" href="{{ prefix }}assets/images/parma-logo.png" type="image/png">
+    <link rel="stylesheet" href="{{ prefix }}assets/css/site.css">
+    <script src="{{ prefix }}assets/js/site.js" defer></script>
+  </head>
+
+  <body>
+    <!-- Skip link for keyboard navigation -->
+    <a class="skip-link" href="#main">{{ site.skip_label }}</a>
+
+    <!-- Site header and navigation -->
+    <header class="site-header">
+      <div class="container header-row">
+        <a class="brand" href="{{ prefix }}">
+          <img class="brand-logo" src="{{ prefix }}assets/images/parma-logo.png" alt="{{ site.name }}" width="1024" height="437">
+          <span class="brand-caption">{{ site.brand_caption }}</span>
+        </a>
+
+        <!-- JavaScript enables this button on small screens. -->
+        <button class="menu-toggle" type="button" aria-controls="site-navigation" aria-expanded="false" hidden>{{ site.menu_label }}</button>
+        <nav id="site-navigation" class="site-navigation" aria-label="{{ site.navigation_label }}">
+          {% for link in navigation %}
+            <a href="{{ link.href }}"{% if link.is_current %} aria-current="page"{% endif %}>{{ link.title }}</a>
+          {% endfor %}
+        </nav>
+      </div>
+    </header>
+
+    <!-- Page banner; its photograph is styled in assets/css/site.css. -->
+    <section class="hero" aria-labelledby="page-title">
+      <div class="container hero-content">
+        <p class="eyebrow">{{ page.hero.eyebrow }}</p>
+        <h1 id="page-title">{% for line in page.hero.title_lines %}{{ line }}{% if loop.last %}{% else %}<br>{% endif %}{% endfor %}</h1>
+        <p class="hero-lead prose">{{ page.hero.lead }}</p>
+      </div>
+    </section>
+
+    <!-- Page content -->
+    <main id="main" class="container content-container">
+      <!-- Each section and its resource cards are edited in content/resources.json. -->
+      {% for section in resources.sections %}
+        <section class="resource-section" aria-labelledby="{{ section.id }}-title">
+          <div class="section-header resource-section-header">
+            <h2 id="{{ section.id }}-title">{{ section.title }}</h2>
+            {% if loop.first %}
+              <a class="section-source" href="{{ resources.source_url }}">{{ resources.source_name }} <span aria-hidden="true">↗</span></a>
+            {% endif %}
+          </div>
+
+          <!-- Keep the complete card markup here; JSON only supplies its content. -->
+          <div class="resource-grid">
+            {% for resource in section.items %}
+              <article class="resource-card">
+                <p class="resource-kind">{{ resource.kind }}</p>
+                <h3><a href="{{ resource.url }}">{{ resource.name }}</a></h3>
+                <p class="resource-description prose">{{ resource.description }}</p>
+
+                <!-- Examples and documentation are optional for each resource. -->
+                {% if resource.links %}
+                  <ul class="resource-links">
+                    {% for link in resource.links %}
+                      <li><a href="{{ link.url }}">{{ link.label }}</a></li>
+                    {% endfor %}
+                  </ul>
+                {% endif %}
+
+                <a class="resource-repository" href="{{ resource.url }}">{{ resources.repository_label }} <span aria-hidden="true">↗</span></a>
+              </article>
+            {% endfor %}
+          </div>
+        </section>
+      {% endfor %}
+    </main>
+
+    <!-- Shared footer: team identity, page navigation and institutional links -->
+    <footer class="site-footer">
+      <div class="container">
+
+        <!-- Three aligned columns on desktop; navigation stays grouped on mobile. -->
+        <div class="footer-grid">
+          <div class="footer-brand">
+            <a class="footer-home" href="{{ prefix }}">
+              <img class="brand-logo footer-logo" src="{{ prefix }}assets/images/parma-logo.png" alt="{{ site.name }}" width="1024" height="437" loading="lazy">
+            </a>
+            <p class="footer-tagline">{{ site.footer.tagline }}</p>
+          </div>
+
+          <nav class="footer-navigation" aria-labelledby="footer-navigation-title">
+            <h2 id="footer-navigation-title" class="footer-heading">{{ site.navigation_label }}</h2>
+            <ul class="footer-link-list">
+              {% for link in navigation %}
+                <li>
+                  <a href="{{ link.href }}"{% if link.is_current %} aria-current="page"{% endif %}>{{ link.title }}</a>
+                </li>
+              {% endfor %}
+            </ul>
+          </nav>
+
+          <nav class="footer-institutions" aria-labelledby="footer-institutions-title">
+            <h2 id="footer-institutions-title" class="footer-heading">{{ site.footer.links_label }}</h2>
+            <ul class="footer-link-list">
+              {% for link in site.footer.links %}
+                <li><a href="{{ link.url }}">{{ link.label }}</a></li>
+              {% endfor %}
+            </ul>
+          </nav>
+        </div>
+
+        <!-- The affiliation note has its own row below the navigation columns. -->
+        <div class="footer-bottom">
+          <p class="footer-note">{{ site.footer.note }}</p>
+        </div>
+      </div>
+    </footer>
+  </body>
+</html>

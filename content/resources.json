@@ -1,0 +1,77 @@
+{
+  "source_name": "sd-ot on GitHub",
+  "source_url": "https://github.com/sd-ot",
+  "repository_label": "View repository",
+  "sections": [
+    {
+      "id": "software",
+      "title": "Software and examples",
+      "items": [
+        {
+          "name": "pysdot",
+          "kind": "Python",
+          "description": "Python bindings for the sdot tools, with examples for geometry, optimal transport and quantization.",
+          "url": "https://github.com/sd-ot/pysdot",
+          "links": [
+            {
+              "label": "Examples",
+              "url": "https://github.com/sd-ot/pysdot/tree/master/examples"
+            },
+            {
+              "label": "Transport cost and gradient",
+              "url": "https://github.com/sd-ot/pysdot/blob/master/examples/optimal_transport/distance_and_gradient.py"
+            }
+          ]
+        },
+        {
+          "name": "sdot",
+          "kind": "C++",
+          "description": "C++ tools for semi-discrete optimal transport and power diagrams.",
+          "url": "https://github.com/sd-ot/sdot",
+          "links": [
+            {
+              "label": "C++ tests and examples",
+              "url": "https://github.com/sd-ot/sdot/tree/master/tests"
+            }
+          ]
+        },
+        {
+          "name": "sd-ot",
+          "kind": "Python",
+          "description": "Semi-discrete optimal transport tools, with Python examples and documentation sources.",
+          "url": "https://github.com/sd-ot/sd-ot",
+          "links": [
+            {
+              "label": "Python examples",
+              "url": "https://github.com/sd-ot/sd-ot/tree/main/src/python/examples"
+            },
+            {
+              "label": "Documentation source",
+              "url": "https://github.com/sd-ot/sd-ot/blob/main/docs/source/index.rst"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "related-repositories",
+      "title": "Related repositories",
+      "items": [
+        {
+          "name": "pysdot-feedstock",
+          "kind": "Conda packaging",
+          "description": "Conda build recipes for pysdot.",
+          "url": "https://github.com/sd-ot/pysdot-feedstock",
+          "links": []
+        },
+        {
+          "name": "sdot_pub",
+          "kind": "C++",
+          "description": "Additional C++ source code, tests and presentation files.",
+          "url": "https://github.com/sd-ot/sdot_pub",
+          "links": []
+        }
+      ]
+    }
+  ]
+}

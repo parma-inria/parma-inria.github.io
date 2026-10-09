@@ -71,7 +71,7 @@ class TemplateTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as directory:
             with patch.object(build, "read_json", side_effect=lambda name: sources[name]):
                 output = build.build(Path(directory) / "site", today=date(2026, 10, 9))
-            self.assertEqual(len(list(output.rglob("*.html"))), 8)
+            self.assertEqual(len(list(output.rglob("*.html"))), 2 * len(build.PAGE_IDS))
             seminar = (output / "francais-gdt-edp-ot-ml/index.html").read_text(encoding="utf-8")
             expected = sum(len(session["talks"]) for session in sources["seminar"]["sessions"])
             self.assertEqual(sum(attrs.get("class") == "talk" for _, attrs in Elements(seminar).elements), expected)

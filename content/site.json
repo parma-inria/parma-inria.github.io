@@ -47,6 +47,19 @@
       }
     },
     {
+      "id": "resources",
+      "path": "resources/",
+      "title": "Resources",
+      "description": "Software, documentation and examples for semi-discrete optimal transport from sd-ot.",
+      "hero": {
+        "eyebrow": "SOFTWARE · DOCUMENTATION · EXAMPLES",
+        "title_lines": [
+          "Resources"
+        ],
+        "lead": "Lorem ipsum dolor sit amet, consectetur adipiscing elit."
+      }
+    },
+    {
       "id": "contact",
       "path": "contact/",
       "title": "Contact",

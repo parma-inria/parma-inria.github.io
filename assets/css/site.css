@@ -565,6 +565,89 @@ ul, ol {
 }
 
 
+/* Resource cards: software, examples and related repositories. */
+.resource-section {
+  margin-bottom: 45px;
+}
+
+.resource-section:last-child {
+  margin-bottom: 0;
+}
+
+.resource-section-header {
+  flex-wrap: wrap;
+  margin-bottom: 24px;
+}
+
+.resource-section-header h2 {
+  margin-bottom: 0;
+  font-size: 1.5rem;
+}
+
+.resource-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 280px), 1fr));
+  gap: 22px;
+}
+
+.resource-card {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  padding: 27px;
+  border: 1px solid var(--line);
+  border-top: 3px solid var(--blue);
+  border-radius: 0 0 var(--radius) var(--radius);
+  background: var(--white);
+}
+
+.resource-kind {
+  margin-bottom: 12px;
+  color: var(--muted);
+  font-size: .8rem;
+  font-weight: 650;
+}
+
+.resource-card h3 {
+  margin-bottom: 14px;
+  font-size: 1.35rem;
+  overflow-wrap: anywhere;
+}
+
+.resource-card h3 a {
+  color: var(--blue-deep);
+  text-decoration: none;
+}
+
+.resource-card h3 a:hover {
+  text-decoration: underline;
+}
+
+.resource-description {
+  margin-bottom: 18px;
+  color: var(--muted);
+  font-size: .95rem;
+}
+
+.resource-links {
+  margin-bottom: 25px;
+  padding-left: 19px;
+  font-size: .9rem;
+}
+
+.resource-links li + li {
+  margin-top: 7px;
+}
+
+.resource-repository {
+  align-self: flex-start;
+  margin-top: auto;
+  padding-top: 8px;
+  font-size: .9rem;
+  font-weight: 650;
+}
+
+
 /* Member cards, search and empty results */
 .members-toolbar {
   display: grid;
@@ -1269,7 +1352,7 @@ ul, ol {
   .hero-content, .content-container {
     padding-block: 22px;
   }
-  .member-card, .session-card, .info-card, .publication-card {
+  .member-card, .session-card, .info-card, .publication-card, .resource-card {
     break-inside: avoid;
   }
   .container {

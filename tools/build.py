@@ -1,4 +1,4 @@
-"""Build the site from four complete HTML pages and JSON content.
+"""Build the site from five complete HTML pages and JSON content.
 
 All HTML belongs in pages/. This tool only validates data, prepares dates and
 paths, and expands {{ field.path }}, {% for ... %} and {% if ... %} blocks.
@@ -22,7 +22,7 @@ ROOT = Path(__file__).resolve().parents[1]
 CONTENT = ROOT / "content"
 PAGES = ROOT / "pages"
 DEFAULT_OUTPUT = ROOT / "public"
-PAGE_IDS = {"home", "team", "seminar", "contact"}
+PAGE_IDS = {"home", "team", "seminar", "resources", "contact"}
 MONTH_NAMES = (
     "January", "February", "March", "April", "May", "June", "July", "August",
     "September", "October", "November", "December",
@@ -108,7 +108,7 @@ def validate_content(sources):
         require_text_list(page["hero"]["title_lines"], location + " → hero.title_lines")
         page_ids.append(page["id"])
     if set(page_ids) != PAGE_IDS or len(page_ids) != len(PAGE_IDS):
-        raise BuildError("content/site.json: mantieni una pagina per home, team, seminar e contact.")
+        raise BuildError("content/site.json: mantieni una pagina per home, team, seminar, resources e contact.")
     if len({page["path"] for page in site["pages"]}) != len(page_ids):
         raise BuildError("content/site.json: i percorsi delle pagine devono essere diversi.")
     require_fields(site["footer"], "content/site.json → footer", {
@@ -181,6 +181,28 @@ def validate_content(sources):
     require_text_list(contact["location"]["address_lines"], "content/contact.json → location.address_lines")
     require_web_url(contact["location"]["url"], "content/contact.json → location.url")
     validate_seminar(sources["seminar"])
+
+    # Resource descriptions and links stay in one editable JSON file.
+    resources = sources["resources"]
+    require_fields(resources, "content/resources.json", {
+        "source_name": str, "source_url": str, "repository_label": str, "sections": list,
+    })
+    require_web_url(resources["source_url"], "content/resources.json → source_url")
+    section_ids = set()
+    for index, section in enumerate(resources["sections"]):
+        location = f"content/resources.json → sections[{index}]"
+        require_fields(section, location, {"id": str, "title": str, "items": list})
+        if not re.fullmatch(r"[a-z][a-z0-9-]*", section["id"]) or section["id"] in section_ids:
+            raise BuildError(f"{location}: use a unique lowercase section ID.")
+        section_ids.add(section["id"])
+        for item in section["items"]:
+            require_fields(item, location + " → items", {
+                "name": str, "kind": str, "description": str, "url": str, "links": list,
+            })
+            require_web_url(item["url"], location + " → items.url")
+            for link in item["links"]:
+                require_fields(link, location + " → items.links", {"label": str, "url": str})
+                require_web_url(link["url"], location + " → items.links.url")
 
     # The saved publication snapshot is valid even when a preview is offline.
     try:
@@ -545,7 +567,7 @@ def render_document(page, prefix, sources, seminar_plan):
 
 
 def build(output=DEFAULT_OUTPUT, today=None):
-    """Render four pages and their existing English aliases before writing."""
+    """Render complete pages and their English aliases before writing."""
     output = Path(output).resolve()
     protected = [CONTENT, PAGES, ROOT / "tools", ROOT / "assets", ROOT / "tests",
                  ROOT / "docs", ROOT / ".github", ROOT / ".vscode", ROOT / ".git"]
@@ -553,7 +575,7 @@ def build(output=DEFAULT_OUTPUT, today=None):
         raise BuildError("Output must be separate from the source files, for example public/.")
 
     # Validate all data before generating any files.
-    sources = {name: read_json(name) for name in ("site", "home", "team", "contact", "seminar", "publications")}
+    sources = {name: read_json(name) for name in ("site", "home", "team", "contact", "seminar", "publications", "resources")}
     validate_content(sources)
     seminar_plan = plan_seminar(sources["seminar"], today)
     if not (ROOT / "assets").is_dir():
@@ -579,7 +601,7 @@ def build(output=DEFAULT_OUTPUT, today=None):
         destination.write_text(document, encoding="utf-8")
     (output / ".nojekyll").write_text("", encoding="utf-8")
     print(f"Site generated in: {output}")
-    print("4 complete HTML pages + 4 English aliases; former members remain visible.")
+    print(f"{len(sources['site']['pages'])} complete HTML pages + {len(sources['site']['pages'])} English aliases; former members remain visible.")
     return output
 
 

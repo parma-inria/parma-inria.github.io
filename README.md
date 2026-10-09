@@ -14,11 +14,12 @@ Website for the ParMA research team at Inria Saclay, CNRS and Université Paris-
 | Seminar dates, programme, abstracts and archive | `content/seminar.json` |
 | Summary of the next session on the home page | `content/seminar.json` → `sessions` (generated automatically) |
 | Email addresses, postal address and contacts | `content/contact.json` |
+| Software, examples and material links | `content/resources.json` |
 | Banner titles, introduction paragraphs, menu and footer | `content/site.json` |
 | Shared Google Maps location | `content/site.json` → `map` |
 | Colours, banner dimensions and page layout | `assets/css/site.css` |
 | Banner photograph and logo | `assets/images/` |
-| Complete HTML for each page | `pages/home.html`, `team.html`, `seminar.html`, `contact.html` |
+| Complete HTML for each page | `pages/home.html`, `team.html`, `seminar.html`, `resources.html`, `contact.html` |
 | Header, footer, member cards or archive layout | The relevant complete HTML file in `pages/` |
 | Member search and mobile menu | `assets/js/site.js` |
 
@@ -75,6 +76,12 @@ For photographs, use one of these options in the member's `photo` field:
 Remote photographs update when the person replaces the image at the same address, once the browser's cached copy expires or is refreshed. If the image address changes, update `photo` in this file. Local copies need to be updated manually. While any photograph loads, or if it cannot be loaded, the card displays the member's initials.
 
 In JSON files, keep the quotation marks and commas: commas separate items, but there must be no comma after the last item in a list. Use `[]` for an empty list.
+
+### Adding material to Resources
+
+The Resources page links to the sd-ot software, examples and related repositories. Edit **`content/resources.json`** to add material, update a description or change a link. Each object in `sections` has a title and an `items` list. Each item has `name`, `kind`, `description`, `url` and optional extra `links`; use `"links": []` when none are needed.
+
+The complete page markup is in `pages/resources.html`. Its banner introduction remains Lorem ipsum until the team chooses the text. The brief resource descriptions are based on the linked repositories. Resources are maintained manually; the daily HAL refresh only updates recent publications.
 
 ### Recent publications
 
@@ -136,10 +143,11 @@ The original team logo is `assets/images/parma-logo.png`. It is used in the head
 parma-site/
 ├── README.md                 ← this guide
 ├── Open local preview.cmd    ← double-click to preview on Windows
-├── pages/                    ← four complete, editable HTML documents
+├── pages/                    ← five complete, editable HTML documents
 │   ├── home.html
 │   ├── team.html
 │   ├── seminar.html
+│   ├── resources.html
 │   └── contact.html
 ├── content/                  ← JSON data and text
 ├── assets/
@@ -158,7 +166,7 @@ parma-site/
 └── .github/workflows/        ← automatic publishing
 ```
 
-Each file in `pages/` contains the whole document: head, header, banner, main content and footer, including the member cards and seminar archive. There are no separate layouts or partial files. Header and footer changes must be applied to all four pages; styling is shared in `assets/css/site.css`.
+Each file in `pages/` contains the whole document: head, header, banner, main content and footer, including the member cards and seminar archive. There are no separate layouts or partial files. Header and footer changes must be applied to all five pages; styling is shared in `assets/css/site.css`.
 
 JSON values are inserted with `{{ field.path }}`. Repeated items use a loop:
 
@@ -170,7 +178,7 @@ JSON values are inserted with `{{ field.path }}`. Repeated items use a loop:
 
 You can edit the HTML around these placeholders directly. Every loop needs `{% endfor %}` and every condition needs `{% endif %}`. Inserted values are escaped automatically. Python expressions, template includes and raw HTML from JSON are not supported.
 
-The four pages retain the URLs `/`, `/team-members/`, `/francais-gdt-edp-ot-ml/` and `/contact/`. The `/en/` versions are generated from the same content. The build calculates relative links for each route.
+The five pages use the URLs `/`, `/team-members/`, `/francais-gdt-edp-ot-ml/`, `/resources/` and `/contact/`. The `/en/` versions are generated from the same content. The build calculates relative links for each route.
 
 The generated descriptive text currently uses Lorem ipsum while the team decides what to write. The home introduction already edited by Mattia and the original scientific abstracts, dates, names and contact details are preserved.
 
