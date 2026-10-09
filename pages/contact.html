@@ -68,12 +68,6 @@
           <h2 id="location-title">{{ contact.location.title }}</h2>
           <address>{% for line in contact.location.address_lines %}{{ line }}{% if loop.last %}{% else %}<br>{% endif %}{% endfor %}</address>
           <a class="address-link" href="{{ contact.location.url }}">{{ contact.location.link_label }}</a>
-
-          <div class="location-note">
-            <h3>{{ contact.location.seminar_venue_title }}</h3>
-            <p>{{ contact.location.seminar_venue }}</p>
-            <a href="{{ prefix }}francais-gdt-edp-ot-ml/">{{ contact.location.seminar_link_label }}</a>
-          </div>
         </div>
 
         <!-- The same institute map is also shown on the seminar page. -->

@@ -26,7 +26,7 @@
       "title": "Team",
       "description": "Team page",
       "hero": {
-        "eyebrow": "Lorem ipsum",
+        "eyebrow": "Our team",
         "title_lines": [
           "Team members"
         ],
@@ -56,7 +56,7 @@
         "title_lines": [
           "Resources"
         ],
-        "lead": "Lorem ipsum dolor sit amet, consectetur adipiscing elit."
+        "lead": "Open repositories, documentation and examples for semi-discrete optimal transport from sd-ot, provided by the ParMA team."
       }
     },
     {
