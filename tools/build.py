@@ -169,13 +169,30 @@ def validate_content(sources):
 
 
 def validate_member_photo(member):
-    """Use live portraits from personal websites, without copying image files."""
+    """Prefer live HTTPS portraits; allow a local copy when direct loading fails."""
     photo = member.get("photo")
     location = f"content/team.json → {member['name']}.photo"
     if photo is None:
         return
-    message = f"{location}: usa un indirizzo completo https:// senza credenziali, oppure null."
-    if not isinstance(photo, str) or re.search(r"\s", photo) or "\\" in photo:
+    message = f"{location}: usa un indirizzo completo https:// senza credenziali, un'immagine in assets/images/members/ oppure null."
+    if not isinstance(photo, str):
+        raise BuildError(message)
+    if photo.startswith("assets/images/members/"):
+        path = PurePosixPath(photo)
+        if (".." in path.parts or any(character in photo for character in "\\:%?#")
+                or path.suffix.lower() not in {".jpg", ".jpeg", ".png", ".webp", ".gif"}):
+            raise BuildError(message)
+        try:
+            image = (ROOT / path).resolve()
+            image_folder = (ROOT / "assets/images/members").resolve()
+            if not image.is_relative_to(image_folder):
+                raise BuildError(message)
+            if not image.is_file():
+                raise BuildError(f"{location}: immagine non trovata: {photo}")
+        except (OSError, ValueError, RuntimeError) as error:
+            raise BuildError(message) from error
+        return
+    if re.search(r"\s", photo) or "\\" in photo:
         raise BuildError(message)
     try:
         parts = urlsplit(photo)
@@ -504,9 +521,11 @@ def render_team(prefix, team):
                 f'<span class="member-initials">{escape(initials)}</span>'
             )
             if member.get("photo"):
+                photo = member["photo"]
+                photo_url = prefix + photo if photo.startswith("assets/images/members/") else photo
                 portrait += (
                     f'<img class="member-portrait" data-member-portrait="{escape(member["name"])}" '
-                    f'src="{escape(member["photo"])}" '
+                    f'src="{escape(photo_url)}" '
                     'alt="" width="64" height="64" loading="lazy" decoding="async" referrerpolicy="no-referrer">'
                 )
             portrait += '</span>'

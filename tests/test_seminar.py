@@ -5,10 +5,12 @@ Run from the project folder: python -m unittest discover -s tests
 
 import copy
 import sys
+import tempfile
 import unittest
 from datetime import date
 from html.parser import HTMLParser
 from pathlib import Path
+from unittest.mock import patch
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "tools"))
 import build
@@ -176,7 +178,7 @@ class SeminarTests(unittest.TestCase):
         build.validate_member_photo(dict(member, photo=None))
         build.validate_member_photo({"name": "Sample Person"})
         for invalid in (
-            42, "", "assets/images/members/sample.jpg", "//example.org/photo.jpg",
+            42, "", "//example.org/photo.jpg",
             "http://example.org/photo.jpg", "javascript:alert(1)", "https:///photo.jpg",
             "https://user:password@example.org/photo.jpg", "https://user@example.org/photo.jpg",
             "https://example.org:invalid/photo.jpg", "https://example.org:65536/photo.jpg",
@@ -185,26 +187,56 @@ class SeminarTests(unittest.TestCase):
             with self.subTest(photo=invalid), self.assertRaises(build.BuildError):
                 build.validate_member_photo(dict(member, photo=invalid))
 
-    def test_remote_portraits_and_initials_on_both_team_routes(self):
+    def test_local_portrait_validation(self):
+        photo = "assets/images/members/sample.jpg"
+        member = {"name": "Sample Person", "photo": photo}
+        with tempfile.TemporaryDirectory() as directory, patch.object(build, "ROOT", Path(directory)):
+            image = Path(directory) / photo
+            image.parent.mkdir(parents=True)
+            image.write_bytes(b"fixture")  # Path validation does not decode photographs.
+            build.validate_member_photo(member)
+            # An existing file outside the allowed folder must still be rejected.
+            outside = Path(directory) / "assets/images/outside.jpg"
+            outside.write_bytes(b"fixture")
+            for invalid in (
+                "assets/images/members/missing.jpg", "assets/images/outside.jpg",
+                "assets/images/members/../outside.jpg", "assets/images/members/../../outside.jpg",
+                "assets/images/members/sample.svg", "assets/images/members/sample.jpg?x=1",
+                "assets/images/members/sample.jpg#fragment", "assets/images/members/sample.jpg:stream",
+                "assets/images/members/%2e%2e/outside.jpg",
+                "assets/images/members/..\\outside.jpg", "/assets/images/members/sample.jpg",
+                "C:/assets/images/members/sample.jpg",
+            ):
+                with self.subTest(photo=invalid), self.assertRaises(build.BuildError):
+                    build.validate_member_photo(dict(member, photo=invalid))
+
+    def test_remote_and_local_portraits_on_both_team_routes(self):
         photo = "https://example.org/photo.jpg?version=1&size=large"
+        local_photo = "assets/images/members/local.jpg"
         member = {"name": "Sample Person", "affiliation": "Sample institute", "url": "https://example.org/", "photo": photo}
         team = {
             "introduction": "Sample team.",
             "search": {"label": "Search", "placeholder": "Name", "count_label": "members", "empty_message": "No result"},
-            "sections": [{"id": "sample", "title": "Sample section", "members": [member, dict(member, name="Another Person", photo=None)]}],
+            "sections": [{"id": "sample", "title": "Sample section", "members": [
+                member, dict(member, name="Local Person", photo=local_photo),
+                dict(member, name="Another Person", photo=None),
+            ]}],
         }
         for prefix in ("../", "../../"):
             with self.subTest(prefix=prefix):
                 document = build.render_team(prefix, team)
                 elements = RenderedElements(document).elements
                 portraits = [attributes for tag, attributes in elements if tag == "img"]
-                self.assertEqual(len(portraits), 1)
+                self.assertEqual(len(portraits), 2)
                 self.assertEqual(portraits[0]["src"], photo)
+                self.assertEqual(portraits[1]["src"], prefix + local_photo)
                 self.assertEqual(portraits[0]["data-member-portrait"], "Sample Person")
+                self.assertEqual(portraits[1]["data-member-portrait"], "Local Person")
                 self.assertEqual(portraits[0]["alt"], "")
                 self.assertEqual(portraits[0]["loading"], "lazy")
-                self.assertEqual(sum(attributes.get("class") == "member-initials" for _, attributes in elements), 2)
+                self.assertEqual(sum(attributes.get("class") == "member-initials" for _, attributes in elements), 3)
                 self.assertIn(">SP</span>", document)
+                self.assertIn(">LP</span>", document)
                 self.assertIn(">AP</span>", document)
 
 

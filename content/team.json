@@ -19,7 +19,7 @@
           "affiliation": "Inria, CR",
           "name": "Katharina Eichinger",
           "url": "https://sites.google.com/view/katharinaeichinger/home",
-          "photo": null
+          "photo": "assets/images/members/katharina-eichinger.png"
         },
         {
           "affiliation": "Inria, CR, team leader",
@@ -49,7 +49,7 @@
           "affiliation": "Université Paris-Saclay, LMO, PR",
           "name": "Quentin Mérigot",
           "url": "http://quentin.mrgt.fr/",
-          "photo": null
+          "photo": "assets/images/members/quentin-merigot.jpg"
         },
         {
           "affiliation": "Inria, CR",
@@ -91,13 +91,13 @@
           "affiliation": "Université Paris-Saclay",
           "name": "Alessandro Cosenza",
           "url": "https://sites.google.com/view/alessandrocosenza/home?pli=1&authuser=0",
-          "photo": null
+          "photo": "assets/images/members/alessandro-cosenza.jpg"
         },
         {
           "affiliation": "Université Paris-Saclay",
           "name": "Filippo Quattrocchi",
           "url": "https://sites.google.com/view/filippoquattrocchi/",
-          "photo": null
+          "photo": "assets/images/members/filippo-quattrocchi.jpg"
         }
       ],
       "title": "Postdoctoral researchers",
@@ -127,7 +127,7 @@
           "affiliation": "Université Paris-Saclay",
           "name": "Mattia Garatti",
           "url": "https://mattiagaratti.github.io/",
-          "photo": null
+          "photo": "https://mattiagaratti.github.io/images/Profile_pic2.jpg"
         },
         {
           "affiliation": "Université Paris-Saclay",
