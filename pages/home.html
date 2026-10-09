@@ -115,20 +115,44 @@
       </section>
     </main>
 
-    <!-- Shared footer and institutional links -->
+    <!-- Shared footer: team identity, page navigation and institutional links -->
     <footer class="site-footer">
-      <div class="container footer-grid">
-        <div>
-          <a href="{{ prefix }}"><img class="brand-logo footer-logo" src="{{ prefix }}assets/images/parma-logo.png" alt="{{ site.name }}" width="1024" height="437" loading="lazy"></a>
-          <p>{{ site.footer.tagline }}</p>
-          <p class="footer-note">{{ site.footer.note }}</p>
+      <div class="container">
+
+        <!-- Three aligned columns on desktop; navigation stays grouped on mobile. -->
+        <div class="footer-grid">
+          <div class="footer-brand">
+            <a class="footer-home" href="{{ prefix }}">
+              <img class="brand-logo footer-logo" src="{{ prefix }}assets/images/parma-logo.png" alt="{{ site.name }}" width="1024" height="437" loading="lazy">
+            </a>
+            <p class="footer-tagline">{{ site.footer.tagline }}</p>
+          </div>
+
+          <nav class="footer-navigation" aria-labelledby="footer-navigation-title">
+            <h2 id="footer-navigation-title" class="footer-heading">{{ site.navigation_label }}</h2>
+            <ul class="footer-link-list">
+              {% for link in navigation %}
+                <li>
+                  <a href="{{ link.href }}"{% if link.is_current %} aria-current="page"{% endif %}>{{ link.title }}</a>
+                </li>
+              {% endfor %}
+            </ul>
+          </nav>
+
+          <nav class="footer-institutions" aria-labelledby="footer-institutions-title">
+            <h2 id="footer-institutions-title" class="footer-heading">{{ site.footer.links_label }}</h2>
+            <ul class="footer-link-list">
+              {% for link in site.footer.links %}
+                <li><a href="{{ link.url }}">{{ link.label }}</a></li>
+              {% endfor %}
+            </ul>
+          </nav>
         </div>
 
-        <nav class="footer-links" aria-label="{{ site.footer.links_label }}">
-          {% for link in site.footer.links %}
-            <a href="{{ link.url }}">{{ link.label }}</a>
-          {% endfor %}
-        </nav>
+        <!-- The affiliation note has its own row below the navigation columns. -->
+        <div class="footer-bottom">
+          <p class="footer-note">{{ site.footer.note }}</p>
+        </div>
       </div>
     </footer>
   </body>
