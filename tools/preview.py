@@ -14,12 +14,17 @@ from threading import Lock
 from urllib.request import urlopen
 from urllib.parse import urlsplit
 
+# Local paths and preview identity
 ROOT = Path(__file__).resolve().parents[1]
 OUTPUT = ROOT / "public"
 BUILD_SCRIPT = ROOT / "tools/build.py"
+# Reuse a running preview only when it belongs to this checkout.
 PROJECT_ID = hashlib.sha256(str(ROOT).casefold().encode("utf-8")).hexdigest()
 build_lock = Lock()
 last_signature = None
+
+
+# Rebuild the generated files when editable sources change
 
 
 def source_signature():
@@ -34,6 +39,7 @@ def source_signature():
 
 
 def rebuild_if_needed():
+    """Serialize builds so simultaneous browser requests cannot overlap."""
     global last_signature
     with build_lock:
         signature = source_signature()
@@ -42,7 +48,11 @@ def rebuild_if_needed():
             last_signature = signature
 
 
+# Serve the preview and identify it for the Windows launcher
+
+
 class PreviewServer(ThreadingHTTPServer):
+    # On Windows, prevent two servers from binding to the same port.
     allow_reuse_address = False
 
 
@@ -57,6 +67,8 @@ class PreviewHandler(SimpleHTTPRequestHandler):
             self.end_headers()
             self.wfile.write(body)
             return
+
+        # Refresh public/ before serving the requested page or asset.
         try:
             rebuild_if_needed()
         except (OSError, subprocess.CalledProcessError):
@@ -66,6 +78,7 @@ class PreviewHandler(SimpleHTTPRequestHandler):
 
 
 def existing_preview_matches(url):
+    """Check whether the requested port already serves this project."""
     try:
         with urlopen(url + "__parma_preview__", timeout=2) as response:
             return json.load(response).get("project") == PROJECT_ID
@@ -74,11 +87,15 @@ def existing_preview_matches(url):
 
 
 def open_browser(url):
+    """Open the default browser, or leave a usable URL in the terminal."""
     try:
         if not webbrowser.open(url):
             print("Open the preview URL in your browser.", flush=True)
     except webbrowser.Error:
         print("Open the preview URL in your browser.", flush=True)
+
+
+# Start the server, or reuse this project's existing preview
 
 
 def main():
@@ -91,6 +108,8 @@ def main():
         print(f"Preview already running: {url}", flush=True)
         open_browser(url)
         return 0
+
+    # Bind only to this computer and serve the generated folder.
     handler = functools.partial(PreviewHandler, directory=str(OUTPUT))
     try:
         server = PreviewServer(("127.0.0.1", arguments.port), handler)
@@ -101,6 +120,8 @@ def main():
             return 0
         print(f"Cannot start preview: {error}", file=sys.stderr)
         return 1
+
+    # Build once before opening the browser.
     try:
         rebuild_if_needed()
     except (OSError, subprocess.CalledProcessError) as error:
@@ -112,6 +133,8 @@ def main():
     print("Press Ctrl+C to stop the preview.", flush=True)
     if arguments.open:
         open_browser(url)
+
+    # Keep serving until Ctrl+C, then release the port.
     try:
         server.serve_forever()
     except KeyboardInterrupt:

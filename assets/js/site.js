@@ -1,7 +1,7 @@
 "use strict";
 
 (() => {
-  // Il menu resta utilizzabile anche senza JavaScript; su mobile abilitiamo il pulsante.
+  // Navigation: enable the mobile button while keeping links usable without JavaScript.
   function initializeNavigation() {
     const menuButton = document.querySelector(".menu-toggle");
     const navigation = document.getElementById("site-navigation");
@@ -11,6 +11,7 @@
     menuButton.hidden = false;
     const mobileViewport = window.matchMedia("(max-width: 800px)");
 
+    // Keep the visual state and the accessibility state in sync.
     function setMenuOpen(open) {
       navigation.classList.toggle("is-open", open);
       menuButton.setAttribute("aria-expanded", String(open));
@@ -39,12 +40,12 @@
     mobileViewport.addEventListener("change", () => setMenuOpen(false));
   }
 
-  // Ignoriamo maiuscole e accenti: "Gallouet" trova anche "Gallouët".
+  // Search normalization: ignore case and accents, so "Gallouet" also finds "Gallouët".
   function normalizeSearchText(value) {
     return value.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
   }
 
-  // Le foto arrivano dai siti personali: se non sono disponibili restano le iniziali.
+  // Member portraits: keep the initials visible until a remote or local image has loaded.
   function initializeMemberPortraits() {
     document.querySelectorAll(".member-portrait").forEach((image) => {
       function updatePortrait() {
@@ -53,12 +54,13 @@
 
       image.addEventListener("load", updatePortrait);
       image.addEventListener("error", () => image.classList.remove("is-loaded"));
-      // Le immagini già presenti nella cache possono aver completato il caricamento.
+
+      // Cached images may have finished loading before the listeners were added.
       updatePortrait();
     });
   }
 
-  // La ricerca esiste solo nella pagina dei membri: le altre pagine non vengono modificate.
+  // Member search: initialize this feature only when the team page contains a search field.
   function initializeMemberSearch() {
     const searchInput = document.getElementById("member-search");
     const memberCount = document.getElementById("member-count");
@@ -81,7 +83,7 @@
       const terms = query.split(/\s+/).filter(Boolean);
       let visibleCount = 0;
 
-      // Tutte le parole cercate devono comparire nel nome, nell'affiliazione o nel ruolo.
+      // Every search term must appear in the name, affiliation or member group.
       searchableMembers.forEach(({ card, text }) => {
         const visible = terms.every((term) => text.includes(term));
         card.hidden = !visible;
@@ -91,7 +93,8 @@
       memberSections.forEach((section) => {
         const hasVisibleMember = Array.from(section.querySelectorAll(".member-card"))
           .some((card) => !card.hidden);
-        // Senza ricerca lasciamo visibili tutti i gruppi, compresi gli ex membri.
+
+        // An empty search keeps every group visible, including former members.
         section.hidden = terms.length > 0 && !hasVisibleMember;
       });
 
@@ -100,6 +103,7 @@
           ? `${visibleCount} of ${memberCards.length} members shown`
           : `${memberCards.length} members`;
       }
+
       if (emptyState) emptyState.hidden = visibleCount > 0;
     }
 
@@ -108,7 +112,7 @@
     filterMembers();
   }
 
-  // Lo script viene caricato con "defer": il documento è già pronto.
+  // Startup: the deferred script runs after the page markup has been parsed.
   initializeNavigation();
   initializeMemberPortraits();
   initializeMemberSearch();

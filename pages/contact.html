@@ -1,77 +1,101 @@
 <!doctype html>
+<!-- Contact page: edit the layout here and the text in content/contact.json. -->
+<!-- Shared navigation, banner text and footer: content/site.json. -->
+
 <html lang="{{ site.language }}">
-<head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>{{ page.title }} · {{ site.name }}</title>
-  <meta name="description" content="{{ page.description }}">
-  <meta name="theme-color" content="{{ site.theme_color }}">
-  <link rel="icon" href="{{ prefix }}assets/images/parma-logo.png" type="image/png">
-  <link rel="stylesheet" href="{{ prefix }}assets/css/site.css">
-  <script src="{{ prefix }}assets/js/site.js" defer></script>
-</head>
-<body>
-  <!-- Complete page layout; text and lists come from content/. -->
-  <a class="skip-link" href="#main">{{ site.skip_label }}</a>
-  <header class="site-header">
-    <div class="container header-row">
-      <a class="brand" href="{{ prefix }}">
-        <img class="brand-logo" src="{{ prefix }}assets/images/parma-logo.png" alt="{{ site.name }}" width="1024" height="437">
-        <span class="brand-caption">{{ site.brand_caption }}</span>
-      </a>
-      <button class="menu-toggle" type="button" aria-controls="site-navigation" aria-expanded="false" hidden>{{ site.menu_label }}</button>
-      <nav id="site-navigation" class="site-navigation" aria-label="{{ site.navigation_label }}">
-        {% for link in navigation %}
-        <a href="{{ link.href }}"{% if link.is_current %} aria-current="page"{% endif %}>{{ link.title }}</a>
-        {% endfor %}
-      </nav>
-    </div>
-  </header>
-  <section class="hero" aria-labelledby="page-title">
-    <div class="container hero-content">
-      <p class="eyebrow">{{ page.hero.eyebrow }}</p>
-      <h1 id="page-title">{% for line in page.hero.title_lines %}{{ line }}{% if loop.last %}{% else %}<br>{% endif %}{% endfor %}</h1>
-      <p class="hero-lead">{{ page.hero.lead }}</p>
-    </div>
-  </section>
-  <main id="main" class="container content-container">
-    <div class="intro-callout"><p class="lead">{{ contact.introduction }}</p></div>
-    <div class="info-grid">
-      {% for person in contact.contacts %}
-      <section class="info-card">
-        <p class="contact-role">{{ person.role }}</p>
-        <h2 class="contact-name">{{ person.name }}</h2>
-        <a href="mailto:{{ person.email }}">{{ person.email }}</a>
-      </section>
-      {% endfor %}
-    </div>
-    <section class="address-card" aria-labelledby="location-title">
-      <div>
-        <p class="eyebrow">{{ contact.location.eyebrow }}</p>
-        <h2 id="location-title">{{ contact.location.title }}</h2>
-        <address>{% for line in contact.location.address_lines %}{{ line }}{% if loop.last %}{% else %}<br>{% endif %}{% endfor %}</address>
-        <a class="address-link" href="{{ contact.location.url }}">{{ contact.location.link_label }}</a>
+  <head>
+    <!-- Browser metadata -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>{{ page.title }} · {{ site.name }}</title>
+    <meta name="description" content="{{ page.description }}">
+    <meta name="theme-color" content="{{ site.theme_color }}">
+
+    <!-- Team logo, shared styles and page interactions -->
+    <link rel="icon" href="{{ prefix }}assets/images/parma-logo.png" type="image/png">
+    <link rel="stylesheet" href="{{ prefix }}assets/css/site.css">
+    <script src="{{ prefix }}assets/js/site.js" defer></script>
+  </head>
+
+  <body>
+    <!-- Skip link for keyboard navigation -->
+    <a class="skip-link" href="#main">{{ site.skip_label }}</a>
+
+    <!-- Site header and navigation -->
+    <header class="site-header">
+      <div class="container header-row">
+        <a class="brand" href="{{ prefix }}">
+          <img class="brand-logo" src="{{ prefix }}assets/images/parma-logo.png" alt="{{ site.name }}" width="1024" height="437">
+          <span class="brand-caption">{{ site.brand_caption }}</span>
+        </a>
+
+        <!-- JavaScript enables this button on small screens. -->
+        <button class="menu-toggle" type="button" aria-controls="site-navigation" aria-expanded="false" hidden>{{ site.menu_label }}</button>
+        <nav id="site-navigation" class="site-navigation" aria-label="{{ site.navigation_label }}">
+          {% for link in navigation %}
+            <a href="{{ link.href }}"{% if link.is_current %} aria-current="page"{% endif %}>{{ link.title }}</a>
+          {% endfor %}
+        </nav>
       </div>
-      <div class="location-note">
-        <h3>{{ contact.location.seminar_venue_title }}</h3>
-        <p>{{ contact.location.seminar_venue }}</p>
-        <a href="{{ prefix }}francais-gdt-edp-ot-ml/">{{ contact.location.seminar_link_label }}</a>
+    </header>
+
+    <!-- Page banner; its photograph is styled in assets/css/site.css. -->
+    <section class="hero" aria-labelledby="page-title">
+      <div class="container hero-content">
+        <p class="eyebrow">{{ page.hero.eyebrow }}</p>
+        <h1 id="page-title">{% for line in page.hero.title_lines %}{{ line }}{% if loop.last %}{% else %}<br>{% endif %}{% endfor %}</h1>
+        <p class="hero-lead">{{ page.hero.lead }}</p>
       </div>
     </section>
-  </main>
-  <footer class="site-footer">
-    <div class="container footer-grid">
-      <div>
-        <a href="{{ prefix }}"><img class="brand-logo footer-logo" src="{{ prefix }}assets/images/parma-logo.png" alt="{{ site.name }}" width="1024" height="437" loading="lazy"></a>
-        <p>{{ site.footer.tagline }}</p>
-        <p class="footer-note">{{ site.footer.note }}</p>
-      </div>
-      <nav class="footer-links" aria-label="{{ site.footer.links_label }}">
-        {% for link in site.footer.links %}
-        <a href="{{ link.url }}">{{ link.label }}</a>
+
+    <!-- Page content -->
+    <main id="main" class="container content-container">
+      <!-- Contact introduction -->
+      <div class="intro-callout"><p class="lead">{{ contact.introduction }}</p></div>
+
+      <!-- Contact cards: names, roles and email addresses from content/contact.json. -->
+      <div class="info-grid">
+        {% for person in contact.contacts %}
+          <section class="info-card">
+            <p class="contact-role">{{ person.role }}</p>
+            <h2 class="contact-name">{{ person.name }}</h2>
+            <a href="mailto:{{ person.email }}">{{ person.email }}</a>
+          </section>
         {% endfor %}
-      </nav>
-    </div>
-  </footer>
-</body>
+      </div>
+
+      <!-- Postal address and seminar venue -->
+      <section class="address-card" aria-labelledby="location-title">
+        <div>
+          <p class="eyebrow">{{ contact.location.eyebrow }}</p>
+          <h2 id="location-title">{{ contact.location.title }}</h2>
+          <address>{% for line in contact.location.address_lines %}{{ line }}{% if loop.last %}{% else %}<br>{% endif %}{% endfor %}</address>
+          <a class="address-link" href="{{ contact.location.url }}">{{ contact.location.link_label }}</a>
+        </div>
+
+        <div class="location-note">
+          <h3>{{ contact.location.seminar_venue_title }}</h3>
+          <p>{{ contact.location.seminar_venue }}</p>
+          <a href="{{ prefix }}francais-gdt-edp-ot-ml/">{{ contact.location.seminar_link_label }}</a>
+        </div>
+      </section>
+    </main>
+
+    <!-- Shared footer and institutional links -->
+    <footer class="site-footer">
+      <div class="container footer-grid">
+        <div>
+          <a href="{{ prefix }}"><img class="brand-logo footer-logo" src="{{ prefix }}assets/images/parma-logo.png" alt="{{ site.name }}" width="1024" height="437" loading="lazy"></a>
+          <p>{{ site.footer.tagline }}</p>
+          <p class="footer-note">{{ site.footer.note }}</p>
+        </div>
+
+        <nav class="footer-links" aria-label="{{ site.footer.links_label }}">
+          {% for link in site.footer.links %}
+            <a href="{{ link.url }}">{{ link.label }}</a>
+          {% endfor %}
+        </nav>
+      </div>
+    </footer>
+  </body>
 </html>

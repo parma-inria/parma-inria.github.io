@@ -15,6 +15,7 @@ from pathlib import Path, PurePosixPath
 from datetime import date
 from urllib.parse import urlsplit
 
+# Source folders and shared date labels
 ROOT = Path(__file__).resolve().parents[1]
 CONTENT = ROOT / "content"
 PAGES = ROOT / "pages"
@@ -30,6 +31,9 @@ class BuildError(Exception):
     """An editable source is missing or invalid."""
 
 
+# Load and validate editable JSON content
+
+
 def read_text(path):
     """Read a source file and explain missing files in Italian."""
     try:
@@ -39,6 +43,7 @@ def read_text(path):
 
 
 def read_json(name):
+    """Read a content file and require a JSON object at its root."""
     path = CONTENT / f"{name}.json"
     try:
         data = json.loads(read_text(path))
@@ -64,6 +69,7 @@ def require_fields(data, location, fields):
 
 
 def require_text_list(items, location):
+    """Require at least one paragraph or heading line."""
     if not items or not all(isinstance(item, str) for item in items):
         raise BuildError(f"{location}: inserisci un elenco non vuoto di testi.")
 
@@ -78,6 +84,8 @@ def require_web_url(url, location):
 def validate_content(sources):
     """Catch common editing mistakes before writing any generated pages."""
     site, home, team, contact = (sources[key] for key in ("site", "home", "team", "contact"))
+
+    # Shared navigation, page banners and footer
     require_fields(site, "content/site.json", {
         "name": str, "language": str, "theme_color": str, "brand_caption": str,
         "skip_label": str, "menu_label": str, "navigation_label": str,
@@ -108,6 +116,7 @@ def validate_content(sources):
         require_fields(link, "content/site.json → footer.links", {"label": str, "url": str})
         require_web_url(link["url"], "content/site.json → footer.links.url")
 
+    # Home introduction, research topics and seminar summary
     require_fields(home, "content/home.json", {
         "hero_actions": dict, "about_eyebrow": str, "about_title_lines": list,
         "introduction": list, "logo_alt": str, "logo_caption": str,
@@ -123,6 +132,8 @@ def validate_content(sources):
     require_fields(home["seminar"], "content/home.json → seminar", {
         "eyebrow": str, "title": str, "description": str, "link_label": str,
     })
+
+    # Member groups, personal websites and optional portraits
     require_fields(team, "content/team.json", {
         "introduction": str, "search": dict, "sections": list,
     })
@@ -145,6 +156,7 @@ def validate_content(sources):
     if len(set(section_ids)) != len(section_ids):
         raise BuildError("content/team.json: gli id delle sezioni devono essere diversi.")
 
+    # Contact cards and the postal address
     require_fields(contact, "content/contact.json", {
         "introduction": str, "contacts": list, "location": dict,
     })
@@ -199,6 +211,9 @@ def validate_member_photo(member):
         raise BuildError(message)
 
 
+# Seminar dates and derived views
+
+
 def parse_session_date(value, location):
     """Require an unambiguous, valid calendar date such as 2026-10-12."""
     if not isinstance(value, str) or not re.fullmatch(r"\d{4}-\d{2}-\d{2}", value):
@@ -225,6 +240,8 @@ def validate_seminar(seminar):
         "academic_year", "abstract", "room", "home_next_session",
         "empty_next_session", "empty_programme",
     ), str))
+
+    # Organizer links and email addresses
     for index, organizer in enumerate(seminar["organizers"]):
         where = f"{location} → organizers[{index}]"
         require_fields(organizer, where, {
@@ -234,6 +251,8 @@ def validate_seminar(seminar):
             raise BuildError(f"{where}.email: inserisci un indirizzo email valido.")
         if organizer["url"]:
             require_web_url(organizer["url"], where + ".url")
+
+    # A date appears once; multiple talks belong to that same session.
     seen_dates = set()
     for index, session in enumerate(seminar["sessions"]):
         where = f"{location} → sessions[{index}]"
@@ -283,6 +302,7 @@ def plan_seminar(seminar, today=None):
 
 
 def session_date_label(session, labels, home=False):
+    """Format one date and room label for the home or seminar page."""
     day = date.fromisoformat(session["date"])
     if home:
         text = f"{day.day} {MONTH_NAMES[day.month - 1]} {day.year}"
@@ -295,7 +315,7 @@ def session_date_label(session, labels, home=False):
     return text
 
 
-
+# HTML template parsing and rendering
 # The template language is deliberately small: dictionary keys, loops and if.
 # It never evaluates Python, calls functions, or inserts unescaped JSON as HTML.
 FIELD = r"[A-Za-z][A-Za-z0-9_]*(?:\.[A-Za-z][A-Za-z0-9_]*)*"
@@ -303,6 +323,7 @@ TOKENS = re.compile(r"({{.*?}}|{%.*?%})", re.DOTALL)
 
 
 def field_value(expression, context):
+    """Resolve a dotted field name through dictionaries, without executing code."""
     if not re.fullmatch(FIELD, expression):
         raise BuildError(f"Invalid template field: {expression!r}")
     value = context
@@ -314,6 +335,7 @@ def field_value(expression, context):
 
 
 def parse_template(source):
+    """Parse the supported fields, loops and conditions into nested nodes."""
     tokens = TOKENS.split(source)
     cursor = 0
 
@@ -360,6 +382,7 @@ def parse_template(source):
 
 
 def render_nodes(nodes, context):
+    """Render parsed nodes, escaping every value inserted into HTML."""
     output = []
     for node in nodes:
         kind = node[0]
@@ -389,10 +412,15 @@ def render_nodes(nodes, context):
 
 
 def render_html(source, context):
+    """Expand one complete HTML page with its prepared data."""
     return render_nodes(parse_template(source), context)
 
 
+# Prepare page data without generating HTML markup
+
+
 def prepare_programme(seminar, plan):
+    """Prepare display labels, calendar columns and archive groups for the HTML."""
     labels = seminar["labels"]
 
     def session_data(session):
@@ -408,6 +436,7 @@ def prepare_programme(seminar, plan):
             ],
         }
 
+    # Split the academic-year calendar into two columns.
     dates = [date.fromisoformat(session["date"]).strftime("%d/%m/%Y")
              for session in plan["calendar"]]
     midpoint = (len(dates) + 1) // 2
@@ -437,6 +466,7 @@ def prepare_programme(seminar, plan):
 
 
 def prepare_team(team, prefix):
+    """Prepare initials, portrait paths and searchable member text."""
     sections = []
     for section in team["sections"]:
         members = []
@@ -455,6 +485,7 @@ def prepare_team(team, prefix):
 
 
 def page_context(page, prefix, sources, seminar_plan):
+    """Collect page data; all HTML markup remains in pages/."""
     site = sources["site"]
     home = sources["home"]
     return {
@@ -475,11 +506,15 @@ def page_context(page, prefix, sources, seminar_plan):
 
 
 def render_document(page, prefix, sources, seminar_plan):
+    """Render a source page and include its filename in any template error."""
     path = PAGES / f"{page['id']}.html"
     try:
         return render_html(read_text(path), page_context(page, prefix, sources, seminar_plan))
     except BuildError as error:
         raise BuildError(f"{path}: {error}") from error
+
+
+# Generate the public/ folder used by the preview and GitHub Pages
 
 
 def build(output=DEFAULT_OUTPUT, today=None):
@@ -489,11 +524,15 @@ def build(output=DEFAULT_OUTPUT, today=None):
                  ROOT / "docs", ROOT / ".github", ROOT / ".vscode", ROOT / ".git"]
     if ROOT.is_relative_to(output) or any(output.is_relative_to(path) for path in protected):
         raise BuildError("Output must be separate from the source files, for example public/.")
+
+    # Validate all data before generating any files.
     sources = {name: read_json(name) for name in ("site", "home", "team", "contact", "seminar")}
     validate_content(sources)
     seminar_plan = plan_seminar(sources["seminar"], today)
     if not (ROOT / "assets").is_dir():
         raise BuildError(f"Missing source folder: {ROOT / 'assets'}")
+
+    # Render both the main routes and the existing English aliases.
     documents = []
     for page in sources["site"]["pages"]:
         route = page["path"]
@@ -503,6 +542,8 @@ def build(output=DEFAULT_OUTPUT, today=None):
                           render_document(page, prefix, sources, seminar_plan)))
         documents.append((Path("en") / route / "index.html",
                           render_document(page, "../" * (depth + 1), sources, seminar_plan)))
+
+    # Write only after every page has rendered successfully.
     output.mkdir(parents=True, exist_ok=True)
     shutil.copytree(ROOT / "assets", output / "assets", dirs_exist_ok=True)
     for relative_path, document in documents:
@@ -515,7 +556,11 @@ def build(output=DEFAULT_OUTPUT, today=None):
     return output
 
 
+# Command-line entry point
+
+
 def main(argv=None):
+    """Read command-line options and report build errors."""
     parser = argparse.ArgumentParser(description="Build ParMA from pages/ and content/.")
     parser.add_argument("--output", type=Path, default=DEFAULT_OUTPUT,
                         help="Output folder (default: public/).")
