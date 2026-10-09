@@ -1,304 +1,654 @@
-<div class="intro-callout"><p>The <strong>GdT OT-PDE-ML</strong> is a research seminar organized by the ParMA team. It brings together researchers to discuss recent theoretical and numerical developments at the crossroads of Optimal Transport theory, Partial Differential Equations, and Machine Learning.</p></div>
+<!-- Contenuti del GdT: questo file è la fonte da modificare, non le pagine HTML generate. -->
+
+<!-- Introduzione del seminario. -->
+<div class="intro-callout">
+  <p>
+    The <strong>GdT OT-PDE-ML</strong> is a research seminar organized by the ParMA team. It brings together researchers
+    to discuss recent theoretical and numerical developments at the crossroads of Optimal Transport theory, Partial
+    Differential Equations, and Machine Learning.
+  </p>
+</div>
 <div class="info-grid">
-<section class="info-card" aria-labelledby="seminar-organizers">
-<h2 class="section-heading" id="seminar-organizers">Organizers</h2>
-<ul class="organizer-list">
-<li>• Benjamin Capdeville (<a href="mailto:benjamin.capdeville@universite-paris-saclay.fr">benjamin.capdeville@universite-paris-saclay.fr</a>)</li>
-<li>• <a href="https://vvillford.github.io/" target="_blank" rel="noopener noreferrer">William Ford</a> (<a href="mailto:william.ford@polytechnique.edu">william.ford@polytechnique.edu</a>)</li>
-<li>• <a href="https://mattiagaratti.github.io/" target="_blank" rel="noopener noreferrer">Mattia Garatti</a> (<a href="mailto:mattia.garatti@universite-paris-saclay.fr">mattia.garatti@universite-paris-saclay.fr</a>)</li>
-</ul>
-<p><em>Write to us to be added to our mailing list in order to stay updated!</em></p>
-</section>
-<section class="info-card" aria-labelledby="seminar-location">
-<h2 class="section-heading" id="seminar-location">Where to find us?</h2>
-<p><a href="https://www.imo.universite-paris-saclay.fr" target="_blank" rel="noopener noreferrer">Institut de Mathématique d’Orsay</a> (IMO), Building 307. Room <strong>3L15</strong>.</p>
-</section>
+
+  <!-- Organizzatori: aggiornare nomi, siti personali e indirizzi email qui. -->
+  <section class="info-card" aria-labelledby="seminar-organizers">
+    <h2 class="section-heading" id="seminar-organizers">Organizers</h2>
+    <ul class="organizer-list">
+      <li>
+        • Benjamin Capdeville
+        (<a href="mailto:benjamin.capdeville@universite-paris-saclay.fr">benjamin.capdeville@universite-paris-saclay.fr</a>)
+      </li>
+      <li>
+        • <a href="https://vvillford.github.io/" target="_blank" rel="noopener noreferrer">William Ford</a>
+        (<a href="mailto:william.ford@polytechnique.edu">william.ford@polytechnique.edu</a>)
+      </li>
+      <li>
+        • <a href="https://mattiagaratti.github.io/" target="_blank" rel="noopener noreferrer">Mattia Garatti</a>
+        (<a href="mailto:mattia.garatti@universite-paris-saclay.fr">mattia.garatti@universite-paris-saclay.fr</a>)
+      </li>
+    </ul>
+    <p><em>Write to us to be added to our mailing list in order to stay updated!</em></p>
+  </section>
+
+  <!-- Luogo degli incontri. -->
+  <section class="info-card" aria-labelledby="seminar-location">
+    <h2 class="section-heading" id="seminar-location">Where to find us?</h2>
+    <p>
+      <a href="https://www.imo.universite-paris-saclay.fr" target="_blank" rel="noopener noreferrer">Institut de
+      Mathématique d’Orsay</a> (IMO), Building 307. Room <strong>3L15</strong>.
+    </p>
+  </section>
 </div>
+
+<!--
+  PROSSIMA SESSIONE: aggiornare data, sala, relatori, titoli e abstract.
+  Quando la sessione è conclusa, spostare il suo article nell'anno corretto dell'archivio
+  e usare h4 per la data, togliendo data-upcoming dall'article.
+-->
 <section aria-labelledby="seminar-next">
-<h2 class="section-heading" id="seminar-next">Next Session</h2>
-<article class="session-card" data-upcoming="true">
-<h3 class="session-date">12/10/2026 — Room 3L15</h3>
-<div class="talk">
-<p class="talk-meta"><strong>10:00</strong> <span>Hugo Koubbi</span></p>
-<p class="talk-title">Homogenized Transformers</p>
-<span class="abstract-label">Abstract</span>
-<div class="abstract-text">We study a random model of deep multi-head self-attention in which the weights are resampled independently across layers and heads, as at initialization of training. Viewing depth as a time variable, the residual stream defines a discrete-time interacting particle system on the unit sphere. We prove that, under suitable joint scalings of the depth, the residual step size, and the number of heads, this dynamics admits a nontrivial homogenized limit.Depending on the scaling, the limit is either deterministic or stochastic with common noise; in the mean-field regime, the latter leads to a stochastic nonlinear Fokker–Planck equation for the conditional law of a representative token. In the Gaussian setting, the limiting drift vanishes, making the homogenized dynamics explicit enough to study representation collapse. This yields quantitative trade-offs between dimension, context length, and temperature, and identifies regimes in which clustering can be mitigated.</div>
-</div>
-<div class="talk">
-<p class="talk-meta"><strong>11:00</strong> <span>Alice Le Brigant</span></p>
-<p class="talk-title">On the Wasserstein Geodesic Principal Component Analysis of probability measures</p>
-<span class="abstract-label">Abstract</span>
-<div class="abstract-text">In this talk we discuss how to perform Principal Component Analysis (PCA) of a dataset whose elements are probability distributions, compared using the Wasserstein distance. The goal is to identify geodesic curves in the space of probability measures that best capture the modes of variation of the underlying dataset. To achieve this, we leverage the Riemannian interpretation of the Wasserstein metric. We first address the case of a collection of centered Gaussian distributions, and show how to lift the computations in the space of invertible linear maps using Bures-Wasserstein geometry. For the more general setting of absolutely continuous probability measures, we use Otto-Wasserstein geometry and neural networks to parameterize geodesics in Wasserstein space. Finally, we compare to classical tangent PCA through various examples and provide illustrations on real-world datasets.</div>
-</div>
-</article>
+  <h2 class="section-heading" id="seminar-next">Next Session</h2>
+  <article class="session-card" data-upcoming="true">
+    <h3 class="session-date">12/10/2026 — Room 3L15</h3>
+    <div class="talk">
+      <p class="talk-meta"><strong>10:00</strong> <span>Hugo Koubbi</span></p>
+      <p class="talk-title">Homogenized Transformers</p>
+      <span class="abstract-label">Abstract</span>
+      <div class="abstract-text">
+        We study a random model of deep multi-head self-attention in which the weights are resampled independently
+        across layers and heads, as at initialization of training. Viewing depth as a time variable, the residual stream
+        defines a discrete-time interacting particle system on the unit sphere. We prove that, under suitable joint
+        scalings of the depth, the residual step size, and the number of heads, this dynamics admits a nontrivial
+        homogenized limit.Depending on the scaling, the limit is either deterministic or stochastic with common noise;
+        in the mean-field regime, the latter leads to a stochastic nonlinear Fokker–Planck equation for the conditional
+        law of a representative token. In the Gaussian setting, the limiting drift vanishes, making the homogenized
+        dynamics explicit enough to study representation collapse. This yields quantitative trade-offs between
+        dimension, context length, and temperature, and identifies regimes in which clustering can be mitigated.
+      </div>
+    </div>
+    <div class="talk">
+      <p class="talk-meta"><strong>11:00</strong> <span>Alice Le Brigant</span></p>
+      <p class="talk-title">On the Wasserstein Geodesic Principal Component Analysis of probability measures</p>
+      <span class="abstract-label">Abstract</span>
+      <div class="abstract-text">
+        In this talk we discuss how to perform Principal Component Analysis (PCA) of a dataset whose elements are
+        probability distributions, compared using the Wasserstein distance. The goal is to identify geodesic curves in
+        the space of probability measures that best capture the modes of variation of the underlying dataset. To achieve
+        this, we leverage the Riemannian interpretation of the Wasserstein metric. We first address the case of a
+        collection of centered Gaussian distributions, and show how to lift the computations in the space of invertible
+        linear maps using Bures-Wasserstein geometry. For the more general setting of absolutely continuous probability
+        measures, we use Otto-Wasserstein geometry and neural networks to parameterize geodesics in Wasserstein space.
+        Finally, we compare to classical tangent PCA through various examples and provide illustrations on real-world
+        datasets.
+      </div>
+    </div>
+  </article>
 </section>
+
+<!-- Calendario: aggiornare le date e l'anno accademico dell'etichetta aria-label. -->
 <section aria-labelledby="seminar-schedule">
-<h2 class="section-heading" id="seminar-schedule">Schedule of the Year</h2>
-<div class="table-wrap">
-<table class="schedule-table" aria-label="Seminar dates for academic year 2026–2027">
-<tbody>
-<tr>
-<td>12/10/2026</td>
-<td>22/03/2027</td>
-</tr>
-<tr>
-<td>16/11/2026</td>
-<td>26/04/2027</td>
-</tr>
-<tr>
-<td>14/12/2026</td>
-<td>24/05/2027</td>
-</tr>
-<tr>
-<td>18/01/2027</td>
-<td>21/06/2027</td>
-</tr>
-<tr>
-<td>22/01/2027</td>
-<td></td>
-</tr>
-</tbody>
-</table>
-</div>
+  <h2 class="section-heading" id="seminar-schedule">Schedule of the Year</h2>
+  <div class="table-wrap">
+    <table class="schedule-table" aria-label="Seminar dates for academic year 2026–2027">
+      <tbody>
+        <tr>
+          <td>12/10/2026</td>
+          <td>22/03/2027</td>
+        </tr>
+        <tr>
+          <td>16/11/2026</td>
+          <td>26/04/2027</td>
+        </tr>
+        <tr>
+          <td>14/12/2026</td>
+          <td>24/05/2027</td>
+        </tr>
+        <tr>
+          <td>18/01/2027</td>
+          <td>21/06/2027</td>
+        </tr>
+        <tr>
+          <td>22/01/2027</td>
+          <td></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
 </section>
+
+<!-- ARCHIVIO: anni e sessioni in ordine dal più recente al più vecchio. -->
 <section aria-labelledby="seminar-history">
-<h2 class="section-heading" id="seminar-history">History of Sessions</h2>
-<section class="archive-year" aria-labelledby="seminar-archive-0">
-<h3 id="seminar-archive-0">Academic Year 2026 – 2027</h3>
-<article class="session-card">
-<h4 class="session-date">14/09/2026 — Room 3L15</h4>
-<div class="talk">
-<p class="talk-meta"><strong>10:30</strong> <span>Vladimir Petrovic</span></p>
-<p class="talk-title">Fast coresets for the Sinkhorn divergence</p>
-<span class="abstract-label">Abstract</span>
-<div class="abstract-text">The Sinkhorn divergence has become a widely used surrogate for the Wasserstein distance in the machine learning community. While exhibiting similar topological behavior, the Sinkhorn divergence is more computationally tractable, and possesses desirable properties that make it particularly well-suited for optimization. In this talk, we will be interested in finding a small weighted subset of a large dataset which faithfully represents the full dataset, with respect to the Sinkhorn divergence. This will be done via the combination of three algorithms, which achieves a subquadratic total runtime. We show that the resulting coreset has low Sinkhorn divergence, and we numerically benchmark the efficiency of our method against existing approaches on various learning tasks.</div>
-</div>
-</article>
-</section>
-<section class="archive-year" aria-labelledby="seminar-archive-1">
-<h3 id="seminar-archive-1">Academic Year 2025 – 2026</h3>
-<article class="session-card">
-<h4 class="session-date">15/06/2026 — Room 3L15</h4>
-<div class="talk">
-<p class="talk-meta"><strong>10:00</strong> <span>Rotem Assouline</span></p>
-<p class="talk-title">Magnetic Brunn-Minkowski inequalities</p>
-<span class="abstract-label">Abstract</span>
-<div class="abstract-text">In this talk, we will consider Minkowski averages on Riemannian manifolds where the interpolation is by action-minimizing magnetic geodesics with respect to a given magnetic potential. We will see that Brunn-Minkowski inequalities for this operation characterize lower bounds on a magnetic Ricci curvature. Examples include natural magnetic fields on Kähler and Sasakian manifolds, the former including as a special case a horocyclic Brunn-Minkowski inequality on complex hyperbolic space. We also observe that closed magnetic potentials from different cohomology classes may give rise to different geodesic Minkowski averages.</div>
-</div>
-<div class="talk">
-<p class="talk-meta"><strong>11:00</strong> <span>Filippo Quattrocchi</span></p>
-<p class="talk-title">Nonlinear kinetic equations as gradient flows</p>
-<span class="abstract-label">Abstract</span>
-<div class="abstract-text">Many evolutionary PDEs, both linear and nonlinear (e.g., the heat and porous medium equations), can be seen as gradient flows in the Wasserstein metric space of probability measures. This classical result provides general tools for existence, numerical approximation, uniqueness, and convergence estimates under weak assumptions. In this talk, we extend this perspective to kinetic equations. First, we introduce discrepancies d_h that measure the minimal acceleration of trajectories connecting two given probabilities on the phase space. We then show that, in the geometry induced by d_h, solutions to the nonlinear kinetic Fokker-Planck equation can be viewed as gradient flows of the free energy. As a consequence, we obtain convergence of an implicit Euler scheme based on d_h to these solutions. This talk is based on arXiv:2502.15665, in collaboration with G. Brigati (ISTA) and J. Maas (ISTA), and ongoing work with G. Brigati (ISTA), G. Carlier (CEREMADE, Paris Dauphine-PSL), and J. Dolbeault (CEREMADE, Paris Dauphine-PSL).</div>
-</div>
-</article>
-<article class="session-card">
-<h4 class="session-date">17/04/2026 — Room 3L8</h4>
-<div class="talk">
-<p class="talk-meta"><strong>14:00</strong> <span>Dario Trevisan</span></p>
-<p class="talk-title">Large Deviations, Kernels, and Feature Learning in Bayesian Wide Neural Networks</p>
-<span class="abstract-label">Abstract</span>
-<div class="abstract-text">Wide neural networks are often described by Gaussian process limits, which capture their typical behavior at initialization and under lazy training regimes. However, these approximations fail to describe the rare but structurally significant fluctuations that govern finite-width effects, posterior concentration, and feature learning. In this talk, we present a large deviation perspective on deep neural networks that goes beyond Gaussian limits.<br><br>
-                We first discuss recent results establishing a functional large deviation principle for fully connected networks with Gaussian initialization and Lipschitz activations, including ReLU. This provides a probabilistic description of the entire network output as a random function on compact input sets, with a rate function characterized by a recursive variational structure across layers.<br><br>
-                We then turn to Bayesian neural networks and show how large deviation theory leads to an explicit variational characterization of the posterior over predictors. In contrast with Gaussian process theory, where the kernel is fixed, the large deviation rate function involves a joint optimization over both outputs and internal kernels, yielding a natural notion of feature learning at the functional level. Numerical experiments illustrate how this framework captures non-Gaussian effects, posterior deformation, and data-dependent kernel selection in moderately wide networks.<br><br>
-                These results suggest that large deviations provide a principled framework to understand representation learning in wide neural networks, bridging probabilistic asymptotics with practical behavior beyond Gaussian approximations. Based on arXiv:2601.18276 and arXiv:2602.22925.</div>
-</div>
-</article>
-<article class="session-card">
-<h4 class="session-date">30/03/2026 — Room 3L15</h4>
-<div class="talk">
-<p class="talk-meta"><strong>14:00</strong> <span>William Ford</span></p>
-<p class="talk-title">Quantitative Uniqueness of Kantorovich Potentials</p>
-<span class="abstract-label">Abstract</span>
-<div class="abstract-text">We study the uniqueness of solutions to the dual optimal transport problem, both qualitatively and quantitatively (bounds on the diameter of the set of optimisers). We show that when one marginal measure has rectifiably connected support, the other has bounded support, and c is C^1_loc, the dual optimisers are unique up to a constant in L^1. This represents the first dual uniqueness result for which both supports can be concentrated on lower-dimensional subsets of the ambient space. On the quantitative side, we prove that when c is C^{1, \alpha} and one of the marginal measures’ supports is Hausdorff distance \epsilon from a regular connected set in R^d, the L^\infty diameter of the set of optimal dual potentials is of order at most \epsilon^{\alpha/(\alpha + 1)}. This is a consequence of a novel characterisation of the set of optimal dual potentials as the intersection of an explicit family of half-spaces.</div>
-</div>
-<div class="talk">
-<p class="talk-meta"><strong>15:00</strong> <span>João Miguel Machado</span></p>
-<p class="talk-title">From functional and geometric inequalities to quantitative stability of variational problems in optimal transport and convex geometry</p>
-<span class="abstract-label">Abstract</span>
-<div class="abstract-text">In recent years the functional and geometric inequalities communities have dedicated a lot of attention to quantitative stability versions of such identities. The general question being: once identified the optimal functions (ref. sets) associated with a functional (ref. geometric) inequality, can we quantify the distance of a general function to the manifold of optimisers, the class of functions for which these identities become equalities. In this talk we will discuss how to use these types of results to derive quantitative stability of solutions to variational problems.<br><br>
-                We start discussing a quantitative version of the Brascamp-Lieb inequality on the variance of a function w.r.t. a log-concave measure, which we show to be sharp. Our methods are intimately connected to the theory of moment measures developed by Cordero-Eurasquin and Klartag (2015), and Santambrogio (2016). On the other hand, we show how to use the quantitative stability of the Prékopa-Leindler and the Brascamp-Lieb variance inequalities to understand the quantitative stability of moment measures via a variational formulation.<br><br>
-                Similar ideas are naturally translated to the quantitative stability for solutions of the Minkowski problem that goes back to Minkowski and Alexandrov (1930’s). These will be understood via the Brunn-Minkowski theory developed by Figalli-Maggi-Pratelli (2012) combined with the older theory of Diskant (1964) based on the Hausdorff distance of convex sets. Joint work with João Pedro Ramos, and with João Pedro Ramos and Károly Böröczky.</div>
-</div>
-</article>
-<article class="session-card">
-<h4 class="session-date">26/01/2026 — Room 3L15</h4>
-<div class="talk">
-<p class="talk-meta"><strong>14:00</strong> <span>Filippo Santambrogio</span></p>
-<p class="talk-title">Sans surprises, si on met Sinkhorn dans le JKO on trouve de la diffusion linéaire / No surprises: putting Sinkhorn into JKO yields linear diffusion</p>
-<span class="abstract-label">Abstract</span>
-<div class="abstract-text">Le schéma JKO est une méthode d’approximation pour trouver des solutions ρ d’EDP sous la forme “équation de continuité où le champ de vitesse v est l’opposé du gradient de la variation première d’une fonctionnelle F”, qui consiste à minimiser de manière itérative une combinaison de F et du carré de la distance W_2 à la densité trouvée à l’étape précédente, avec un paramètre τ qui correspond à un pas de temps. En particulier, lorsque F est l’entropie de ρ, on trouve l’équation de la chaleur. Pour des raisons computationnelles, on est tentés de remplacer le vrai coût de transport définissant W_2 par son approximation entropique, à l’origine de la méthode numérique de Sinkhorn, ce qui nécessite le choix d’un coefficient ε devant l’entropie du plan de transport γ. Si ε est très petit, on s’attend à converger vers la même EDP, flot de gradient de F, mais si ε est grand il semblerait qu’une diffusion supplémentaire apparaîtrait. Dans un article récent avec A. Baradat et A. Hraivoronska nous prouvons que c’est bien le cas. Plus précisément, lorsque ε/τ→α, l’équation qu’on obtient à la limite est celle du flot de gradient de F avec un terme de plus de la forme αΔρ.<br><br>
-                <em>English:</em> The JKO scheme is an approximation method for finding solutions ρ of PDEs of the form “a continuity equation where the velocity field v is the negative gradient of the first variation of a functional F”. For computational reasons, one is tempted to replace the true transport cost defining W_2 by its entropic regularization (Sinkhorn approximation). When ε/τ→α, the limiting equation is the gradient flow of F with an additional term of the form αΔρ.</div>
-</div>
-</article>
-<article class="session-card">
-<h4 class="session-date">15/12/2025 — Room 3L15</h4>
-<div class="talk">
-<p class="talk-meta"><strong>14:00</strong> <span>Christophe Vauthier</span></p>
-<p class="talk-title">Variational Analysis in the Wasserstein Hierarchy</p>
-<span class="abstract-label">Abstract</span>
-<div class="abstract-text">Let M be a complete connected Riemannian manifold. For n ≥ 0, we endow the Wasserstein space P⁽ⁿ⁾₂(M) = P₂(… P₂(M)…), equipped with the Wasserstein distance W₂, with a variational structure that generalizes the standard variational structure on P₂(M) provided by optimal transport theory. Our approach makes use of tools from category theory to lift the geometric structure of the manifold M to the spaces P⁽ⁿ⁾₂(M), in order to establish in a principled way a rigorous theoretical framework for variational analysis on the space P⁽ⁿ⁾₂(M). In particular, we obtain a precise characterization of the constant speed geodesics of the space P⁽ⁿ⁾₂(M) in terms of optimal velocity plans. Moreover, we introduce a notion of gradient for functionals defined on P⁽ⁿ⁾₂(M), which allows us to study the differentiability and the convexity of various types of such functionals.</div>
-</div>
-<div class="talk">
-<p class="talk-meta"><strong>15:00</strong> <span>Dmitry Vorotnikov</span></p>
-<p class="talk-title">Adaptive Gradient Flow Scheme and Dual Variational Solutions to the Nash System</p>
-<span class="abstract-label">Abstract</span>
-<div class="abstract-text">We investigate the influence of so-called base states on the consistency of the dual variational formulation for quadratic systems of PDEs that are not necessarily conservative (typical examples include the noise-free Nash system with a quadratic Hamiltonian and multiple players). We identify a necessary condition under which consistency holds over large time intervals. In particular, in the single-player case, there exists a sequence of base states (each exhibiting full consistency) that converges in mean to zero. Furthermore, we propose a scheme based on Hilbertian gradient flows that, starting from an arbitrary base state, generates a sequence of new base states that is expected to converge to a solution of the original PDE. Based on work in progress with A. Acharya (Carnegie Mellon).</div>
-</div>
-</article>
-<article class="session-card">
-<h4 class="session-date">17/11/2025 — Room 3L15</h4>
-<div class="talk">
-<p class="talk-meta"><strong>14:00</strong> <span>Agnès Desolneux</span></p>
-<p class="talk-title">La distance MW_2 entre mélanges de gaussiennes : définition, extensions et applications</p>
-<span class="abstract-label">Abstract</span>
-<div class="abstract-text">Dans cet exposé je présenterai plusieurs extensions et applications de la distance MW_2 introduite avec Julie Delon. Cette distance s’obtient en considérant le transport usuel W_2 et en le restreignant aux plans de transport qui sont eux-mêmes des mélanges de gaussiennes (GMM). Il en résulte une distance MW_2 qui s’exprime comme un problème de transport discret dans l’espace des mesures gaussiennes. Je montrerai plusieurs applications de cette distance, ce qui nécessite souvent d’abord de pouvoir obtenir une application (map) de transport à partir d’un plan de transport. Je parlerai aussi de l’extension à la distance de Gromov-Wasserstein pour pouvoir faire du transport entre GMM vivants dans des espaces euclidiens de dimensions différentes.</div>
-</div>
-<div class="talk">
-<p class="talk-meta"><strong>15:00</strong> <span>Luca Tamanini</span></p>
-<p class="talk-title">La structure de « infimal convolution » de la distance de Hellinger-Kantorovich</p>
-<span class="abstract-label">Abstract</span>
-<div class="abstract-text">Liero, Mielke et Savaré ont conjecturé que la distance de Hellinger-Kantorovich peut être exprimée comme la « infimal convolution » métrique des distances de Hellinger et de Wasserstein. Cette affirmation est assez claire, du moins intuitivement, si l’on compare les représentations dynamiques des trois distances. Cependant, aucune démonstration rigoureuse n’avait encore été fournie.</div>
-</div>
-</article>
-<article class="session-card">
-<h4 class="session-date">06/10/2025 — Room 3L15</h4>
-<div class="talk">
-<p class="talk-meta"><strong>14:25</strong> <span>Samuel Vaiter</span></p>
-<p class="talk-title">Differentiation of Sinkhorn</p>
-<span class="abstract-label">Abstract</span>
-<div class="abstract-text">Entropic Optimal Tranport is now a common tool in machine learning through the use of Sinkhorn algorithm. It is thus commonly use in routines where backpropagation is applied. In this talk, I will discuss some properties of the derivatives of EOT and Sinkhorn’s iterates. Joint work with E. Pauwels (TSE).</div>
-</div>
-<div class="talk">
-<p class="talk-meta"><strong>16:00</strong> <span>Benjamin Capdeville</span></p>
-<p class="talk-title">Hidden gradient flow structures for the Moran process and the Kimura equation</p>
-<span class="abstract-label">Abstract</span>
-<div class="abstract-text">In this talk, I will introduce the Moran process and its high popuation limit the Kimura equation, and explain how they are related to Wasserstein gradient flows. Indeed, the degeneracy of the diffusion at the boundaries leads to the study of a conditioned version of the dynamics, that can be seen as a Wasserstein gradient flow, with degenerate underlying geometry, involving the Shahshahani metric. Finally, we will see that the dissipation induced by the hidden gradient flow in the continuous setting is a good approximation of the dissipation in the discrete setting in its high population limit.</div>
-</div>
-<div class="talk">
-<p class="talk-meta"><strong>16:20</strong> <span>Quentin Giton</span></p>
-<p class="talk-title">A Kantorovich framework for diffusion models</p>
-<span class="abstract-label">Abstract</span>
-<div class="abstract-text">Generative models aim to learn—and sample from—the probability distribution underlying observed data. I’ll give a quick tour of what’s out there, then show how to build a generative model with optimal transport: we move any distribution towards the Gaussian by following the Wasserstein gradient flow of some free energy and we implement it using the JKO scheme. In practice, we are unable to exactly compute the next measure in the scheme, so we linearly parametrize the associated Kantorovich potential and learn its weights by SGD; the semi-discrete case drops out as a special, very interpretable instance. I’ll present the construction and current results (no full error bounds yet) and show some animations that reveal the model’s generative behavior.</div>
-</div>
-<div class="talk">
-<p class="talk-meta"><strong>16:40</strong> <span>Louis Tocquec</span></p>
-<p class="talk-title">Convergence rates for regularized unbalanced optimal transport: the discrete case</p>
-<span class="abstract-label">Abstract</span>
-<div class="abstract-text">Unbalanced optimal transport (UOT) is a natural extension of optimal transport (OT) allowing comparison between measures of different masses. It arises naturally in machine learning by offering a robustness against outliers. The aim of this work is to provide convergence rates of the regularized transport plans and potentials towards their original solution when both measures are weighted sums of Dirac masses.</div>
-</div>
-</article>
-</section>
-<section class="archive-year" aria-labelledby="seminar-archive-2">
-<h3 id="seminar-archive-2">Academic Year 2024 – 2025</h3>
-<article class="session-card">
-<h4 class="session-date">13/06/2025 — Room 1A13</h4>
-<div class="talk">
-<p class="talk-meta"><strong>14:00</strong> <span>Giovanni Conforti</span></p>
-<p class="talk-title">Semiconcavity of entropic potentials and exponential convergence of Sinkhorn’s algorithm</p>
-<span class="abstract-label">Abstract</span>
-<div class="abstract-text">The entropic optimal transport problem is a regularised version of the classical optimal transport problem which consists in minimising relative entropy against a reference distribution among all couplings of two given marginals. In this talk, we study stability of optimisers and exponential convergence of Sinkhorn’s algorithm, that is widely used to solve EOT in practice. In the first part of the talk, we will illustrate how semiconcavity of dual optimal variables, known as entropic potentials, plays a key role in understanding both problems. In the second part of the talk we discuss how to establish semiconcavity bounds in examples of interest such as log-concave marginals or marginals with bounded support. <em>Joint work with A. Chiarini, G. Greco and L. Tamanini.</em></div>
-</div>
-</article>
-<article class="session-card">
-<h4 class="session-date">19/05/2025 — Room 1A13</h4>
-<div class="talk">
-<p class="talk-meta"><strong>14:00</strong> <span>Averil Aussedat</span></p>
-<p class="talk-title">Towards a characterization of the geometric tangent cone to the Wasserstein space</p>
-<span class="abstract-label">Abstract</span>
-<div class="abstract-text">The Wasserstein space can be given a family of geometric tangent cones built from geodesics. These tangent cones form a subset of measures on the tangent bundle, and most often, a strict subset. This talk addresses the following problem: can we know if an element belongs to the tangent cone by looking at the directional derivative of the Wasserstein distance along it? We give some context around this question, the currently available results and some open developments.</div>
-</div>
-<div class="talk">
-<p class="talk-meta"><strong>14:55</strong> <span>Julie Delon</span></p>
-<p class="talk-title">Beyond Wasserstein: a general fixed-point approach for computing barycentres of measures</p>
-<span class="abstract-label">Abstract</span>
-<div class="abstract-text">In this talk, we investigate the computation of barycentres for generic optimal transport costs, extending beyond the well-studied Wasserstein barycentres. We introduce a fixed-point algorithm that generalizes prior works and prove its convergence under minimal assumptions. Our approach applies to a broad class of cost functions and probability measures, providing a flexible framework for the numerical computation of generic transport barycentres. <em>Joint work with Eloi Tanguy and Nathaël Gozlan.</em></div>
-</div>
-<div class="talk">
-<p class="talk-meta"><strong>15:50</strong> <span>Clément Soubrier</span></p>
-<p class="talk-title">Applying optimal transport based metrics to analyze biological shape heterogeneity</p>
-<span class="abstract-label">Abstract</span>
-<div class="abstract-text">Analyzing shapes is a key step to understand biological functions and properties of cells and proteins. Subtle shape variations and conformations can have a significant impact on the interactions with the shape environment. In order to capture theses variations, we developed optimal transport based alignment tools and metrics, enabling to quantify shape heterogeneity and classify morphotypes. In particular I will present the numerical challenges involved in both alignment and metric computation, as well as examples of biological data classification.</div>
-</div>
-</article>
-<article class="session-card">
-<h4 class="session-date">31/03/2025 — Room 1A13</h4>
-<div class="talk">
-<p class="talk-meta"><strong>14:00</strong> <span>Johannes Hertrich</span></p>
-<p class="talk-title">Wasserstein Gradient Flows for Maximum Mean Discrepancies with Riesz Kernels</p>
-<span class="abstract-label">Abstract</span>
-<div class="abstract-text">Motivated by kernel-based loss functions in machine learning, we study Wasserstein gradient flows with respect to the maximum mean discrepancy (MMD) with Riesz kernels, which is also known as energy distance. Since the kernel is non-smooth and not $\lambda$-convex, most of the standard theory on Wasserstein gradient flows does not apply in this case. As a remedy, we characterize Wasserstein gradient flows via steepest descent directions, which allows us to compute analytic solutions for some special cases. We pay special attention to the one-dimensional case, where the Wasserstein space can be isometrically embedded into a Hilbert space, which allows an explicit description of the Wasserstein gradient flows via one-dimensional ODEs. Numerically, the computation of MMD flows can be costly due to the double integral. As a remedy, we propose the fast evaluation of kernel matrix-vector multiplication via slicing. Using this fast computation of the MMD, we can apply the MMD flows to large-scale problems and present an example for generative modelling on standard image datasets.</div>
-</div>
-<div class="talk">
-<p class="talk-meta"><strong>15:15</strong> <span>Christophe Vauthier</span></p>
-<p class="talk-title">Critical points of the Sliced-Wasserstein distance</p>
-<span class="abstract-label">Abstract</span>
-<div class="abstract-text">The SW metric has gained significant interest in the optimal transport and machine learning literature, due to its ability to capture intricate geometric properties of probability distributions while remaining computationally tractable, making it a valuable tool for various applications, including generative modeling and domain adaptation. Our study aims to provide a rigorous analysis of the critical points arising from the optimization of the SW objective. By computing explicit perturbations, we establish that stable critical points of SW cannot concentrate on segments. This stability analysis is crucial for understanding the behaviour of optimization algorithms for models trained using the SW objective. Furthermore, we investigate the properties of the SW objective, shedding light on the existence and convergence behavior of critical points. We illustrate our theoretical results through numerical experiments.</div>
-</div>
-</article>
-<article class="session-card">
-<h4 class="session-date">10/03/2025 — Room 1A13</h4>
-<div class="talk">
-<p class="talk-meta"><strong>14:00</strong> <span>Borjan Geshkovski</span></p>
-<p class="talk-title">Measure-to-measure interpolation using Transformers</p>
-<span class="abstract-label">Abstract</span>
-<div class="abstract-text">Transformers are deep neural network architectures that underpin the recent successes of large language models. Unlike more classical architectures that can be viewed as point-to-point maps, a Transformer acts as a measure-to-measure map implemented as specific interacting particle system on the unit sphere: the input is the empirical measure of tokens in a prompt and its evolution is governed by the continuity equation. Transformers are not limited to empirical measures and can in principle process any input measure. We provide an explicit choice of parameters that allows a single Transformer to match N arbitrary input measures to N arbitrary target measures, under the minimal assumption that every pair of input-target measures can be matched by some transport map.</div>
-</div>
-<div class="talk">
-<p class="talk-meta"><strong>15:15</strong> <span>Erwan Stämpfli</span></p>
-<p class="talk-title">Ballistic Benamou Brenier formulation of Porous media and viscous Burgers equations</p>
-<span class="abstract-label">Abstract</span>
-<div class="abstract-text">We study a variationnal formulation of the porous media equation and viscous Burgers equation established by Yann Brenier. We recover the solutions from the minimizer of a space-time functional which bears a striking ressemblance to the Benamou Brenier formulation of optimal transportation. We construct a discretization and establish convergence of the associated numerical scheme.</div>
-</div>
-</article>
-<article class="session-card">
-<h4 class="session-date">27/01/2025 — Room 1A13</h4>
-<div class="talk">
-<p class="talk-meta"><strong>14:00</strong> <span>Maxime Sylvestre</span></p>
-<p class="talk-title">Estimées de régularité du transport optimal via régularisation entropique</p>
-<span class="abstract-label">Abstract</span>
-<div class="abstract-text">Le théorème de contraction de Caffarelli assure le caractère Lipschitz du transport optimal entre une gaussienne et une mesure à log-densité fortement concave. En 2022 Chewi et Pooladian ont proposé une preuve de ce théorème utilisant la version entropique du transport optimal. Nous proposons ici une extension de ces deux résultats qui se fonde sur l’inégalité de Prekopa-Leindler. L’utilisation de l’inégalité de Prekopa-Leindler permet de relâcher les hypothèses de régularité sur les log-densité et d’introduire une anisotropie. Nous en déduisons des résultats de régularité et de croissance pour le transport optimal lorsque la cible est log-concave.</div>
-</div>
-<div class="talk">
-<p class="talk-meta"><strong>15:15</strong> <span>Raphaël Barboni</span></p>
-<p class="talk-title">Convergence of gradient flow for the training of deep neural networks</p>
-<span class="abstract-label">Abstract</span>
-<div class="abstract-text">We study the convergence of gradient flow for the training of deep neural networks. If Residual Neural Networks are a popular example of very deep architectures, their training constitutes a challenging optimization problem due notably to the non-convexity and the non-coercivity of the objective. Yet, in applications, those tasks are successfully solved by simple optimization algorithms such as gradient descent. To better understand this phenomenon, we focus here on a “mean-field” model of infinitely deep and arbitrarily wide ResNet, parameterized by probability measures over the product set of layers and parameters and with constant marginal on the set of layers. Indeed, in the case of shallow neural networks, mean field models have proven to benefit from simplified loss-landscapes and good theoretical guarantees when trained with gradient flow for the Wasserstein metric on the set of probability measures. Motivated by this approach, we propose to train our model with gradient flow w.r.t. the conditional Optimal Transport distance: a restriction of the classical Wasserstein distance which enforces our marginal condition. Performing a local Polyak-Łojasiewicz analysis, we show convergence of the gradient flow for well-chosen initializations: if the number of features is finite but sufficiently large and the risk is sufficiently small at initialization, the gradient flow converges towards a global minimizer.</div>
-</div>
-</article>
-<article class="session-card">
-<h4 class="session-date">16/12/2024 — Room 2P8</h4>
-<div class="talk">
-<p class="talk-meta"><strong>14:00</strong> <span>Arthur Stephanovitch</span></p>
-<p class="talk-title">Smooth transport maps via diffusion and applications to generative models</p>
-<span class="abstract-label">Abstract</span>
-<div class="abstract-text">We show that the Langevin map transporting the d-dimensional Gaussian to a k-smooth deformation is (k+1)-smooth. We give applications of this result to functional inequalities as well as generative models.</div>
-</div>
-<div class="talk">
-<p class="talk-meta"><strong>15:15</strong> <span>Louis-Pierre Chaintron</span></p>
-</div>
-</article>
-<article class="session-card">
-<h4 class="session-date">25/11/2024</h4>
-<div class="talk">
-<p class="talk-meta"><strong>14:00</strong> <span>Pablo López Rivera</span></p>
-<p class="talk-title">Un taux pour la convergence uniforme des potentiels entropiques</p>
-<span class="abstract-label">Abstract</span>
-<div class="abstract-text">Dans le cadre euclidien quadratique, le théorème de Brenier-McCann nous dit que, sous de faibles hypothèses, le problème de transport optimal entre deux mesures a une solution unique qui possède une structure bien définie : l’application optimale correspond au gradient d’une fonction convexe, que l’on appelle potentiel de Brenier. Cependant, leur estimation est difficile, car cela revient à résoudre l’équation de Monge-Ampère associée, une EDP non linéaire d’ordre deux. Cependant, si l’on régularise le problème de transport optimal en ajoutant une entropie modulée par un paramètre de température, cette régularisation entropique nous fournit une approximation de l’application optimale si la température est basse. Dans cet exposé, j’exhiberai un taux de convergence pour les potentiels entropiques et leurs gradients vers leurs équivalents non régularisés, pour la convergence uniforme sur tout compact, sous des hypothèses de convexité.</div>
-</div>
-</article>
-<article class="session-card">
-<h4 class="session-date">24/10/2024</h4>
-<div class="talk">
-<p class="talk-meta"><strong>14:00</strong> <span>Anastasia Hraivoronska</span></p>
-<p class="talk-title">The fully discrete JKO scheme for nonlinear diffusion and crowd motion models</p>
-<span class="abstract-label">Abstract</span>
-<div class="abstract-text">This talk presents a formulation of the JKO scheme restricted to atomic measures on the regular grid as a discrete-in-space approximation to the standard JKO scheme. We discuss the application of this fully discrete formulation for developing new numerical schemes for nonlinear diffusion equations with drift and the crowd motion model. The main result of this presentation is the convergence of the scheme to the corresponding PDEs as the time and space discretization vanishes.</div>
-</div>
-<div class="talk">
-<p class="talk-meta"><strong>15:00</strong> <span>Nicola Meunier</span></p>
-<p class="talk-title">TBD</p>
-</div>
-</article>
-</section>
+  <h2 class="section-heading" id="seminar-history">History of Sessions</h2>
+
+  <!-- Academic Year 2026 – 2027 -->
+  <section class="archive-year" aria-labelledby="seminar-archive-0">
+    <h3 id="seminar-archive-0">Academic Year 2026 – 2027</h3>
+
+    <!-- Sessione del 14/09/2026 -->
+    <article class="session-card">
+      <h4 class="session-date">14/09/2026 — Room 3L15</h4>
+      <div class="talk">
+        <p class="talk-meta"><strong>10:30</strong> <span>Vladimir Petrovic</span></p>
+        <p class="talk-title">Fast coresets for the Sinkhorn divergence</p>
+        <span class="abstract-label">Abstract</span>
+        <div class="abstract-text">
+          The Sinkhorn divergence has become a widely used surrogate for the Wasserstein distance in the machine
+          learning community. While exhibiting similar topological behavior, the Sinkhorn divergence is more
+          computationally tractable, and possesses desirable properties that make it particularly well-suited for
+          optimization. In this talk, we will be interested in finding a small weighted subset of a large dataset which
+          faithfully represents the full dataset, with respect to the Sinkhorn divergence. This will be done via the
+          combination of three algorithms, which achieves a subquadratic total runtime. We show that the resulting
+          coreset has low Sinkhorn divergence, and we numerically benchmark the efficiency of our method against
+          existing approaches on various learning tasks.
+        </div>
+      </div>
+    </article>
+  </section>
+
+  <!-- Academic Year 2025 – 2026 -->
+  <section class="archive-year" aria-labelledby="seminar-archive-1">
+    <h3 id="seminar-archive-1">Academic Year 2025 – 2026</h3>
+
+    <!-- Sessione del 15/06/2026 -->
+    <article class="session-card">
+      <h4 class="session-date">15/06/2026 — Room 3L15</h4>
+      <div class="talk">
+        <p class="talk-meta"><strong>10:00</strong> <span>Rotem Assouline</span></p>
+        <p class="talk-title">Magnetic Brunn-Minkowski inequalities</p>
+        <span class="abstract-label">Abstract</span>
+        <div class="abstract-text">
+          In this talk, we will consider Minkowski averages on Riemannian manifolds where the interpolation is by
+          action-minimizing magnetic geodesics with respect to a given magnetic potential. We will see that
+          Brunn-Minkowski inequalities for this operation characterize lower bounds on a magnetic Ricci curvature.
+          Examples include natural magnetic fields on Kähler and Sasakian manifolds, the former including as a special
+          case a horocyclic Brunn-Minkowski inequality on complex hyperbolic space. We also observe that closed magnetic
+          potentials from different cohomology classes may give rise to different geodesic Minkowski averages.
+        </div>
+      </div>
+      <div class="talk">
+        <p class="talk-meta"><strong>11:00</strong> <span>Filippo Quattrocchi</span></p>
+        <p class="talk-title">Nonlinear kinetic equations as gradient flows</p>
+        <span class="abstract-label">Abstract</span>
+        <div class="abstract-text">
+          Many evolutionary PDEs, both linear and nonlinear (e.g., the heat and porous medium equations), can be seen as
+          gradient flows in the Wasserstein metric space of probability measures. This classical result provides general
+          tools for existence, numerical approximation, uniqueness, and convergence estimates under weak assumptions. In
+          this talk, we extend this perspective to kinetic equations. First, we introduce discrepancies d_h that measure
+          the minimal acceleration of trajectories connecting two given probabilities on the phase space. We then show
+          that, in the geometry induced by d_h, solutions to the nonlinear kinetic Fokker-Planck equation can be viewed
+          as gradient flows of the free energy. As a consequence, we obtain convergence of an implicit Euler scheme
+          based on d_h to these solutions. This talk is based on arXiv:2502.15665, in collaboration with G. Brigati
+          (ISTA) and J. Maas (ISTA), and ongoing work with G. Brigati (ISTA), G. Carlier (CEREMADE, Paris Dauphine-PSL),
+          and J. Dolbeault (CEREMADE, Paris Dauphine-PSL).
+        </div>
+      </div>
+    </article>
+
+    <!-- Sessione del 17/04/2026 -->
+    <article class="session-card">
+      <h4 class="session-date">17/04/2026 — Room 3L8</h4>
+      <div class="talk">
+        <p class="talk-meta"><strong>14:00</strong> <span>Dario Trevisan</span></p>
+        <p class="talk-title">Large Deviations, Kernels, and Feature Learning in Bayesian Wide Neural Networks</p>
+        <span class="abstract-label">Abstract</span>
+        <div class="abstract-text">
+          Wide neural networks are often described by Gaussian process limits, which capture their typical behavior at
+          initialization and under lazy training regimes. However, these approximations fail to describe the rare but
+          structurally significant fluctuations that govern finite-width effects, posterior concentration, and feature
+          learning. In this talk, we present a large deviation perspective on deep neural networks that goes beyond
+          Gaussian limits.<br><br> We first discuss recent results establishing a functional large deviation principle
+          for fully connected networks with Gaussian initialization and Lipschitz activations, including ReLU. This
+          provides a probabilistic description of the entire network output as a random function on compact input sets,
+          with a rate function characterized by a recursive variational structure across layers.<br><br> We then turn to
+          Bayesian neural networks and show how large deviation theory leads to an explicit variational characterization
+          of the posterior over predictors. In contrast with Gaussian process theory, where the kernel is fixed, the
+          large deviation rate function involves a joint optimization over both outputs and internal kernels, yielding a
+          natural notion of feature learning at the functional level. Numerical experiments illustrate how this
+          framework captures non-Gaussian effects, posterior deformation, and data-dependent kernel selection in
+          moderately wide networks.<br><br> These results suggest that large deviations provide a principled framework
+          to understand representation learning in wide neural networks, bridging probabilistic asymptotics with
+          practical behavior beyond Gaussian approximations. Based on arXiv:2601.18276 and arXiv:2602.22925.
+        </div>
+      </div>
+    </article>
+
+    <!-- Sessione del 30/03/2026 -->
+    <article class="session-card">
+      <h4 class="session-date">30/03/2026 — Room 3L15</h4>
+      <div class="talk">
+        <p class="talk-meta"><strong>14:00</strong> <span>William Ford</span></p>
+        <p class="talk-title">Quantitative Uniqueness of Kantorovich Potentials</p>
+        <span class="abstract-label">Abstract</span>
+        <div class="abstract-text">
+          We study the uniqueness of solutions to the dual optimal transport problem, both qualitatively and
+          quantitatively (bounds on the diameter of the set of optimisers). We show that when one marginal measure has
+          rectifiably connected support, the other has bounded support, and c is C^1_loc, the dual optimisers are unique
+          up to a constant in L^1. This represents the first dual uniqueness result for which both supports can be
+          concentrated on lower-dimensional subsets of the ambient space. On the quantitative side, we prove that when c
+          is C^{1, \alpha} and one of the marginal measures’ supports is Hausdorff distance \epsilon from a regular
+          connected set in R^d, the L^\infty diameter of the set of optimal dual potentials is of order at most
+          \epsilon^{\alpha/(\alpha + 1)}. This is a consequence of a novel characterisation of the set of optimal dual
+          potentials as the intersection of an explicit family of half-spaces.
+        </div>
+      </div>
+      <div class="talk">
+        <p class="talk-meta"><strong>15:00</strong> <span>João Miguel Machado</span></p>
+        <p class="talk-title">
+          From functional and geometric inequalities to quantitative stability of variational problems in optimal
+          transport and convex geometry
+        </p>
+        <span class="abstract-label">Abstract</span>
+        <div class="abstract-text">
+          In recent years the functional and geometric inequalities communities have dedicated a lot of attention to
+          quantitative stability versions of such identities. The general question being: once identified the optimal
+          functions (ref. sets) associated with a functional (ref. geometric) inequality, can we quantify the distance
+          of a general function to the manifold of optimisers, the class of functions for which these identities become
+          equalities. In this talk we will discuss how to use these types of results to derive quantitative stability of
+          solutions to variational problems.<br><br> We start discussing a quantitative version of the Brascamp-Lieb
+          inequality on the variance of a function w.r.t. a log-concave measure, which we show to be sharp. Our methods
+          are intimately connected to the theory of moment measures developed by Cordero-Eurasquin and Klartag (2015),
+          and Santambrogio (2016). On the other hand, we show how to use the quantitative stability of the
+          Prékopa-Leindler and the Brascamp-Lieb variance inequalities to understand the quantitative stability of
+          moment measures via a variational formulation.<br><br> Similar ideas are naturally translated to the
+          quantitative stability for solutions of the Minkowski problem that goes back to Minkowski and Alexandrov
+          (1930’s). These will be understood via the Brunn-Minkowski theory developed by Figalli-Maggi-Pratelli (2012)
+          combined with the older theory of Diskant (1964) based on the Hausdorff distance of convex sets. Joint work
+          with João Pedro Ramos, and with João Pedro Ramos and Károly Böröczky.
+        </div>
+      </div>
+    </article>
+
+    <!-- Sessione del 26/01/2026 -->
+    <article class="session-card">
+      <h4 class="session-date">26/01/2026 — Room 3L15</h4>
+      <div class="talk">
+        <p class="talk-meta"><strong>14:00</strong> <span>Filippo Santambrogio</span></p>
+        <p class="talk-title">
+          Sans surprises, si on met Sinkhorn dans le JKO on trouve de la diffusion linéaire / No surprises: putting
+          Sinkhorn into JKO yields linear diffusion
+        </p>
+        <span class="abstract-label">Abstract</span>
+        <div class="abstract-text">
+          Le schéma JKO est une méthode d’approximation pour trouver des solutions ρ d’EDP sous la forme “équation de
+          continuité où le champ de vitesse v est l’opposé du gradient de la variation première d’une fonctionnelle F”,
+          qui consiste à minimiser de manière itérative une combinaison de F et du carré de la distance W_2 à la densité
+          trouvée à l’étape précédente, avec un paramètre τ qui correspond à un pas de temps. En particulier, lorsque F
+          est l’entropie de ρ, on trouve l’équation de la chaleur. Pour des raisons computationnelles, on est tentés de
+          remplacer le vrai coût de transport définissant W_2 par son approximation entropique, à l’origine de la
+          méthode numérique de Sinkhorn, ce qui nécessite le choix d’un coefficient ε devant l’entropie du plan de
+          transport γ. Si ε est très petit, on s’attend à converger vers la même EDP, flot de gradient de F, mais si ε
+          est grand il semblerait qu’une diffusion supplémentaire apparaîtrait. Dans un article récent avec A. Baradat
+          et A. Hraivoronska nous prouvons que c’est bien le cas. Plus précisément, lorsque ε/τ→α, l’équation qu’on
+          obtient à la limite est celle du flot de gradient de F avec un terme de plus de la forme αΔρ.<br><br>
+          <em>English:</em> The JKO scheme is an approximation method for finding solutions ρ of PDEs of the form “a
+          continuity equation where the velocity field v is the negative gradient of the first variation of a functional
+          F”. For computational reasons, one is tempted to replace the true transport cost defining W_2 by its entropic
+          regularization (Sinkhorn approximation). When ε/τ→α, the limiting equation is the gradient flow of F with an
+          additional term of the form αΔρ.
+        </div>
+      </div>
+    </article>
+
+    <!-- Sessione del 15/12/2025 -->
+    <article class="session-card">
+      <h4 class="session-date">15/12/2025 — Room 3L15</h4>
+      <div class="talk">
+        <p class="talk-meta"><strong>14:00</strong> <span>Christophe Vauthier</span></p>
+        <p class="talk-title">Variational Analysis in the Wasserstein Hierarchy</p>
+        <span class="abstract-label">Abstract</span>
+        <div class="abstract-text">
+          Let M be a complete connected Riemannian manifold. For n ≥ 0, we endow the Wasserstein space P⁽ⁿ⁾₂(M) = P₂(…
+          P₂(M)…), equipped with the Wasserstein distance W₂, with a variational structure that generalizes the standard
+          variational structure on P₂(M) provided by optimal transport theory. Our approach makes use of tools from
+          category theory to lift the geometric structure of the manifold M to the spaces P⁽ⁿ⁾₂(M), in order to
+          establish in a principled way a rigorous theoretical framework for variational analysis on the space P⁽ⁿ⁾₂(M).
+          In particular, we obtain a precise characterization of the constant speed geodesics of the space P⁽ⁿ⁾₂(M) in
+          terms of optimal velocity plans. Moreover, we introduce a notion of gradient for functionals defined on
+          P⁽ⁿ⁾₂(M), which allows us to study the differentiability and the convexity of various types of such
+          functionals.
+        </div>
+      </div>
+      <div class="talk">
+        <p class="talk-meta"><strong>15:00</strong> <span>Dmitry Vorotnikov</span></p>
+        <p class="talk-title">Adaptive Gradient Flow Scheme and Dual Variational Solutions to the Nash System</p>
+        <span class="abstract-label">Abstract</span>
+        <div class="abstract-text">
+          We investigate the influence of so-called base states on the consistency of the dual variational formulation
+          for quadratic systems of PDEs that are not necessarily conservative (typical examples include the noise-free
+          Nash system with a quadratic Hamiltonian and multiple players). We identify a necessary condition under which
+          consistency holds over large time intervals. In particular, in the single-player case, there exists a sequence
+          of base states (each exhibiting full consistency) that converges in mean to zero. Furthermore, we propose a
+          scheme based on Hilbertian gradient flows that, starting from an arbitrary base state, generates a sequence of
+          new base states that is expected to converge to a solution of the original PDE. Based on work in progress with
+          A. Acharya (Carnegie Mellon).
+        </div>
+      </div>
+    </article>
+
+    <!-- Sessione del 17/11/2025 -->
+    <article class="session-card">
+      <h4 class="session-date">17/11/2025 — Room 3L15</h4>
+      <div class="talk">
+        <p class="talk-meta"><strong>14:00</strong> <span>Agnès Desolneux</span></p>
+        <p class="talk-title">
+          La distance MW_2 entre mélanges de gaussiennes : définition, extensions et applications
+        </p>
+        <span class="abstract-label">Abstract</span>
+        <div class="abstract-text">
+          Dans cet exposé je présenterai plusieurs extensions et applications de la distance MW_2 introduite avec Julie
+          Delon. Cette distance s’obtient en considérant le transport usuel W_2 et en le restreignant aux plans de
+          transport qui sont eux-mêmes des mélanges de gaussiennes (GMM). Il en résulte une distance MW_2 qui s’exprime
+          comme un problème de transport discret dans l’espace des mesures gaussiennes. Je montrerai plusieurs
+          applications de cette distance, ce qui nécessite souvent d’abord de pouvoir obtenir une application (map) de
+          transport à partir d’un plan de transport. Je parlerai aussi de l’extension à la distance de
+          Gromov-Wasserstein pour pouvoir faire du transport entre GMM vivants dans des espaces euclidiens de dimensions
+          différentes.
+        </div>
+      </div>
+      <div class="talk">
+        <p class="talk-meta"><strong>15:00</strong> <span>Luca Tamanini</span></p>
+        <p class="talk-title">La structure de « infimal convolution » de la distance de Hellinger-Kantorovich</p>
+        <span class="abstract-label">Abstract</span>
+        <div class="abstract-text">
+          Liero, Mielke et Savaré ont conjecturé que la distance de Hellinger-Kantorovich peut être exprimée comme la «
+          infimal convolution » métrique des distances de Hellinger et de Wasserstein. Cette affirmation est assez
+          claire, du moins intuitivement, si l’on compare les représentations dynamiques des trois distances. Cependant,
+          aucune démonstration rigoureuse n’avait encore été fournie.
+        </div>
+      </div>
+    </article>
+
+    <!-- Sessione del 06/10/2025 -->
+    <article class="session-card">
+      <h4 class="session-date">06/10/2025 — Room 3L15</h4>
+      <div class="talk">
+        <p class="talk-meta"><strong>14:25</strong> <span>Samuel Vaiter</span></p>
+        <p class="talk-title">Differentiation of Sinkhorn</p>
+        <span class="abstract-label">Abstract</span>
+        <div class="abstract-text">
+          Entropic Optimal Tranport is now a common tool in machine learning through the use of Sinkhorn algorithm. It
+          is thus commonly use in routines where backpropagation is applied. In this talk, I will discuss some
+          properties of the derivatives of EOT and Sinkhorn’s iterates. Joint work with E. Pauwels (TSE).
+        </div>
+      </div>
+      <div class="talk">
+        <p class="talk-meta"><strong>16:00</strong> <span>Benjamin Capdeville</span></p>
+        <p class="talk-title">Hidden gradient flow structures for the Moran process and the Kimura equation</p>
+        <span class="abstract-label">Abstract</span>
+        <div class="abstract-text">
+          In this talk, I will introduce the Moran process and its high popuation limit the Kimura equation, and explain
+          how they are related to Wasserstein gradient flows. Indeed, the degeneracy of the diffusion at the boundaries
+          leads to the study of a conditioned version of the dynamics, that can be seen as a Wasserstein gradient flow,
+          with degenerate underlying geometry, involving the Shahshahani metric. Finally, we will see that the
+          dissipation induced by the hidden gradient flow in the continuous setting is a good approximation of the
+          dissipation in the discrete setting in its high population limit.
+        </div>
+      </div>
+      <div class="talk">
+        <p class="talk-meta"><strong>16:20</strong> <span>Quentin Giton</span></p>
+        <p class="talk-title">A Kantorovich framework for diffusion models</p>
+        <span class="abstract-label">Abstract</span>
+        <div class="abstract-text">
+          Generative models aim to learn—and sample from—the probability distribution underlying observed data. I’ll
+          give a quick tour of what’s out there, then show how to build a generative model with optimal transport: we
+          move any distribution towards the Gaussian by following the Wasserstein gradient flow of some free energy and
+          we implement it using the JKO scheme. In practice, we are unable to exactly compute the next measure in the
+          scheme, so we linearly parametrize the associated Kantorovich potential and learn its weights by SGD; the
+          semi-discrete case drops out as a special, very interpretable instance. I’ll present the construction and
+          current results (no full error bounds yet) and show some animations that reveal the model’s generative
+          behavior.
+        </div>
+      </div>
+      <div class="talk">
+        <p class="talk-meta"><strong>16:40</strong> <span>Louis Tocquec</span></p>
+        <p class="talk-title">Convergence rates for regularized unbalanced optimal transport: the discrete case</p>
+        <span class="abstract-label">Abstract</span>
+        <div class="abstract-text">
+          Unbalanced optimal transport (UOT) is a natural extension of optimal transport (OT) allowing comparison
+          between measures of different masses. It arises naturally in machine learning by offering a robustness against
+          outliers. The aim of this work is to provide convergence rates of the regularized transport plans and
+          potentials towards their original solution when both measures are weighted sums of Dirac masses.
+        </div>
+      </div>
+    </article>
+  </section>
+
+  <!-- Academic Year 2024 – 2025 -->
+  <section class="archive-year" aria-labelledby="seminar-archive-2">
+    <h3 id="seminar-archive-2">Academic Year 2024 – 2025</h3>
+
+    <!-- Sessione del 13/06/2025 -->
+    <article class="session-card">
+      <h4 class="session-date">13/06/2025 — Room 1A13</h4>
+      <div class="talk">
+        <p class="talk-meta"><strong>14:00</strong> <span>Giovanni Conforti</span></p>
+        <p class="talk-title">
+          Semiconcavity of entropic potentials and exponential convergence of Sinkhorn’s algorithm
+        </p>
+        <span class="abstract-label">Abstract</span>
+        <div class="abstract-text">
+          The entropic optimal transport problem is a regularised version of the classical optimal transport problem
+          which consists in minimising relative entropy against a reference distribution among all couplings of two
+          given marginals. In this talk, we study stability of optimisers and exponential convergence of Sinkhorn’s
+          algorithm, that is widely used to solve EOT in practice. In the first part of the talk, we will illustrate how
+          semiconcavity of dual optimal variables, known as entropic potentials, plays a key role in understanding both
+          problems. In the second part of the talk we discuss how to establish semiconcavity bounds in examples of
+          interest such as log-concave marginals or marginals with bounded support. <em>Joint work with A. Chiarini, G.
+          Greco and L. Tamanini.</em>
+        </div>
+      </div>
+    </article>
+
+    <!-- Sessione del 19/05/2025 -->
+    <article class="session-card">
+      <h4 class="session-date">19/05/2025 — Room 1A13</h4>
+      <div class="talk">
+        <p class="talk-meta"><strong>14:00</strong> <span>Averil Aussedat</span></p>
+        <p class="talk-title">Towards a characterization of the geometric tangent cone to the Wasserstein space</p>
+        <span class="abstract-label">Abstract</span>
+        <div class="abstract-text">
+          The Wasserstein space can be given a family of geometric tangent cones built from geodesics. These tangent
+          cones form a subset of measures on the tangent bundle, and most often, a strict subset. This talk addresses
+          the following problem: can we know if an element belongs to the tangent cone by looking at the directional
+          derivative of the Wasserstein distance along it? We give some context around this question, the currently
+          available results and some open developments.
+        </div>
+      </div>
+      <div class="talk">
+        <p class="talk-meta"><strong>14:55</strong> <span>Julie Delon</span></p>
+        <p class="talk-title">
+          Beyond Wasserstein: a general fixed-point approach for computing barycentres of measures
+        </p>
+        <span class="abstract-label">Abstract</span>
+        <div class="abstract-text">
+          In this talk, we investigate the computation of barycentres for generic optimal transport costs, extending
+          beyond the well-studied Wasserstein barycentres. We introduce a fixed-point algorithm that generalizes prior
+          works and prove its convergence under minimal assumptions. Our approach applies to a broad class of cost
+          functions and probability measures, providing a flexible framework for the numerical computation of generic
+          transport barycentres. <em>Joint work with Eloi Tanguy and Nathaël Gozlan.</em>
+        </div>
+      </div>
+      <div class="talk">
+        <p class="talk-meta"><strong>15:50</strong> <span>Clément Soubrier</span></p>
+        <p class="talk-title">Applying optimal transport based metrics to analyze biological shape heterogeneity</p>
+        <span class="abstract-label">Abstract</span>
+        <div class="abstract-text">
+          Analyzing shapes is a key step to understand biological functions and properties of cells and proteins. Subtle
+          shape variations and conformations can have a significant impact on the interactions with the shape
+          environment. In order to capture theses variations, we developed optimal transport based alignment tools and
+          metrics, enabling to quantify shape heterogeneity and classify morphotypes. In particular I will present the
+          numerical challenges involved in both alignment and metric computation, as well as examples of biological data
+          classification.
+        </div>
+      </div>
+    </article>
+
+    <!-- Sessione del 31/03/2025 -->
+    <article class="session-card">
+      <h4 class="session-date">31/03/2025 — Room 1A13</h4>
+      <div class="talk">
+        <p class="talk-meta"><strong>14:00</strong> <span>Johannes Hertrich</span></p>
+        <p class="talk-title">Wasserstein Gradient Flows for Maximum Mean Discrepancies with Riesz Kernels</p>
+        <span class="abstract-label">Abstract</span>
+        <div class="abstract-text">
+          Motivated by kernel-based loss functions in machine learning, we study Wasserstein gradient flows with respect
+          to the maximum mean discrepancy (MMD) with Riesz kernels, which is also known as energy distance. Since the
+          kernel is non-smooth and not $\lambda$-convex, most of the standard theory on Wasserstein gradient flows does
+          not apply in this case. As a remedy, we characterize Wasserstein gradient flows via steepest descent
+          directions, which allows us to compute analytic solutions for some special cases. We pay special attention to
+          the one-dimensional case, where the Wasserstein space can be isometrically embedded into a Hilbert space,
+          which allows an explicit description of the Wasserstein gradient flows via one-dimensional ODEs. Numerically,
+          the computation of MMD flows can be costly due to the double integral. As a remedy, we propose the fast
+          evaluation of kernel matrix-vector multiplication via slicing. Using this fast computation of the MMD, we can
+          apply the MMD flows to large-scale problems and present an example for generative modelling on standard image
+          datasets.
+        </div>
+      </div>
+      <div class="talk">
+        <p class="talk-meta"><strong>15:15</strong> <span>Christophe Vauthier</span></p>
+        <p class="talk-title">Critical points of the Sliced-Wasserstein distance</p>
+        <span class="abstract-label">Abstract</span>
+        <div class="abstract-text">
+          The SW metric has gained significant interest in the optimal transport and machine learning literature, due to
+          its ability to capture intricate geometric properties of probability distributions while remaining
+          computationally tractable, making it a valuable tool for various applications, including generative modeling
+          and domain adaptation. Our study aims to provide a rigorous analysis of the critical points arising from the
+          optimization of the SW objective. By computing explicit perturbations, we establish that stable critical
+          points of SW cannot concentrate on segments. This stability analysis is crucial for understanding the
+          behaviour of optimization algorithms for models trained using the SW objective. Furthermore, we investigate
+          the properties of the SW objective, shedding light on the existence and convergence behavior of critical
+          points. We illustrate our theoretical results through numerical experiments.
+        </div>
+      </div>
+    </article>
+
+    <!-- Sessione del 10/03/2025 -->
+    <article class="session-card">
+      <h4 class="session-date">10/03/2025 — Room 1A13</h4>
+      <div class="talk">
+        <p class="talk-meta"><strong>14:00</strong> <span>Borjan Geshkovski</span></p>
+        <p class="talk-title">Measure-to-measure interpolation using Transformers</p>
+        <span class="abstract-label">Abstract</span>
+        <div class="abstract-text">
+          Transformers are deep neural network architectures that underpin the recent successes of large language
+          models. Unlike more classical architectures that can be viewed as point-to-point maps, a Transformer acts as a
+          measure-to-measure map implemented as specific interacting particle system on the unit sphere: the input is
+          the empirical measure of tokens in a prompt and its evolution is governed by the continuity equation.
+          Transformers are not limited to empirical measures and can in principle process any input measure. We provide
+          an explicit choice of parameters that allows a single Transformer to match N arbitrary input measures to N
+          arbitrary target measures, under the minimal assumption that every pair of input-target measures can be
+          matched by some transport map.
+        </div>
+      </div>
+      <div class="talk">
+        <p class="talk-meta"><strong>15:15</strong> <span>Erwan Stämpfli</span></p>
+        <p class="talk-title">Ballistic Benamou Brenier formulation of Porous media and viscous Burgers equations</p>
+        <span class="abstract-label">Abstract</span>
+        <div class="abstract-text">
+          We study a variationnal formulation of the porous media equation and viscous Burgers equation established by
+          Yann Brenier. We recover the solutions from the minimizer of a space-time functional which bears a striking
+          ressemblance to the Benamou Brenier formulation of optimal transportation. We construct a discretization and
+          establish convergence of the associated numerical scheme.
+        </div>
+      </div>
+    </article>
+
+    <!-- Sessione del 27/01/2025 -->
+    <article class="session-card">
+      <h4 class="session-date">27/01/2025 — Room 1A13</h4>
+      <div class="talk">
+        <p class="talk-meta"><strong>14:00</strong> <span>Maxime Sylvestre</span></p>
+        <p class="talk-title">Estimées de régularité du transport optimal via régularisation entropique</p>
+        <span class="abstract-label">Abstract</span>
+        <div class="abstract-text">
+          Le théorème de contraction de Caffarelli assure le caractère Lipschitz du transport optimal entre une
+          gaussienne et une mesure à log-densité fortement concave. En 2022 Chewi et Pooladian ont proposé une preuve de
+          ce théorème utilisant la version entropique du transport optimal. Nous proposons ici une extension de ces deux
+          résultats qui se fonde sur l’inégalité de Prekopa-Leindler. L’utilisation de l’inégalité de Prekopa-Leindler
+          permet de relâcher les hypothèses de régularité sur les log-densité et d’introduire une anisotropie. Nous en
+          déduisons des résultats de régularité et de croissance pour le transport optimal lorsque la cible est
+          log-concave.
+        </div>
+      </div>
+      <div class="talk">
+        <p class="talk-meta"><strong>15:15</strong> <span>Raphaël Barboni</span></p>
+        <p class="talk-title">Convergence of gradient flow for the training of deep neural networks</p>
+        <span class="abstract-label">Abstract</span>
+        <div class="abstract-text">
+          We study the convergence of gradient flow for the training of deep neural networks. If Residual Neural
+          Networks are a popular example of very deep architectures, their training constitutes a challenging
+          optimization problem due notably to the non-convexity and the non-coercivity of the objective. Yet, in
+          applications, those tasks are successfully solved by simple optimization algorithms such as gradient descent.
+          To better understand this phenomenon, we focus here on a “mean-field” model of infinitely deep and arbitrarily
+          wide ResNet, parameterized by probability measures over the product set of layers and parameters and with
+          constant marginal on the set of layers. Indeed, in the case of shallow neural networks, mean field models have
+          proven to benefit from simplified loss-landscapes and good theoretical guarantees when trained with gradient
+          flow for the Wasserstein metric on the set of probability measures. Motivated by this approach, we propose to
+          train our model with gradient flow w.r.t. the conditional Optimal Transport distance: a restriction of the
+          classical Wasserstein distance which enforces our marginal condition. Performing a local Polyak-Łojasiewicz
+          analysis, we show convergence of the gradient flow for well-chosen initializations: if the number of features
+          is finite but sufficiently large and the risk is sufficiently small at initialization, the gradient flow
+          converges towards a global minimizer.
+        </div>
+      </div>
+    </article>
+
+    <!-- Sessione del 16/12/2024 -->
+    <article class="session-card">
+      <h4 class="session-date">16/12/2024 — Room 2P8</h4>
+      <div class="talk">
+        <p class="talk-meta"><strong>14:00</strong> <span>Arthur Stephanovitch</span></p>
+        <p class="talk-title">Smooth transport maps via diffusion and applications to generative models</p>
+        <span class="abstract-label">Abstract</span>
+        <div class="abstract-text">
+          We show that the Langevin map transporting the d-dimensional Gaussian to a k-smooth deformation is
+          (k+1)-smooth. We give applications of this result to functional inequalities as well as generative models.
+        </div>
+      </div>
+      <div class="talk">
+        <p class="talk-meta"><strong>15:15</strong> <span>Louis-Pierre Chaintron</span></p>
+      </div>
+    </article>
+
+    <!-- Sessione del 25/11/2024 -->
+    <article class="session-card">
+      <h4 class="session-date">25/11/2024</h4>
+      <div class="talk">
+        <p class="talk-meta"><strong>14:00</strong> <span>Pablo López Rivera</span></p>
+        <p class="talk-title">Un taux pour la convergence uniforme des potentiels entropiques</p>
+        <span class="abstract-label">Abstract</span>
+        <div class="abstract-text">
+          Dans le cadre euclidien quadratique, le théorème de Brenier-McCann nous dit que, sous de faibles hypothèses,
+          le problème de transport optimal entre deux mesures a une solution unique qui possède une structure bien
+          définie : l’application optimale correspond au gradient d’une fonction convexe, que l’on appelle potentiel de
+          Brenier. Cependant, leur estimation est difficile, car cela revient à résoudre l’équation de Monge-Ampère
+          associée, une EDP non linéaire d’ordre deux. Cependant, si l’on régularise le problème de transport optimal en
+          ajoutant une entropie modulée par un paramètre de température, cette régularisation entropique nous fournit
+          une approximation de l’application optimale si la température est basse. Dans cet exposé, j’exhiberai un taux
+          de convergence pour les potentiels entropiques et leurs gradients vers leurs équivalents non régularisés, pour
+          la convergence uniforme sur tout compact, sous des hypothèses de convexité.
+        </div>
+      </div>
+    </article>
+
+    <!-- Sessione del 24/10/2024 -->
+    <article class="session-card">
+      <h4 class="session-date">24/10/2024</h4>
+      <div class="talk">
+        <p class="talk-meta"><strong>14:00</strong> <span>Anastasia Hraivoronska</span></p>
+        <p class="talk-title">The fully discrete JKO scheme for nonlinear diffusion and crowd motion models</p>
+        <span class="abstract-label">Abstract</span>
+        <div class="abstract-text">
+          This talk presents a formulation of the JKO scheme restricted to atomic measures on the regular grid as a
+          discrete-in-space approximation to the standard JKO scheme. We discuss the application of this fully discrete
+          formulation for developing new numerical schemes for nonlinear diffusion equations with drift and the crowd
+          motion model. The main result of this presentation is the convergence of the scheme to the corresponding PDEs
+          as the time and space discretization vanishes.
+        </div>
+      </div>
+      <div class="talk">
+        <p class="talk-meta"><strong>15:00</strong> <span>Nicola Meunier</span></p>
+        <p class="talk-title">TBD</p>
+      </div>
+    </article>
+  </section>
 </section>

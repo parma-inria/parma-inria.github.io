@@ -1,9 +1,20 @@
 {
-  "description": "ParMA studies optimal transport and particle methods, connecting mathematical theory, numerical analysis and scientific computing at Inria Saclay and Université Paris-Saclay.",
+  "hero_actions": {
+    "team_label": "Meet the team",
+    "seminar_label": "Explore the seminar"
+  },
+  "about_eyebrow": "RESEARCH IN MOTION",
+  "about_title_lines": [
+    "Optimal transport theory",
+    "and applications"
+  ],
   "introduction": [
     "ParMA is a research team at the Inria Saclay Centre, in partnership with CNRS and Université Paris-Saclay. We study optimal transport and its applications, with a particular focus on particle methods. Our research combines mathematical modeling, numerical analysis and scientific computing to understand the geometry of probability distributions and develop efficient algorithms.",
     "We use these ideas to design and analyze particle schemes for fluid dynamics and other evolution equations, and to address inverse problems and applications in the social sciences. By connecting theoretical results with computational tools, we aim to build reliable methods for simulating physical systems and working with data represented by point clouds."
   ],
+  "logo_alt": "ParMA logo formed by a cloud of particles",
+  "logo_caption": "Geometry, probability and computation.",
+  "research_title": "From mathematical ideas to computational tools",
   "research": [
     {
       "title": "Optimal transport",
@@ -18,23 +29,26 @@
       "text": "Connecting theory and computational tools for inverse problems, physical systems and data represented by point clouds."
     }
   ],
-  "contacts": [
-    {
-      "role": "Team Project Leader",
-      "name": "Thomas Gallouët",
-      "email": "thomas.gallouet@inria.fr"
-    },
-    {
-      "role": "Team Assistant",
-      "name": "Laëtitia Jubely",
-      "email": "laetitia.jubely@inria.fr"
-    }
-  ],
-  "address": [
-    "Bâtiment 307, rue Michel Magat",
-    "Faculté des Sciences d’Orsay, Université Paris-Saclay",
-    "F-91405 Orsay Cedex, France"
-  ],
-  "source": "https://team.inria.fr/parma/",
-  "imported": "2026-10-08"
+  "seminar": {
+    "eyebrow": "OUR RESEARCH SEMINAR",
+    "title": "GdT OT–PDE–ML",
+    "description": "Recent theoretical and numerical developments in optimal transport, partial differential equations and machine learning.",
+    "link_label": "Program and session archive"
+  },
+  "next_session": {
+    "date": "12 October 2026 · Room 3L15",
+    "title": "Next session",
+    "talks": [
+      {
+        "time": "10:00",
+        "speaker": "Hugo Koubbi",
+        "title": "Homogenized Transformers"
+      },
+      {
+        "time": "11:00",
+        "speaker": "Alice Le Brigant",
+        "title": "On the Wasserstein Geodesic Principal Component Analysis of probability measures"
+      }
+    ]
+  }
 }

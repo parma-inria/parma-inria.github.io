@@ -1,0 +1,29 @@
+{
+  "introduction": "For research enquiries, collaborations and information about ParMA, contact the team below.",
+  "contacts": [
+    {
+      "role": "Team Project Leader",
+      "name": "Thomas Gallouët",
+      "email": "thomas.gallouet@inria.fr"
+    },
+    {
+      "role": "Team Assistant",
+      "name": "Laëtitia Jubely",
+      "email": "laetitia.jubely@inria.fr"
+    }
+  ],
+  "location": {
+    "eyebrow": "VISIT THE TEAM",
+    "title": "Institut de Mathématique d’Orsay",
+    "address_lines": [
+      "Bâtiment 307, rue Michel Magat",
+      "Faculté des Sciences d’Orsay, Université Paris-Saclay",
+      "F-91405 Orsay Cedex, France"
+    ],
+    "url": "https://www.imo.universite-paris-saclay.fr/",
+    "link_label": "Institut de Mathématique d’Orsay",
+    "seminar_venue_title": "Seminar venue",
+    "seminar_venue": "Building 307 · Room 3L15",
+    "seminar_link_label": "See the seminar program"
+  }
+}

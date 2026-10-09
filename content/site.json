@@ -1,0 +1,93 @@
+{
+  "name": "ParMA",
+  "language": "en",
+  "theme_color": "#06365a",
+  "brand_caption": "Optimal transport & particle methods",
+  "skip_label": "Skip to content",
+  "menu_label": "Menu",
+  "navigation_label": "Main navigation",
+  "pages": [
+    {
+      "id": "home",
+      "path": "",
+      "title": "Presentation",
+      "description": "ParMA studies optimal transport and particle methods, connecting mathematical theory, numerical analysis and scientific computing at Inria Saclay and Université Paris-Saclay.",
+      "hero": {
+        "eyebrow": "INRIA SACLAY · CNRS · UNIVERSITÉ PARIS-SACLAY",
+        "title_lines": [
+          "Optimal transport.",
+          "From theory to particles."
+        ],
+        "lead": "Exploring the geometry of probability distributions and the motion of particles."
+      }
+    },
+    {
+      "id": "team",
+      "path": "team-members/",
+      "title": "Team",
+      "description": "Meet the ParMA research team: permanent researchers, engineers, postdoctoral researchers, PhD students and former members.",
+      "hero": {
+        "eyebrow": "THE PEOPLE BEHIND ParMA",
+        "title_lines": [
+          "Team members"
+        ],
+        "lead": "Researchers, engineers and PhD students working across mathematics and scientific computing."
+      }
+    },
+    {
+      "id": "seminar",
+      "path": "francais-gdt-edp-ot-ml/",
+      "title": "GdT OT–PDE–ML",
+      "description": "Program, abstracts and archives of the ParMA GdT OT–PDE–ML seminar at the Institut de Mathématique d’Orsay.",
+      "hero": {
+        "eyebrow": "OPTIMAL TRANSPORT · PDE · MACHINE LEARNING",
+        "title_lines": [
+          "GdT OT–PDE–ML"
+        ],
+        "lead": "A research seminar at the crossroads of transport, equations and learning."
+      }
+    },
+    {
+      "id": "contact",
+      "path": "contact/",
+      "title": "Contact",
+      "description": "Contact the ParMA team at Inria Saclay and Université Paris-Saclay.",
+      "hero": {
+        "eyebrow": "GET IN TOUCH",
+        "title_lines": [
+          "Contact ParMA"
+        ],
+        "lead": "Find the team at the Institut de Mathématique d’Orsay, Université Paris-Saclay."
+      }
+    }
+  ],
+  "footer": {
+    "tagline": "Optimal transport and motion of particles",
+    "note": "A research team at Inria Saclay, in partnership with CNRS and Université Paris-Saclay.",
+    "links_label": "Institutional links",
+    "links": [
+      {
+        "label": "Inria Saclay",
+        "url": "https://www.inria.fr/en/inria-saclay-centre"
+      },
+      {
+        "label": "Institut de Mathématique d’Orsay",
+        "url": "https://www.imo.universite-paris-saclay.fr/"
+      },
+      {
+        "label": "CNRS",
+        "url": "https://www.cnrs.fr/en"
+      },
+      {
+        "label": "Université Paris-Saclay",
+        "url": "https://www.universite-paris-saclay.fr/en"
+      },
+      {
+        "label": "Original Inria website",
+        "url": "https://team.inria.fr/parma/"
+      }
+    ]
+  },
+  "source_url": "https://team.inria.fr/parma/",
+  "imported_on": "2026-10-08"
+}

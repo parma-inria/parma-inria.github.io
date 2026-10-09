@@ -1,0 +1,52 @@
+name: Pubblica il sito ParMA
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: pages-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    name: Genera e controlla il sito
+    runs-on: ubuntu-latest
+    steps:
+      - name: Scarica il progetto
+        uses: actions/checkout@v7
+      - name: Prepara Python
+        uses: actions/setup-python@v7
+        with:
+          python-version: '3.13'
+      - name: Genera le pagine
+        run: python tools/build.py
+      - name: Controlla pagine e collegamenti
+        run: python tools/check.py
+      - name: Prepara il sito per la pubblicazione
+        if: github.ref == 'refs/heads/main' && github.event_name != 'pull_request'
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: public
+
+  deploy:
+    name: Pubblica su GitHub Pages
+    if: github.ref == 'refs/heads/main' && github.event_name != 'pull_request'
+    needs: build
+    runs-on: ubuntu-latest
+    permissions:
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Pubblica il sito
+        id: deployment
+        uses: actions/deploy-pages@v4
