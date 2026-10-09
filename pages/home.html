@@ -1,0 +1,111 @@
+<!doctype html>
+<html lang="{{ site.language }}">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{{ page.title }} · {{ site.name }}</title>
+  <meta name="description" content="{{ page.description }}">
+  <meta name="theme-color" content="{{ site.theme_color }}">
+  <link rel="icon" href="{{ prefix }}assets/images/parma-logo.png" type="image/png">
+  <link rel="stylesheet" href="{{ prefix }}assets/css/site.css">
+  <script src="{{ prefix }}assets/js/site.js" defer></script>
+</head>
+<body>
+  <!-- Complete page layout; text and lists come from content/. -->
+  <a class="skip-link" href="#main">{{ site.skip_label }}</a>
+  <header class="site-header">
+    <div class="container header-row">
+      <a class="brand" href="{{ prefix }}">
+        <img class="brand-logo" src="{{ prefix }}assets/images/parma-logo.png" alt="{{ site.name }}" width="1024" height="437">
+        <span class="brand-caption">{{ site.brand_caption }}</span>
+      </a>
+      <button class="menu-toggle" type="button" aria-controls="site-navigation" aria-expanded="false" hidden>{{ site.menu_label }}</button>
+      <nav id="site-navigation" class="site-navigation" aria-label="{{ site.navigation_label }}">
+        {% for link in navigation %}
+        <a href="{{ link.href }}"{% if link.is_current %} aria-current="page"{% endif %}>{{ link.title }}</a>
+        {% endfor %}
+      </nav>
+    </div>
+  </header>
+  <section class="hero hero-home" aria-labelledby="page-title">
+    <div class="container hero-content">
+      <p class="eyebrow">{{ page.hero.eyebrow }}</p>
+      <h1 id="page-title">{% for line in page.hero.title_lines %}{{ line }}{% if loop.last %}{% else %}<br>{% endif %}{% endfor %}</h1>
+      <p class="hero-lead">{{ page.hero.lead }}</p>
+      <div class="hero-actions">
+        <a class="button" href="{{ prefix }}team-members/">{{ home.hero_actions.team_label }}</a>
+        <a class="button button-secondary" href="{{ prefix }}francais-gdt-edp-ot-ml/">{{ home.hero_actions.seminar_label }}</a>
+      </div>
+    </div>
+  </section>
+  <main id="main" class="container content-container">
+    <!-- Introduction: content/home.json -->
+    <section class="home-grid" aria-labelledby="about-title">
+      <div class="home-copy">
+        <p class="eyebrow">{{ home.about_eyebrow }}</p>
+        <h2 id="about-title">{% for line in home.about_title_lines %}{{ line }}{% if loop.last %}{% else %}<br>{% endif %}{% endfor %}</h2>
+        {% for paragraph in home.introduction %}
+        <p{% if loop.first %} class="lead"{% endif %}>{{ paragraph }}</p>
+        {% endfor %}
+      </div>
+      <div class="home-visual">
+        <img class="parma-logo" src="{{ prefix }}assets/images/parma-logo.png" alt="{{ home.logo_alt }}" width="1024" height="437" loading="lazy">
+        <p>{{ home.logo_caption }}</p>
+      </div>
+    </section>
+    <!-- Research card markup is contained in this page. -->
+    <section aria-labelledby="research-title">
+      <h2 id="research-title" class="section-heading">{{ home.research_title }}</h2>
+      <div class="feature-grid">
+        {% for feature in home.research %}
+        {% if feature.title %}
+        <article class="feature-card">
+          <span class="feature-number">{{ feature.number }}</span>
+          <h3>{{ feature.title }}</h3>
+          <p>{{ feature.text }}</p>
+        </article>
+        {% endif %}
+        {% endfor %}
+      </div>
+    </section>
+    <!-- The next session is calculated from content/seminar.json. -->
+    <section class="home-seminar" aria-labelledby="home-seminar-title">
+      <div>
+        <p class="eyebrow">{{ home.seminar.eyebrow }}</p>
+        <h2 id="home-seminar-title">{{ home.seminar.title }}</h2>
+        <p>{{ home.seminar.description }}</p>
+        <a class="button" href="{{ prefix }}francais-gdt-edp-ot-ml/">{{ home.seminar.link_label }}</a>
+      </div>
+      <div class="info-card">
+        <h3>{{ seminar.labels.home_next_session }}</h3>
+        {% if programme.next %}
+        <p class="session-date">{{ programme.next.date_home_label }}</p>
+        {% if programme.next.talks %}
+        {% for talk in programme.next.talks %}
+        <p>{% if talk.meta %}{{ talk.meta }}{% endif %}{% if talk.title %}<br>{{ talk.title }}{% endif %}</p>
+        {% endfor %}
+        {% else %}
+        <p>{{ seminar.labels.empty_programme }}</p>
+        {% endif %}
+        {% else %}
+        <p>{{ seminar.labels.empty_next_session }}</p>
+        {% endif %}
+      </div>
+    </section>
+  </main>
+  <footer class="site-footer">
+    <div class="container footer-grid">
+      <div>
+        <a href="{{ prefix }}"><img class="brand-logo footer-logo" src="{{ prefix }}assets/images/parma-logo.png" alt="{{ site.name }}" width="1024" height="437" loading="lazy"></a>
+        <p>{{ site.footer.tagline }}</p>
+        <p class="footer-note">{{ site.footer.note }}</p>
+      </div>
+      <nav class="footer-links" aria-label="{{ site.footer.links_label }}">
+        {% for link in site.footer.links %}
+        <a href="{{ link.url }}">{{ link.label }}</a>
+        {% endfor %}
+      </nav>
+    </div>
+  </footer>
+</body>
+</html>

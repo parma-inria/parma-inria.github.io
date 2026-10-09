@@ -3,36 +3,34 @@
     "team_label": "Meet the team",
     "seminar_label": "Explore the seminar"
   },
-  "about_eyebrow": "RESEARCH IN MOTION",
+  "about_eyebrow": "Lorem ipsum",
   "about_title_lines": [
-    "Optimal transport theory",
-    "and applications"
+    "Lorem ipsum dolor sit amet"
   ],
   "introduction": [
-    "ParMA is a research team at the Inria Saclay Centre, in partnership with CNRS and Université Paris-Saclay. We study optimal transport and its applications, with a particular focus on particle methods. Our research combines mathematical modeling, numerical analysis and scientific computing to understand the geometry of probability distributions and develop efficient algorithms.",
-    "We use these ideas to design and analyze particle schemes for fluid dynamics and other evolution equations, and to address inverse problems and applications in the social sciences. By connecting theoretical results with computational tools, we aim to build reliable methods for simulating physical systems and working with data represented by point clouds."
+    "ParMA is a research team at the Inria Saclay Centre, in partnership with CNRS and Université Paris-Saclay. We study optimal    transport and its applications, with a particular focus on particle methods. Our research focuses on the application of OT techniques to the numerical resolution of problems, where one want to impose that a point cloud (representing either some data, or the result of a simulation) follows a certain probability distribution. This will for instance be done by using the Wasserstein distance as a penalization. We especially focus on the numerical analysis and resolution relying on particle discretization (i.e. point clouds)"
   ],
   "logo_alt": "ParMA logo formed by a cloud of particles",
-  "logo_caption": "Geometry, probability and computation.",
-  "research_title": "From mathematical ideas to computational tools",
+  "logo_caption": "A cloud of particlies forming our logo",
+  "research_title": "Our engagement in research",
   "research": [
     {
       "title": "Optimal transport",
-      "text": "Understanding the geometry of probability distributions and developing efficient transport algorithms."
+      "text": " "
     },
     {
-      "title": "Particle methods",
-      "text": "Designing and analyzing particle schemes for fluid dynamics and other evolution equations."
+      "title": "",
+      "text": " "
     },
     {
-      "title": "Scientific computing",
-      "text": "Connecting theory and computational tools for inverse problems, physical systems and data represented by point clouds."
+      "title": "",
+      "text": " "
     }
   ],
   "seminar": {
     "eyebrow": "OUR RESEARCH SEMINAR",
     "title": "GdT OT–PDE–ML",
-    "description": "Recent theoretical and numerical developments in optimal transport, partial differential equations and machine learning.",
+    "description": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
     "link_label": "Program and session archive"
   }
 }

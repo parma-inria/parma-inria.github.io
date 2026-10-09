@@ -1,11 +1,8 @@
-"""Generate public/ from editable content, HTML templates and static assets.
+"""Build the site from four complete HTML pages and JSON content.
 
-Uses Python's standard library only. Run from any folder:
-    python tools/build.py
-    python tools/build.py --output path/to/preview
-
-Templates use string.Template placeholders ($name or ${name}). JSON text is
-escaped before insertion; only generated HTML fragments are inserted as HTML.
+All HTML belongs in pages/. This tool only validates data, prepares dates and
+paths, and expands {{ field.path }}, {% for ... %} and {% if ... %} blocks.
+Uses the Python standard library; no packages need to be installed.
 """
 
 import argparse
@@ -16,14 +13,11 @@ import shutil
 import sys
 from pathlib import Path, PurePosixPath
 from datetime import date
-from string import Template
-from textwrap import indent
 from urllib.parse import urlsplit
-
 
 ROOT = Path(__file__).resolve().parents[1]
 CONTENT = ROOT / "content"
-TEMPLATES = ROOT / "templates"
+PAGES = ROOT / "pages"
 DEFAULT_OUTPUT = ROOT / "public"
 PAGE_IDS = {"home", "team", "seminar", "contact"}
 MONTH_NAMES = (
@@ -259,78 +253,6 @@ def validate_seminar(seminar):
                 raise BuildError(f"{talk_where}.abstract: usa un elenco di paragrafi di testo, oppure [].")
 
 
-def escape(value):
-    return html.escape(str(value), quote=True)
-
-
-def escaped_fields(data):
-    """Prepare an object whose values are plain text for an HTML template."""
-    return {key: escape(value) for key, value in data.items()}
-
-
-def text_lines(lines):
-    """Explicit line breaks in headings and addresses, without editable HTML."""
-    return "<br>".join(escape(line) for line in lines)
-
-
-def render_template(template_name, **values):
-    path = TEMPLATES / template_name
-    try:
-        return Template(read_text(path)).substitute(values).rstrip()
-    except (KeyError, ValueError) as error:
-        raise BuildError(f"Modello non valido: {path}. Segnaposto: {error}") from error
-
-
-def render_header(page_id, prefix, site):
-    links = []
-    for page in site["pages"]:
-        current = ' aria-current="page"' if page["id"] == page_id else ""
-        links.append(f'<a href="{escape(prefix + page["path"])}"{current}>{escape(page["title"])}</a>')
-    return render_template(
-        "partials/header.html",
-        prefix=prefix,
-        site_name=escape(site["name"]),
-        brand_caption=escape(site["brand_caption"]),
-        skip_label=escape(site["skip_label"]),
-        menu_label=escape(site["menu_label"]),
-        navigation_label=escape(site["navigation_label"]),
-        navigation_links=indent("\n".join(links), "      "),
-    )
-
-
-def render_hero(page, prefix, home):
-    actions = ""
-    if page["id"] == "home":
-        actions = indent(render_template(
-            "partials/hero-actions.html", prefix=prefix,
-            **escaped_fields(home["hero_actions"]),
-        ), "    ")
-    hero = page["hero"]
-    return render_template(
-        "partials/hero.html",
-        hero_class="hero hero-home" if page["id"] == "home" else "hero",
-        eyebrow=escape(hero["eyebrow"]),
-        title=text_lines(hero["title_lines"]),
-        lead=escape(hero["lead"]),
-        actions=actions,
-    )
-
-
-def render_footer(prefix, site):
-    footer = site["footer"]
-    links = [
-        f'<a href="{escape(link["url"])}">{escape(link["label"])}</a>'
-        for link in footer["links"]
-    ]
-    return render_template(
-        "partials/footer.html",
-        prefix=prefix, site_name=escape(site["name"]),
-        tagline=escape(footer["tagline"]), note=escape(footer["note"]),
-        links_label=escape(footer["links_label"]),
-        institutional_links=indent("\n".join(links), "      "),
-    )
-
-
 def academic_year_start(day):
     """An academic year runs from 1 September through 31 August."""
     return day.year if day.month >= 9 else day.year - 1
@@ -373,247 +295,214 @@ def session_date_label(session, labels, home=False):
     return text
 
 
-def render_home(prefix, home, seminar, plan):
-    paragraphs = []
-    for index, paragraph in enumerate(home["introduction"]):
-        style = ' class="lead"' if index == 0 else ""
-        paragraphs.append(f"<p{style}>{escape(paragraph)}</p>")
-    cards = [
-        render_template("partials/research-card.html", number=f"{index:02}", **escaped_fields(feature))
-        for index, feature in enumerate(home["research"], start=1)
-    ]
-    next_session = plan["next"]
+
+# The template language is deliberately small: dictionary keys, loops and if.
+# It never evaluates Python, calls functions, or inserts unescaped JSON as HTML.
+FIELD = r"[A-Za-z][A-Za-z0-9_]*(?:\.[A-Za-z][A-Za-z0-9_]*)*"
+TOKENS = re.compile(r"({{.*?}}|{%.*?%})", re.DOTALL)
+
+
+def field_value(expression, context):
+    if not re.fullmatch(FIELD, expression):
+        raise BuildError(f"Invalid template field: {expression!r}")
+    value = context
+    for key in expression.split("."):
+        if not isinstance(value, dict) or key not in value:
+            raise BuildError(f"Unknown template field: {expression}")
+        value = value[key]
+    return value
+
+
+def parse_template(source):
+    tokens = TOKENS.split(source)
+    cursor = 0
+
+    def parse_block(stops=()):
+        nonlocal cursor
+        nodes = []
+        while cursor < len(tokens):
+            token = tokens[cursor]
+            cursor += 1
+            if token.startswith("{{") and token.endswith("}}"):
+                field = token[2:-2].strip()
+                if not re.fullmatch(FIELD, field):
+                    raise BuildError(f"Invalid template field: {field!r}")
+                nodes.append(("field", field))
+            elif token.startswith("{%") and token.endswith("%}"):
+                command = token[2:-2].strip()
+                if command in stops:
+                    return nodes, command
+                loop = re.fullmatch(rf"for ([A-Za-z][A-Za-z0-9_]*) in ({FIELD})", command)
+                condition = re.fullmatch(rf"if ({FIELD})", command)
+                if loop:
+                    children, ending = parse_block(("endfor",))
+                    if ending != "endfor":
+                        raise BuildError("A template for block is missing {% endfor %}.")
+                    nodes.append(("for", loop[1], loop[2], children))
+                elif condition:
+                    yes, ending = parse_block(("else", "endif"))
+                    no = []
+                    if ending == "else":
+                        no, ending = parse_block(("endif",))
+                    if ending != "endif":
+                        raise BuildError("A template if block is missing {% endif %}.")
+                    nodes.append(("if", condition[1], yes, no))
+                else:
+                    raise BuildError(f"Unsupported or misplaced template command: {command!r}")
+            else:
+                if "{{" in token or "{%" in token:
+                    raise BuildError("Unclosed template placeholder or command.")
+                nodes.append(("text", token))
+        return nodes, None
+
+    nodes, _ = parse_block()
+    return nodes
+
+
+def render_nodes(nodes, context):
+    output = []
+    for node in nodes:
+        kind = node[0]
+        if kind == "text":
+            output.append(node[1])
+        elif kind == "field":
+            value = field_value(node[1], context)
+            if isinstance(value, (dict, list)):
+                raise BuildError(f"Template field must be text: {node[1]}")
+            output.append(html.escape("" if value is None else str(value), quote=True))
+        elif kind == "if":
+            branch = node[2] if field_value(node[1], context) else node[3]
+            output.append(render_nodes(branch, context))
+        elif kind == "for":
+            values = field_value(node[2], context)
+            if not isinstance(values, list):
+                raise BuildError(f"Template loop must use a list: {node[2]}")
+            for index, value in enumerate(values):
+                local = dict(context)
+                local[node[1]] = value
+                local["loop"] = {
+                    "first": index == 0, "last": index == len(values) - 1,
+                    "index": index + 1,
+                }
+                output.append(render_nodes(node[3], local))
+    return "".join(output)
+
+
+def render_html(source, context):
+    return render_nodes(parse_template(source), context)
+
+
+def prepare_programme(seminar, plan):
     labels = seminar["labels"]
-    talks = []
-    if next_session:
-        for talk in next_session["talks"]:
-            meta = " · ".join(value for value in (talk["time"], talk["speaker"]) if value)
-            talks.append(render_template(
-                "partials/next-session-talk.html", meta=escape(meta),
-                title="<br>" + escape(talk["title"]) if talk["title"] else "",
-            ))
-        if not talks:
-            talks.append(f'<p>{escape(labels["empty_programme"])}</p>')
-    else:
-        talks.append(f'<p>{escape(labels["empty_next_session"])}</p>')
-    next_session_date = (
-        f'<p class="session-date">{escape(session_date_label(next_session, labels, home=True))}</p>'
-        if next_session else ""
-    )
-    home_seminar = home["seminar"]
-    return render_template(
-        "pages/home.html",
-        prefix=prefix,
-        about_eyebrow=escape(home["about_eyebrow"]),
-        about_title=text_lines(home["about_title_lines"]),
-        introduction=indent("\n".join(paragraphs), "    "),
-        logo_alt=escape(home["logo_alt"]), logo_caption=escape(home["logo_caption"]),
-        research_title=escape(home["research_title"]),
-        research_cards=indent("\n".join(cards), "    "),
-        seminar_eyebrow=escape(home_seminar["eyebrow"]), seminar_title=escape(home_seminar["title"]),
-        seminar_description=escape(home_seminar["description"]),
-        seminar_link_label=escape(home_seminar["link_label"]),
-        next_session_date=indent(next_session_date, "    "),
-        next_session_title=escape(labels["home_next_session"]),
-        next_session_talks=indent("\n".join(talks), "    "),
-    )
 
+    def session_data(session):
+        return {
+            **session,
+            "date_label": session_date_label(session, labels),
+            "date_home_label": session_date_label(session, labels, home=True),
+            "talks": [
+                {**talk, "meta": " · ".join(
+                    text for text in (talk["time"], talk["speaker"]) if text
+                )}
+                for talk in session["talks"]
+            ],
+        }
 
-def render_seminar_talk(talk, labels):
-    meta_parts = []
-    if talk["time"]:
-        meta_parts.append(f'<strong>{escape(talk["time"])}</strong>')
-    if talk["speaker"]:
-        meta_parts.append(f'<span>{escape(talk["speaker"])}</span>')
-    meta = f'<p class="talk-meta">{" ".join(meta_parts)}</p>' if meta_parts else ""
-    title = f'<p class="talk-title">{escape(talk["title"])}</p>' if talk["title"] else ""
-    abstract = ""
-    if talk["abstract"]:
-        paragraphs = "<br><br>".join(escape(paragraph) for paragraph in talk["abstract"])
-        abstract = (
-            f'<span class="abstract-label">{escape(labels["abstract"])}</span>\n'
-            f'<div class="abstract-text">{paragraphs}</div>'
-        )
-    return render_template(
-        "partials/seminar-talk.html", meta=indent(meta, "  "),
-        title=indent(title, "  "), abstract=indent(abstract, "  "),
-    )
-
-
-def render_seminar_session(session, labels, upcoming=False):
-    talks = [render_seminar_talk(talk, labels) for talk in session["talks"]]
-    if not talks:
-        talks.append(f'<p>{escape(labels["empty_programme"])}</p>')
-    return render_template(
-        "partials/seminar-session.html",
-        upcoming=' data-upcoming="true"' if upcoming else "",
-        heading_level=3 if upcoming else 4,
-        date=escape(session_date_label(session, labels)),
-        talks=indent("\n".join(talks), "  "),
-    )
-
-
-def render_seminar(seminar, plan):
-    labels = seminar["labels"]
-    organizers = []
-    for organizer in seminar["organizers"]:
-        name = escape(organizer["name"])
-        if organizer["url"]:
-            name = f'<a href="{escape(organizer["url"])}" target="_blank" rel="noopener noreferrer">{name}</a>'
-        organizers.append(render_template(
-            "partials/seminar-organizer.html", name=name, email=escape(organizer["email"]),
-        ))
-    # Show later announced talks too, even when an earlier date has no programme yet.
-    upcoming = [
-        render_seminar_session(session, labels, upcoming=True)
-        for session in plan["upcoming"]
-        if session is plan["next"] or session["talks"]
-    ]
-    if not upcoming:
-        upcoming.append(f'<p>{escape(labels["empty_next_session"])}</p>')
-    # Two chronological columns keep the established compact calendar layout.
-    dates = [date.fromisoformat(session["date"]).strftime("%d/%m/%Y") for session in plan["calendar"]]
+    dates = [date.fromisoformat(session["date"]).strftime("%d/%m/%Y")
+             for session in plan["calendar"]]
     midpoint = (len(dates) + 1) // 2
-    rows = []
-    for index in range(midpoint):
-        right = dates[midpoint + index] if midpoint + index < len(dates) else ""
-        rows.append(f"<tr><td>{dates[index]}</td><td>{right}</td></tr>")
-    if not rows:
-        rows.append(f'<tr><td colspan="2">{escape(labels["empty_next_session"])}</td></tr>')
-    years = []
-    for index, (year, sessions) in enumerate(plan["history"].items()):
-        years.append(render_template(
-            "partials/seminar-archive-year.html", archive_id=f"seminar-archive-{index}",
-            title=escape(f"{labels['academic_year']} {year} – {year + 1}"),
-            sessions=indent("\n\n".join(render_seminar_session(session, labels) for session in sessions), "  "),
-        ))
-    venue = seminar["venue"]
     year = plan["academic_year"]
-    return render_template(
-        "pages/seminar.html", introduction=escape(seminar["introduction"]),
-        organizers_label=escape(labels["organizers"]),
-        organizers=indent("\n".join(organizers), "      "),
-        mailing_list_note=escape(seminar["mailing_list_note"]),
-        location_label=escape(labels["location"]), venue_name=escape(venue["name"]),
-        venue_url=escape(venue["url"]), building=escape(venue["building"]),
-        room_label=escape(labels["room"]), room=escape(venue["room"]),
-        next_session_label=escape(labels["next_session"]),
-        next_sessions=indent("\n\n".join(upcoming), "  "),
-        schedule_label=escape(labels["schedule"]),
-        schedule_description=escape(f"Seminar dates for academic year {year}–{year + 1}"),
-        calendar_rows=indent("\n".join(rows), "      "),
-        history_label=escape(labels["history"]), archive_years=indent("\n\n".join(years), "  "),
-    )
+    return {
+        "next": session_data(plan["next"]) if plan["next"] else None,
+        "upcoming": [
+            session_data(session) for session in plan["upcoming"]
+            if session is plan["next"] or session["talks"]
+        ],
+        "calendar": [
+            {"left": dates[index],
+             "right": dates[midpoint + index] if midpoint + index < len(dates) else ""}
+            for index in range(midpoint)
+        ],
+        "academic_year": year,
+        "schedule_description": f"Seminar dates for academic year {year}–{year + 1}",
+        "history": [
+            {
+                "id": f"seminar-archive-{index}",
+                "title": f"{labels['academic_year']} {archive_year} – {archive_year + 1}",
+                "sessions": [session_data(session) for session in sessions],
+            }
+            for index, (archive_year, sessions) in enumerate(plan["history"].items())
+        ],
+    }
 
 
-def render_team(prefix, team):
+def prepare_team(team, prefix):
     sections = []
     for section in team["sections"]:
-        cards = []
+        members = []
         for member in section["members"]:
-            name = escape(member["name"])
-            if member["url"]:
-                name = f'<a href="{escape(member["url"])}">{name}</a>'
-            name_parts = member["name"].split()
-            initials = (name_parts[0][0] + (name_parts[-1][0] if len(name_parts) > 1 else "")).upper() if name_parts else ""
-            portrait = (
-                '<span class="member-photo" aria-hidden="true">'
-                f'<span class="member-initials">{escape(initials)}</span>'
-            )
-            if member.get("photo"):
-                photo = member["photo"]
-                photo_url = prefix + photo if photo.startswith("assets/images/members/") else photo
-                portrait += (
-                    f'<img class="member-portrait" data-member-portrait="{escape(member["name"])}" '
-                    f'src="{escape(photo_url)}" '
-                    'alt="" width="64" height="64" loading="lazy" decoding="async" referrerpolicy="no-referrer">'
-                )
-            portrait += '</span>'
-            search_text = " ".join([member["name"], member["affiliation"], section["title"]])
-            cards.append(render_template(
-                "partials/member-card.html", name=name,
-                portrait=portrait,
-                affiliation=escape(member["affiliation"]), search_text=escape(search_text),
-            ))
-        # Former members use the same visible section as every other category.
-        sections.append(render_template(
-            "partials/member-section.html", section_id=escape(section["id"]),
-            title=escape(section["title"]), member_cards=indent("\n".join(cards), "    "),
-        ))
-    search = team["search"]
-    return render_template(
-        "pages/team.html", introduction=escape(team["introduction"]),
-        search_label=escape(search["label"]), search_placeholder=escape(search["placeholder"]),
-        count_label=escape(search["count_label"]), empty_message=escape(search["empty_message"]),
-        member_count=sum(len(section["members"]) for section in team["sections"]),
-        member_sections="\n\n".join(sections),
-    )
+            parts = member["name"].split()
+            initials = (parts[0][0] + (parts[-1][0] if len(parts) > 1 else "")).upper() if parts else ""
+            photo = member.get("photo") or ""
+            members.append({
+                **member, "initials": initials,
+                "photo_url": prefix + photo if photo.startswith("assets/images/members/") else photo,
+                "search_text": " ".join((member["name"], member["affiliation"], section["title"])),
+            })
+        sections.append({**section, "members": members})
+    return {**team, "sections": sections,
+            "member_count": sum(len(section["members"]) for section in sections)}
 
 
-def render_contact(prefix, contact):
-    cards = [
-        render_template("partials/contact-card.html", **escaped_fields(person))
-        for person in contact["contacts"]
-    ]
-    location = contact["location"]
-    return render_template(
-        "pages/contact.html", prefix=prefix,
-        introduction=escape(contact["introduction"]),
-        contact_cards=indent("\n".join(cards), "  "),
-        location_eyebrow=escape(location["eyebrow"]), location_title=escape(location["title"]),
-        address=text_lines(location["address_lines"]), location_url=escape(location["url"]),
-        location_link_label=escape(location["link_label"]),
-        seminar_venue_title=escape(location["seminar_venue_title"]),
-        seminar_venue=escape(location["seminar_venue"]),
-        seminar_link_label=escape(location["seminar_link_label"]),
-    )
-
-
-def render_document(page, prefix, sources, seminar_html, seminar_plan):
-    page_id = page["id"]
-    if page_id == "home":
-        body = render_home(prefix, sources["home"], sources["seminar"], seminar_plan)
-    elif page_id == "team":
-        body = render_team(prefix, sources["team"])
-    elif page_id == "contact":
-        body = render_contact(prefix, sources["contact"])
-    else:
-        body = seminar_html.rstrip()
+def page_context(page, prefix, sources, seminar_plan):
     site = sources["site"]
-    return render_template(
-        "layout.html", prefix=prefix,
-        language=escape(site["language"]), page_title=escape(page["title"]),
-        site_name=escape(site["name"]), description=escape(page["description"]),
-        theme_color=escape(site["theme_color"]),
-        header=indent(render_header(page_id, prefix, site), "    "),
-        hero=indent(render_hero(page, prefix, sources["home"]), "    "),
-        body=indent(body, "      "), footer=indent(render_footer(prefix, site), "    "),
-    ) + "\n"
+    home = sources["home"]
+    return {
+        **sources,
+        "site": site, "page": page, "prefix": prefix,
+        "navigation": [
+            {"title": item["title"], "href": prefix + item["path"],
+             "is_current": item["id"] == page["id"]}
+            for item in site["pages"]
+        ],
+        "home": {**home, "research": [
+            {**feature, "number": f"{index:02}"}
+            for index, feature in enumerate(home["research"], start=1)
+        ]},
+        "team": prepare_team(sources["team"], prefix),
+        "programme": prepare_programme(sources["seminar"], seminar_plan),
+    }
+
+
+def render_document(page, prefix, sources, seminar_plan):
+    path = PAGES / f"{page['id']}.html"
+    try:
+        return render_html(read_text(path), page_context(page, prefix, sources, seminar_plan))
+    except BuildError as error:
+        raise BuildError(f"{path}: {error}") from error
 
 
 def build(output=DEFAULT_OUTPUT, today=None):
-    """Build eight entry points. Existing files are overwritten, never deleted."""
+    """Render four pages and their existing English aliases before writing."""
     output = Path(output).resolve()
-    protected = [ROOT, CONTENT, TEMPLATES, ROOT / "tools", ROOT / "assets"]
-    if output == ROOT or any(output.is_relative_to(path) for path in protected[1:]):
-        raise BuildError("La cartella di output deve essere separata dai file sorgente, per esempio public/.")
+    protected = [CONTENT, PAGES, ROOT / "tools", ROOT / "assets", ROOT / "tests",
+                 ROOT / "docs", ROOT / ".github", ROOT / ".vscode", ROOT / ".git"]
+    if ROOT.is_relative_to(output) or any(output.is_relative_to(path) for path in protected):
+        raise BuildError("Output must be separate from the source files, for example public/.")
     sources = {name: read_json(name) for name in ("site", "home", "team", "contact", "seminar")}
     validate_content(sources)
     seminar_plan = plan_seminar(sources["seminar"], today)
-    seminar_html = render_seminar(sources["seminar"], seminar_plan)
     if not (ROOT / "assets").is_dir():
-        raise BuildError(f"Cartella sorgente mancante: {ROOT / 'assets'}")
-
-    # Render everything before writing, so template errors leave the output intact.
+        raise BuildError(f"Missing source folder: {ROOT / 'assets'}")
     documents = []
     for page in sources["site"]["pages"]:
-        path = page["path"]
-        depth = len(PurePosixPath(path).parts)
+        route = page["path"]
+        depth = len(PurePosixPath(route).parts)
         prefix = "../" * depth if depth else "./"
-        documents.append((Path(path) / "index.html", render_document(page, prefix, sources, seminar_html, seminar_plan)))
-        english_prefix = "../" * (depth + 1)
-        documents.append((Path("en") / path / "index.html", render_document(page, english_prefix, sources, seminar_html, seminar_plan)))
-
+        documents.append((Path(route) / "index.html",
+                          render_document(page, prefix, sources, seminar_plan)))
+        documents.append((Path("en") / route / "index.html",
+                          render_document(page, "../" * (depth + 1), sources, seminar_plan)))
     output.mkdir(parents=True, exist_ok=True)
     shutil.copytree(ROOT / "assets", output / "assets", dirs_exist_ok=True)
     for relative_path, document in documents:
@@ -621,20 +510,20 @@ def build(output=DEFAULT_OUTPUT, today=None):
         destination.parent.mkdir(parents=True, exist_ok=True)
         destination.write_text(document, encoding="utf-8")
     (output / ".nojekyll").write_text("", encoding="utf-8")
-    count = sum(len(section["members"]) for section in sources["team"]["sections"])
-    print(f"Sito generato in: {output}")
-    print(f"4 pagine + 4 alias inglesi; {count} membri, compresi gli ex membri sempre visibili.")
+    print(f"Site generated in: {output}")
+    print("4 complete HTML pages + 4 English aliases; former members remain visible.")
     return output
 
 
 def main(argv=None):
-    parser = argparse.ArgumentParser(description="Genera il sito ParMA dai contenuti e dai modelli HTML.")
-    parser.add_argument("--output", type=Path, default=DEFAULT_OUTPUT, help="Cartella di destinazione (default: public/).")
+    parser = argparse.ArgumentParser(description="Build ParMA from pages/ and content/.")
+    parser.add_argument("--output", type=Path, default=DEFAULT_OUTPUT,
+                        help="Output folder (default: public/).")
     arguments = parser.parse_args(argv)
     try:
         build(arguments.output)
     except (BuildError, OSError, UnicodeError) as error:
-        print(f"Errore: {error}", file=sys.stderr)
+        print(f"Error: {error}", file=sys.stderr)
         return 1
     return 0
 

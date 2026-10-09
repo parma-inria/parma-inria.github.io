@@ -54,6 +54,22 @@ def home_fixture():
     }
 
 
+def fixture_sources(home=None, seminar=None, team=None):
+    sources = {name: build.read_json(name) for name in ("site", "home", "team", "contact", "seminar")}
+    if home is not None:
+        sources["home"] = {**sources["home"], **home}
+    if seminar is not None:
+        sources["seminar"] = seminar
+    if team is not None:
+        sources["team"] = team
+    return sources
+
+
+def render_page(page_id, prefix, sources, plan):
+    page = next(item for item in sources["site"]["pages"] if item["id"] == page_id)
+    return build.render_document(page, prefix, sources, plan)
+
+
 class RenderedElements(HTMLParser):
     """Read output attributes and calendar cells without relying on indentation."""
 
@@ -94,8 +110,8 @@ class SeminarTests(unittest.TestCase):
         plan = build.plan_seminar(self.seminar, day)
         return (
             plan,
-            build.render_home("./", self.home, self.seminar, plan),
-            build.render_seminar(self.seminar, plan),
+            render_page("home", "./", fixture_sources(self.home, self.seminar), plan),
+            render_page("seminar", "../", fixture_sources(self.home, self.seminar), plan),
         )
 
     def test_session_moves_from_next_to_archive_on_following_day(self):
@@ -153,7 +169,8 @@ class SeminarTests(unittest.TestCase):
         _, home, page = self.render(date(2026, 10, 9))
         self.assertNotIn('<img src=x', page)
         self.assertIn("&lt;img src=x onerror=&quot;bad&quot;&gt;", page)
-        self.assertIn("x &lt; y<br><br>second &amp; third", page)
+        self.assertRegex(page, r'<p class="abstract-text">\s*x &lt; y\s*</p>')
+        self.assertRegex(page, r'<p class="abstract-text">\s*second &amp; third\s*</p>')
         self.assertIn("A &amp; B", home)
         self.assertNotIn(" · &lt;img", home)
 
@@ -224,9 +241,12 @@ class SeminarTests(unittest.TestCase):
         }
         for prefix in ("../", "../../"):
             with self.subTest(prefix=prefix):
-                document = build.render_team(prefix, team)
+                sources = fixture_sources(team=team, seminar=seminar_fixture())
+                plan = build.plan_seminar(sources["seminar"], date(2026, 10, 9))
+                document = render_page("team", prefix, sources, plan)
                 elements = RenderedElements(document).elements
-                portraits = [attributes for tag, attributes in elements if tag == "img"]
+                portraits = [attributes for tag, attributes in elements if tag == "img"
+                            and attributes.get("class") == "member-portrait"]
                 self.assertEqual(len(portraits), 2)
                 self.assertEqual(portraits[0]["src"], photo)
                 self.assertEqual(portraits[1]["src"], prefix + local_photo)

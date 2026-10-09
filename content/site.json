@@ -11,53 +11,53 @@
       "id": "home",
       "path": "",
       "title": "Presentation",
-      "description": "ParMA studies optimal transport and particle methods, connecting mathematical theory, numerical analysis and scientific computing at Inria Saclay and Université Paris-Saclay.",
+      "description": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
       "hero": {
         "eyebrow": "INRIA SACLAY · CNRS · UNIVERSITÉ PARIS-SACLAY",
         "title_lines": [
-          "Optimal transport.",
-          "From theory to particles."
+          "Lorem ipsum",
+          "dolor sit amet"
         ],
-        "lead": "Exploring the geometry of probability distributions and the motion of particles."
+        "lead": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua."
       }
     },
     {
       "id": "team",
       "path": "team-members/",
       "title": "Team",
-      "description": "Meet the ParMA research team: permanent researchers, engineers, postdoctoral researchers, PhD students and former members.",
+      "description": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
       "hero": {
-        "eyebrow": "THE PEOPLE BEHIND ParMA",
+        "eyebrow": "Lorem ipsum",
         "title_lines": [
           "Team members"
         ],
-        "lead": "Researchers, engineers and PhD students working across mathematics and scientific computing."
+        "lead": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua."
       }
     },
     {
       "id": "seminar",
       "path": "francais-gdt-edp-ot-ml/",
       "title": "GdT OT–PDE–ML",
-      "description": "Program, abstracts and archives of the ParMA GdT OT–PDE–ML seminar at the Institut de Mathématique d’Orsay.",
+      "description": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
       "hero": {
         "eyebrow": "OPTIMAL TRANSPORT · PDE · MACHINE LEARNING",
         "title_lines": [
           "GdT OT–PDE–ML"
         ],
-        "lead": "A research seminar at the crossroads of transport, equations and learning."
+        "lead": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua."
       }
     },
     {
       "id": "contact",
       "path": "contact/",
       "title": "Contact",
-      "description": "Contact the ParMA team at Inria Saclay and Université Paris-Saclay.",
+      "description": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
       "hero": {
         "eyebrow": "GET IN TOUCH",
         "title_lines": [
           "Contact ParMA"
         ],
-        "lead": "Find the team at the Institut de Mathématique d’Orsay, Université Paris-Saclay."
+        "lead": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua."
       }
     }
   ],

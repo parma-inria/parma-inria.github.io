@@ -306,10 +306,12 @@ ul, ol {
   color: var(--white);
 }
 
-.hero-home {
-  min-height: 448px;
-  background-position: center 46%;
+/* Keep the glacier and foreground at the bottom visible. */
+.hero.hero-home {
+  min-height: clamp(520px, 44vw, 720px);
+  background-position: center bottom;
 }
+
 
 .hero-content {
   padding-block: 50px;
@@ -946,8 +948,12 @@ ul, ol {
     min-height: 42px;
     padding-inline: 13px;
   }
-  .hero-home {
-    min-height: 418px;
+  .hero.hero-home {
+    min-height: 520px;
+    background-size: auto, 100% auto;
+    background-repeat: no-repeat;
+    background-position: center, center bottom;
+    align-items: flex-start;
   }
   .hero {
     background-position: 58% center;
@@ -1008,8 +1014,8 @@ ul, ol {
     min-height: 246px;
     background-image: linear-gradient(90deg, rgba(4,31,60,.88), rgba(5,40,72,.66)), url("../images/mountains.jpg");
   }
-  .hero-home {
-    min-height: 422px;
+  .hero.hero-home {
+    min-height: 600px;
   }
   .hero h1 {
     font-size: 2.35rem;
@@ -1107,4 +1113,47 @@ ul, ol {
   .container {
     width: 100%;
   }
+}
+
+/* Original team logo, shown without cropping. */
+.brand-logo {
+  display: block;
+  width: 150px;
+  height: auto;
+  object-fit: contain;
+}
+.footer-logo {
+  width: 145px;
+  margin-bottom: 16px;
+}
+
+/* Seminar history can be opened by year; team sections stay visible. */
+.seminar-archive {
+  margin-block: 22px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  overflow: hidden;
+}
+.seminar-archive > summary {
+  padding: 18px 22px;
+  background: var(--surface);
+  color: var(--blue-deep);
+  cursor: pointer;
+  font-size: 1.15rem;
+  font-weight: 650;
+}
+.seminar-archive[open] > summary {
+  border-bottom: 1px solid var(--line);
+}
+.archive-content {
+  padding: 0 22px;
+}
+@media (max-width: 540px) {
+  .brand-logo { width: 125px; }
+  .archive-content { padding-inline: 12px; }
+}
+@media print {
+  .hero.hero-home { min-height: 0; background: none; }
+  .seminar-archive > summary { background: none; }
+  .seminar-archive > .archive-content { display: block !important; }
 }

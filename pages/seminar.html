@@ -1,0 +1,156 @@
+<!doctype html>
+<html lang="{{ site.language }}">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{{ page.title }} · {{ site.name }}</title>
+  <meta name="description" content="{{ page.description }}">
+  <meta name="theme-color" content="{{ site.theme_color }}">
+  <link rel="icon" href="{{ prefix }}assets/images/parma-logo.png" type="image/png">
+  <link rel="stylesheet" href="{{ prefix }}assets/css/site.css">
+  <script src="{{ prefix }}assets/js/site.js" defer></script>
+</head>
+<body>
+  <!-- Complete page layout; text and lists come from content/. -->
+  <a class="skip-link" href="#main">{{ site.skip_label }}</a>
+  <header class="site-header">
+    <div class="container header-row">
+      <a class="brand" href="{{ prefix }}">
+        <img class="brand-logo" src="{{ prefix }}assets/images/parma-logo.png" alt="{{ site.name }}" width="1024" height="437">
+        <span class="brand-caption">{{ site.brand_caption }}</span>
+      </a>
+      <button class="menu-toggle" type="button" aria-controls="site-navigation" aria-expanded="false" hidden>{{ site.menu_label }}</button>
+      <nav id="site-navigation" class="site-navigation" aria-label="{{ site.navigation_label }}">
+        {% for link in navigation %}
+        <a href="{{ link.href }}"{% if link.is_current %} aria-current="page"{% endif %}>{{ link.title }}</a>
+        {% endfor %}
+      </nav>
+    </div>
+  </header>
+  <section class="hero" aria-labelledby="page-title">
+    <div class="container hero-content">
+      <p class="eyebrow">{{ page.hero.eyebrow }}</p>
+      <h1 id="page-title">{% for line in page.hero.title_lines %}{{ line }}{% if loop.last %}{% else %}<br>{% endif %}{% endfor %}</h1>
+      <p class="hero-lead">{{ page.hero.lead }}</p>
+    </div>
+  </section>
+  <main id="main" class="container content-container">
+    <div class="intro-callout"><p class="lead">{{ seminar.introduction }}</p></div>
+    <div class="info-grid">
+      <section class="info-card" aria-labelledby="organizers-title">
+        <h2 id="organizers-title">{{ seminar.labels.organizers }}</h2>
+        <ul class="organizer-list">
+          {% for organizer in seminar.organizers %}
+          <li>
+            <p>{% if organizer.url %}<a href="{{ organizer.url }}" target="_blank" rel="noopener noreferrer">{{ organizer.name }}</a>{% else %}{{ organizer.name }}{% endif %}<br>
+              <a href="mailto:{{ organizer.email }}">{{ organizer.email }}</a></p>
+          </li>
+          {% endfor %}
+        </ul>
+        <p>{{ seminar.mailing_list_note }}</p>
+      </section>
+      <section class="info-card" aria-labelledby="venue-title">
+        <h2 id="venue-title">{{ seminar.labels.location }}</h2>
+        <p><a href="{{ seminar.venue.url }}">{{ seminar.venue.name }}</a></p>
+        <p>{{ seminar.venue.building }} · {{ seminar.labels.room }} {{ seminar.venue.room }}</p>
+      </section>
+    </div>
+    <!-- Announced sessions and calendar share content/seminar.json. -->
+    <section aria-labelledby="next-session-title">
+      <h2 id="next-session-title" class="section-heading">{{ seminar.labels.next_session }}</h2>
+      {% if programme.upcoming %}
+      {% for session in programme.upcoming %}
+      <article class="session-card" data-upcoming="true">
+        <h3 class="session-date">{{ session.date_label }}</h3>
+        {% if session.talks %}
+        {% for talk in session.talks %}
+          <article class="talk">
+            {% if talk.meta %}
+            <p class="talk-meta">{% if talk.time %}<strong>{{ talk.time }}</strong> {% endif %}{{ talk.speaker }}</p>
+            {% endif %}
+            {% if talk.title %}
+            <p class="talk-title">{{ talk.title }}</p>
+            {% endif %}
+            {% if talk.abstract %}
+            <p class="abstract-label">{{ seminar.labels.abstract }}</p>
+            {% for paragraph in talk.abstract %}
+            <p class="abstract-text">{{ paragraph }}</p>
+            {% endfor %}
+            {% endif %}
+          </article>
+        {% endfor %}
+        {% else %}
+        <p>{{ seminar.labels.empty_programme }}</p>
+        {% endif %}
+      </article>
+      {% endfor %}
+      {% else %}
+      <p>{{ seminar.labels.empty_next_session }}</p>
+      {% endif %}
+    </section>
+    <section aria-labelledby="schedule-title">
+      <h2 id="schedule-title" class="section-heading">{{ seminar.labels.schedule }}</h2>
+      <p>{{ programme.schedule_description }}</p>
+      <div class="table-wrap">
+        <table class="schedule-table" aria-label="{{ programme.schedule_description }}">
+          <tbody>
+            {% if programme.calendar %}
+            {% for row in programme.calendar %}
+            <tr><td>{{ row.left }}</td><td>{{ row.right }}</td></tr>
+            {% endfor %}
+            {% else %}
+            <tr><td colspan="2">{{ seminar.labels.empty_next_session }}</td></tr>
+            {% endif %}
+          </tbody>
+        </table>
+      </div>
+    </section>
+    <!-- Archive years start closed; open a summary to read the sessions. -->
+    <section aria-labelledby="history-title">
+      <h2 id="history-title" class="section-heading">{{ seminar.labels.history }}</h2>
+      {% for archive in programme.history %}
+      <details class="seminar-archive" id="{{ archive.id }}">
+        <summary>{{ archive.title }}</summary>
+        <div class="archive-content">
+          {% for session in archive.sessions %}
+          <article class="session-card">
+            <h3 class="session-date">{{ session.date_label }}</h3>
+            {% for talk in session.talks %}
+          <article class="talk">
+            {% if talk.meta %}
+            <p class="talk-meta">{% if talk.time %}<strong>{{ talk.time }}</strong> {% endif %}{{ talk.speaker }}</p>
+            {% endif %}
+            {% if talk.title %}
+            <p class="talk-title">{{ talk.title }}</p>
+            {% endif %}
+            {% if talk.abstract %}
+            <p class="abstract-label">{{ seminar.labels.abstract }}</p>
+            {% for paragraph in talk.abstract %}
+            <p class="abstract-text">{{ paragraph }}</p>
+            {% endfor %}
+            {% endif %}
+          </article>
+            {% endfor %}
+          </article>
+          {% endfor %}
+        </div>
+      </details>
+      {% endfor %}
+    </section>
+  </main>
+  <footer class="site-footer">
+    <div class="container footer-grid">
+      <div>
+        <a href="{{ prefix }}"><img class="brand-logo footer-logo" src="{{ prefix }}assets/images/parma-logo.png" alt="{{ site.name }}" width="1024" height="437" loading="lazy"></a>
+        <p>{{ site.footer.tagline }}</p>
+        <p class="footer-note">{{ site.footer.note }}</p>
+      </div>
+      <nav class="footer-links" aria-label="{{ site.footer.links_label }}">
+        {% for link in site.footer.links %}
+        <a href="{{ link.url }}">{{ link.label }}</a>
+        {% endfor %}
+      </nav>
+    </div>
+  </footer>
+</body>
+</html>

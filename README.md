@@ -16,11 +16,11 @@ Website for the ParMA research team at Inria Saclay, CNRS and Université Paris-
 | Banner titles, menu and footer | `content/site.json` |
 | Colours, banner dimensions and page layout | `assets/css/site.css` |
 | Banner photograph and logo | `assets/images/` |
-| A page's HTML structure | `templates/pages/` |
-| Shared elements and cards | `templates/partials/` |
+| Complete HTML for each page | `pages/home.html`, `team.html`, `seminar.html`, `contact.html` |
+| Header, footer, member cards or archive layout | The relevant complete HTML file in `pages/` |
 | Member search and mobile menu | `assets/js/site.js` |
 
-For everyday updates, start with **`content/`**. Pages in **`public/`** are generated automatically: any changes made there will be overwritten the next time the site is generated.
+For data updates, start with **`content/`**. For page layout and HTML, start with **`pages/`**. Pages in **`public/`** are generated automatically: any changes made there will be overwritten the next time the site is generated.
 
 ## Working in VS Code
 
@@ -96,42 +96,59 @@ To add a session, insert an object into `sessions`:
 
 Add another object to `talks` for a second presentation. Keep `abstract` as a list of paragraphs; use `[]` if no abstract has been provided. To reserve a date before the programme is ready, use `"talks": []` in the session. Update that same entry when the speakers are confirmed, rather than adding the date again. An empty `room` omits the room from that session's heading.
 
+Archive years are collapsible: click a year to open or close its sessions. Former team members remain visible on the team page.
+
 The build automatically selects the earliest session on or after its date, including planned sessions whose programme has not yet been announced. It derives the calendar and September-to-August academic years from the dates, and groups completed sessions with talks into the archive. The file is arranged with recent dates first for convenience; the build sorts dates itself.
 
 These selections are calculated **when the site is generated**, using that day's date. The published pages update when you regenerate and publish the site; time passing by itself does not rebuild them. You do not need to move old sessions manually or edit `content/home.json` when the programme changes.
 
-### Changing the banner image and height
+### Changing the banner image and logo
 
-Replace `assets/images/mountains.jpg` with the new photograph, keeping the same filename. In `assets/css/site.css`, find the **Banner** section: `.hero-home` controls the home page banner height, while `.hero` controls the banner height on other pages. `background-position` determines which part of the image is shown. Further down, you will find rules for tablets, phones and printing.
+Replace `assets/images/mountains.jpg` with the new photograph. In `assets/css/site.css`, `.hero.hero-home` sets the home banner height and keeps the bottom of the photograph visible. On smaller screens, the photo fits the screen width and sits below the banner text, so the landscape is less cropped.
+
+The original team logo is `assets/images/parma-logo.png`. It is used in the header, footer and browser icon. `.brand-logo` controls its displayed size.
 
 ## How are the folders organised?
 
 ```text
 parma-site/
 ├── README.md                 ← this guide
-├── content/                  ← content to update
-├── templates/
-│   ├── layout.html           ← shared HTML document
-│   ├── pages/                ← home, members, seminar and contacts
-│   └── partials/             ← menu, banner, footer and cards
+├── pages/                    ← four complete, editable HTML documents
+│   ├── home.html
+│   ├── team.html
+│   ├── seminar.html
+│   └── contact.html
+├── content/                  ← JSON data and text
 ├── assets/
-│   ├── css/site.css          ← styling
-│   ├── js/site.js            ← menu and search
-│   └── images/               ← banner, logo, icon and local member photographs
+│   ├── css/site.css          ← shared styling
+│   ├── js/site.js            ← menu, portraits and member search
+│   └── images/               ← photograph, team logo and local portraits
 ├── tools/
 │   ├── build.py              ← generates public/
 │   ├── check.py              ← checks local files and links
 │   └── preview.py            ← starts the preview
-├── docs/sources/             ← sources of imported materials
-├── tests/                    ← automatic seminar and portrait checks
+├── docs/sources/             ← original imported materials
+├── tests/                    ← checks for pages, seminar data and portraits
 ├── public/                   ← generated site, excluded from Git
 ├── .vscode/                  ← project tasks and settings
 └── .github/workflows/        ← automatic publishing
 ```
 
-Templates use placeholders such as `$introduction` and `${prefix}`. The build tool inserts the JSON content and calculates relative paths. Seminar dates and scientific texts come from `content/seminar.json`; the HTML structure is in `templates/pages/` and `templates/partials/`.
+Each file in `pages/` contains the whole document: head, header, banner, main content and footer, including the member cards and seminar archive. There are no separate layouts or partial files. Header and footer changes must be applied to all four pages; styling is shared in `assets/css/site.css`.
 
-The four pages retain the URLs `/`, `/team-members/`, `/francais-gdt-edp-ot-ml/` and `/contact/`. The `/en/` versions are generated from the same content.
+JSON values are inserted with `{{ field.path }}`. Repeated items use a loop:
+
+```html
+{% for member in section.members %}
+<p>{% if member.url %}<a href="{{ member.url }}">{{ member.name }}</a>{% else %}{{ member.name }}{% endif %}</p>
+{% endfor %}
+```
+
+You can edit the HTML around these placeholders directly. Every loop needs `{% endfor %}` and every condition needs `{% endif %}`. Inserted values are escaped automatically. Python expressions, template includes and raw HTML from JSON are not supported.
+
+The four pages retain the URLs `/`, `/team-members/`, `/francais-gdt-edp-ot-ml/` and `/contact/`. The `/en/` versions are generated from the same content. The build calculates relative links for each route.
+
+The generated descriptive text currently uses Lorem ipsum while the team decides what to write. The home introduction already edited by Mattia and the original scientific abstracts, dates, names and contact details are preserved.
 
 ## Publishing a change
 

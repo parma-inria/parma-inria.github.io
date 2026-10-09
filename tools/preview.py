@@ -20,7 +20,7 @@ def source_signature():
     """Il server rigenera solo quando cambia un contenuto, un modello o un asset."""
 
     files = [BUILD_SCRIPT]
-    for folder in ('content', 'templates', 'assets'):
+    for folder in ('content', 'pages', 'assets'):
         files.extend(path for path in (ROOT / folder).rglob('*') if path.is_file())
     return (date.today().isoformat(), tuple(
         (str(path), path.stat().st_mtime_ns, path.stat().st_size)
