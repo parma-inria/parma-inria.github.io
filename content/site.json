@@ -15,55 +15,54 @@
       "hero": {
         "eyebrow": "INRIA SACLAY · CNRS · UNIVERSITÉ PARIS-SACLAY",
         "title_lines": [
-          "Lorem ipsum",
-          "dolor sit amet"
+          "ParMa"
         ],
-        "lead": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua."
+        "lead": "Optimal Transport and Applications"
       }
     },
     {
       "id": "team",
       "path": "team-members/",
       "title": "Team",
-      "description": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
+      "description": "Team page",
       "hero": {
         "eyebrow": "Lorem ipsum",
         "title_lines": [
           "Team members"
         ],
-        "lead": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua."
+        "lead": "Meet the ParMA team: permanent researchers, research engineers, postdoctoral researchers and PhD students. Feel free to reach out to us for any questions or collaborations."
       }
     },
     {
       "id": "seminar",
       "path": "francais-gdt-edp-ot-ml/",
       "title": "GdT OT–PDE–ML",
-      "description": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
+      "description": "GdT page",
       "hero": {
         "eyebrow": "OPTIMAL TRANSPORT · PDE · MACHINE LEARNING",
         "title_lines": [
           "GdT OT–PDE–ML"
         ],
-        "lead": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua."
+        "lead": "The GdT OT-PDE-ML is a research seminar organized by the ParMA team. It brings together researchers to discuss recent theoretical and numerical developments at the crossroads of Optimal Transport theory, Partial Differential Equations, and Machine Learning."
       }
     },
     {
       "id": "contact",
       "path": "contact/",
       "title": "Contact",
-      "description": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
+      "description": "Contact page",
       "hero": {
         "eyebrow": "GET IN TOUCH",
         "title_lines": [
           "Contact ParMA"
         ],
-        "lead": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua."
+        "lead": "Feel free to reach out to us for any questions or collaborations."
       }
     }
   ],
   "footer": {
-    "tagline": "Optimal transport and motion of particles",
-    "note": "A research team at Inria Saclay, in partnership with CNRS and Université Paris-Saclay.",
+    "tagline": "Optimal Transport and Applications",
+    "note": "Research team at Inria Saclay, in partnership with CNRS and Université Paris-Saclay.",
     "links_label": "Institutional links",
     "links": [
       {
@@ -81,10 +80,6 @@
       {
         "label": "Université Paris-Saclay",
         "url": "https://www.universite-paris-saclay.fr/en"
-      },
-      {
-        "label": "Original Inria website",
-        "url": "https://team.inria.fr/parma/"
       }
     ]
   },

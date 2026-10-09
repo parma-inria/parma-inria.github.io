@@ -1,17 +1,17 @@
 {
   "hero_actions": {
     "team_label": "Meet the team",
-    "seminar_label": "Explore the seminar"
+    "seminar_label": "Explore our seminar"
   },
-  "about_eyebrow": "Lorem ipsum",
+  "about_eyebrow": "Who we are",
   "about_title_lines": [
-    "Lorem ipsum dolor sit amet"
+    "Optimal Transport @ Inria Saclay"
   ],
   "introduction": [
     "ParMA is a research team at the Inria Saclay Centre, in partnership with CNRS and Université Paris-Saclay. We study optimal    transport and its applications, with a particular focus on particle methods. Our research focuses on the application of OT techniques to the numerical resolution of problems, where one want to impose that a point cloud (representing either some data, or the result of a simulation) follows a certain probability distribution. This will for instance be done by using the Wasserstein distance as a penalization. We especially focus on the numerical analysis and resolution relying on particle discretization (i.e. point clouds)"
   ],
   "logo_alt": "ParMA logo formed by a cloud of particles",
-  "logo_caption": "A cloud of particlies forming our logo",
+  "logo_caption": "A cloud of particles forming our logo",
   "research_title": "Our engagement in research",
   "research": [
     {
@@ -30,7 +30,7 @@
   "seminar": {
     "eyebrow": "OUR RESEARCH SEMINAR",
     "title": "GdT OT–PDE–ML",
-    "description": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
+    "description": "The GdT OT-PDE-ML is a research seminar organized by the ParMA team. It brings together researchers to discuss recent theoretical and numerical developments at the crossroads of Optimal Transport theory, Partial Differential Equations, and Machine Learning.",
     "link_label": "Program and session archive"
   }
 }
