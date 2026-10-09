@@ -42,8 +42,8 @@
         <ul class="organizer-list">
           {% for organizer in seminar.organizers %}
           <li>
-            <p>{% if organizer.url %}<a href="{{ organizer.url }}" target="_blank" rel="noopener noreferrer">{{ organizer.name }}</a>{% else %}{{ organizer.name }}{% endif %}<br>
-              <a href="mailto:{{ organizer.email }}">{{ organizer.email }}</a></p>
+            <p>{% if organizer.url %}<a href="{{ organizer.url }}" target="_blank" rel="noopener noreferrer">{{ organizer.name }}</a>{% else %}{{ organizer.name }}{% endif %} (
+              <a href="mailto:{{ organizer.email }}">{{ organizer.email }}</a>)</p>
           </li>
           {% endfor %}
         </ul>
