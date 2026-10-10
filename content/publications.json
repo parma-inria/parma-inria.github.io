@@ -5,8 +5,20 @@
   "link_label": "Read the paper",
   "empty_message": "Recent publications will appear here after the next update.",
   "hal_structure_id": 1184761,
-  "updated_on": "2026-10-09",
+  "updated_on": "2026-10-10",
   "items": [
+    {
+      "id": "hal-05788044",
+      "title": "Embedding large subsets of Wasserstein spaces into Banach spaces",
+      "authors": [
+        "Cyril Letrouit",
+        "Quentin Merigot"
+      ],
+      "venue": "Preprint",
+      "date": "2026-10-08",
+      "url": "https://hal.science/hal-05788044",
+      "doi": ""
+    },
     {
       "id": "hal-05774627",
       "title": "First-order Γ-expansion for entropic optimal transport with non-degenerate costs",
@@ -32,19 +44,6 @@
       "venue": "Preprint",
       "date": "2026-09-15",
       "url": "https://hal.science/hal-05751291",
-      "doi": ""
-    },
-    {
-      "id": "hal-05704415",
-      "title": "Quantitative stability of classical, entropic, and doubly entropic Wasserstein barycenters",
-      "authors": [
-        "Guillaume Carlier",
-        "Julien Guérin",
-        "Quentin Mérigot"
-      ],
-      "venue": "Preprint",
-      "date": "2026-07-26",
-      "url": "https://hal.science/hal-05704415",
       "doi": ""
     }
   ]
