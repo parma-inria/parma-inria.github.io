@@ -63,7 +63,8 @@ jobs:
           name: generated-content
           path: |
             content/publications.json
-            content/translations/*.json
+            content/translations/fr.json
+            content/translations/it.json
           if-no-files-found: error
           retention-days: 1
       - name: Prepara il sito per la pubblicazione

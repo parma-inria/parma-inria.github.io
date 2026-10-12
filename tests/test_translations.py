@@ -55,6 +55,80 @@ def fixture():
 
 
 class TranslationTests(unittest.TestCase):
+    def setUp(self):
+        # Unit fixtures must not depend on the site's editorial language files.
+        self.real_review_loader = translations.read_reviewed
+        loader = patch.object(translations, "read_reviewed", return_value={})
+        loader.start()
+        self.addCleanup(loader.stop)
+
+    def test_reviewed_schema_preserves_placeholders_math_and_addresses(self):
+        invalid = [
+            {"language": "it", "translations": {}},
+            {"language": "fr", "translations": {}, "unexpected": True},
+            {"language": "fr", "translations": {"Team": ""}},
+            {"language": "fr", "translations": {"{count} members": "{total} membres"}},
+            {"language": "fr", "translations": {"{count} members": "{{count}} membres"}},
+            {"language": "fr", "translations": {"$x$": "$y$"}},
+            {"language": "fr", "translations": {r"C^{1, \alpha}": r"C^{1, \beta}"}},
+            {"language": "fr", "translations": {"https://example.org": "https://other.org"}},
+            {"language": "fr", "translations": {"a@example.org": "b@example.org"}},
+        ]
+        for reviewed in invalid:
+            with self.subTest(reviewed=reviewed), self.assertRaises(translations.TranslationError):
+                translations.validate_reviewed(reviewed, "fr")
+        valid = {"language": "fr", "translations": {"{count} members": "{count} membres"}}
+        self.assertEqual(translations.validate_reviewed(valid, "fr"), valid["translations"])
+
+    def test_reviewed_text_overrides_old_cache_without_changing_english(self):
+        sources = {"home": {"introduction": ["An English introduction."]}}
+        cache = translations.empty_cache("fr")
+        cache["translations"] = {"An English introduction.": "Old translation."}
+        reviewed = {"An English introduction.": "Revised introduction."}
+        localized = translations.localize_sources(sources, "fr", cache, reviewed=reviewed)
+        self.assertEqual(localized["home"]["introduction"], ["Revised introduction."])
+        self.assertEqual(cache["translations"]["An English introduction."], "Old translation.")
+        self.assertEqual(sources["home"]["introduction"], ["An English introduction."])
+        sources["home"]["introduction"] = ["A changed English introduction."]
+        changed = translations.localize_sources(sources, "fr", cache, reviewed=reviewed)
+        self.assertEqual(changed["home"]["introduction"], ["A changed English introduction."])
+        automatic = translations.update_cache(sources, "fr", lambda pieces: ["New translation." for _ in pieces], cache, reviewed=reviewed)
+        self.assertEqual(automatic["translations"]["A changed English introduction."], "New translation.")
+
+    def test_fully_reviewed_sources_need_no_model_and_are_idempotent(self):
+        sources = {"home": {"introduction": ["A complete introduction."]}, "ui": {"months": ["May"]}}
+        reviewed = {"A complete introduction.": "A reviewed introduction.", "May": "Mai"}
+        with patch.object(translations, "MarianTranslator", side_effect=AssertionError("Model loaded")):
+            first = translations.update_cache(sources, "fr", reviewed=reviewed)
+            second = translations.update_cache(sources, "fr", cache=first, reviewed=reviewed)
+        self.assertEqual(first, second)
+        self.assertEqual(first["translations"]["May"], "Mai")
+        self.assertTrue(translations.require_complete(sources, "fr", first, reviewed=reviewed))
+
+    def test_completeness_rejects_a_cache_that_loses_reviewed_corrections(self):
+        sources = {"home": {"introduction": ["An English introduction."]}}
+        cache = translations.empty_cache("fr")
+        cache["translations"] = {"An English introduction.": "Old translation."}
+        with self.assertRaises(translations.TranslationError):
+            translations.require_complete(sources, "fr", cache, reviewed={"An English introduction.": "Reviewed translation."})
+
+    def test_reviewed_entries_cannot_translate_scientific_titles(self):
+        sources = {"publications": {"items": [{"title": "Scientific paper title"}]},
+                   "seminar": {"sessions": [{"talks": [{"title": "Scientific talk title"}]}]}}
+        reviewed = {"Scientific paper title": "Changed paper", "Scientific talk title": "Changed talk"}
+        self.assertEqual(translations.current_reviews(sources, "fr", reviewed), {})
+        self.assertEqual(translations.localize_sources(sources, "fr", reviewed=reviewed), sources)
+
+    def test_reviewed_loader_rejects_duplicate_keys_and_missing_files_are_optional(self):
+        with tempfile.TemporaryDirectory() as directory, patch.object(translations, "CACHE_DIRECTORY", Path(directory)):
+            self.assertEqual(self.real_review_loader("fr"), {})
+            path = Path(directory) / "reviewed.fr.json"
+            path.write_text('{"language":"fr","translations":{"Team":"A","Team":"B"}}', encoding="utf-8")
+            with self.assertRaises(translations.TranslationError):
+                self.real_review_loader("fr")
+            path.write_text('{"language":"fr","translations":{"Team":"Equipe"}}', encoding="utf-8")
+            self.assertEqual(self.real_review_loader("fr"), {"Team": "Equipe"})
+
     def test_allowlist_protects_bibliography_people_and_addresses(self):
         selected = translations.collect_texts(fixture())
         self.assertIn("We study optimal transport.", selected)

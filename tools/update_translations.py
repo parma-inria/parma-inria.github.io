@@ -162,6 +162,63 @@ def read_cache(language):
     return validate_cache(cache, language)
 
 
+def validate_reviewed(reviewed, language):
+    """Validate editorial corrections without restricting natural word order."""
+    if (not isinstance(reviewed, dict) or set(reviewed) != {"language", "translations"}
+            or reviewed["language"] != language or language not in MODELS
+            or not isinstance(reviewed["translations"], dict)):
+        raise TranslationError(f"Invalid reviewed translation schema for {language}.")
+    placeholders = r"(?<!\{)\{[A-Za-z_][A-Za-z0-9_]*\}(?!\})"
+    immutable = re.compile(
+        r"\$\$[\s\S]*?\$\$|\$(?:\\.|[^$])*\$|"
+        r"\\\([\s\S]*?\\\)|\\\[[\s\S]*?\\\]|"
+        r"```[\s\S]*?```|`[^`]*`|"
+        r"[A-Za-z]+(?:[_^]\{[^{}]*\})+|\\[A-Za-z]+(?:\{[^{}]*\})*"
+    )
+    addresses = re.compile(r"https?://[^\s<>]+|[\w.+-]+@[\w.-]+\.[A-Za-z]{2,}")
+    def address_tokens(text):
+        return sorted(token.rstrip(".,;:!?)]}") for token in addresses.findall(text))
+    for original, target in reviewed["translations"].items():
+        if (not isinstance(original, str) or not original.strip()
+                or not isinstance(target, str) or not target.strip()):
+            raise TranslationError(f"Invalid reviewed translation entry for {language}.")
+        if sorted(re.findall(placeholders, original)) != sorted(re.findall(placeholders, target)):
+            raise TranslationError(f"Changed UI placeholders in reviewed {language} translation.")
+        if sorted(immutable.findall(original)) != sorted(immutable.findall(target)):
+            raise TranslationError(f"Changed mathematical notation or code in reviewed {language} translation.")
+        if address_tokens(original) != address_tokens(target):
+            raise TranslationError(f"Changed URL or email address in reviewed {language} translation.")
+    return copy.deepcopy(reviewed["translations"])
+
+
+def read_reviewed(language):
+    """Reviewed sources are editable corrections, separate from generated caches."""
+    path = CACHE_DIRECTORY / f"reviewed.{language}.json"
+    if not path.exists():
+        return {}
+    def unique_keys(pairs):
+        result = {}
+        for key, value in pairs:
+            if key in result:
+                raise TranslationError(f"Duplicate reviewed translation key in {path}.")
+            result[key] = value
+        return result
+    try:
+        reviewed = json.loads(path.read_text(encoding="utf-8"), object_pairs_hook=unique_keys)
+        return validate_reviewed(reviewed, language)
+    except (OSError, json.JSONDecodeError) as error:
+        raise TranslationError(f"Cannot read {path}: {error}") from error
+
+
+def current_reviews(sources, language, reviewed=None):
+    """A correction applies only while its exact English source is still eligible."""
+    reviewed = read_reviewed(language) if reviewed is None else validate_reviewed(
+        {"language": language, "translations": reviewed}, language,
+    )
+    eligible = set(collect_texts(sources))
+    return {original: target for original, target in reviewed.items() if original in eligible}
+
+
 def _matches(path, pattern):
     parts = pattern.split(".")
     return len(path) == len(parts) and all(
@@ -206,13 +263,13 @@ def collect_texts(sources):
     ))
 
 
-def localize_sources(sources, language, cache=None):
+def localize_sources(sources, language, cache=None, reviewed=None):
     """Return a deep copy; cache misses keep English until the next deployment."""
     localized = copy.deepcopy(sources)
     if language == "en":
         return localized
     cache = read_cache(language) if cache is None else validate_cache(cache, language)
-    translations = cache["translations"]
+    translations = {**cache["translations"], **current_reviews(sources, language, reviewed)}
     for path, source in _text_locations(localized):
         parent = localized
         for part in path[:-1]:
@@ -382,16 +439,19 @@ class MarianTranslator:
         return [" ".join(parts) for parts in result]
 
 
-def update_cache(sources, language, translator=None, cache=None):
+def update_cache(sources, language, translator=None, cache=None, reviewed=None):
     """Translate only cache misses; reject bad output before changing any cache file."""
     cache = read_cache(language) if cache is None else validate_cache(cache, language)
     texts = collect_texts(sources)
+    corrections = current_reviews(sources, language, reviewed)
     # Apply canonical month formatting only when the English UI uses that month.
     # This also repairs a previous cache produced before calendar overrides existed.
     ui_months = sources.get("ui", {}).get("months", [])
     for english, localized in CALENDAR_MONTHS[language].items():
         if english in ui_months:
             cache["translations"][english] = localized
+    # Editorial corrections have final priority, including deliberate calendar styling.
+    cache["translations"].update(corrections)
     missing = [text for text in texts if text not in cache["translations"]]
     print(f"{language}: {len(texts)} source texts, {len(missing)} new or changed", flush=True)
     if missing:
@@ -419,16 +479,19 @@ def update_cache(sources, language, translator=None, cache=None):
     cache["source_sha256"] = hashlib.sha256(
         json.dumps(texts, ensure_ascii=False, separators=(",", ":")).encode("utf-8")
     ).hexdigest()
-    require_complete(sources, language, cache)
+    require_complete(sources, language, cache, reviewed=corrections)
     return cache
 
 
-def require_complete(sources, language, cache=None):
+def require_complete(sources, language, cache=None, reviewed=None):
     """CI must never deploy a locale with untranslated cache misses."""
     cache = read_cache(language) if cache is None else validate_cache(cache, language)
     missing = [text for text in collect_texts(sources) if text not in cache["translations"]]
     if missing:
         raise TranslationError(f"{language}: {len(missing)} source texts have no cached translation.")
+    corrections = current_reviews(sources, language, reviewed)
+    if any(cache["translations"].get(original) != target for original, target in corrections.items()):
+        raise TranslationError(f"{language}: cached translations do not include the current reviewed corrections.")
     return True
 
 

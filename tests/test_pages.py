@@ -17,6 +17,12 @@ from test_seminar import fixture_sources, render_page, seminar_fixture
 
 
 class TemplateTests(unittest.TestCase):
+    def setUp(self):
+        # Fake translation-cache assertions are independent from reviewed site prose.
+        loader = patch.object(update_translations, "read_reviewed", return_value={})
+        loader.start()
+        self.addCleanup(loader.stop)
+
     def test_nested_loops_keep_parent_scope_and_if_handles_missing_photo(self):
         template = """{% for section in sections %}{{ section.title }}:
 {% for member in section.members %}{% if member.photo %}{{ member.photo }}{% else %}{{ section.title }} / {{ member.name }}{% endif %};{% endfor %}{% endfor %}{{ member }}"""
