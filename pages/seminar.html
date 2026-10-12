@@ -65,7 +65,7 @@
 
         <section class="info-card" aria-labelledby="venue-title">
           <h2 id="venue-title">{{ seminar.labels.location }}</h2>
-          <p><a href="{{ seminar.venue.url }}">{{ seminar.venue.name }}</a></p>
+          <p><a href="{{ seminar.venue.url }}" target="_blank" rel="noopener noreferrer">{{ seminar.venue.name }}</a></p>
           <p>{{ seminar.venue.building }} · {{ seminar.labels.room }} {{ seminar.venue.room }}</p>
         </section>
       </div>
@@ -76,7 +76,7 @@
       <!-- Google Maps uses the shared location in content/site.json. -->
       <div class="seminar-map map-panel">
         <iframe class="location-map" src="{{ site.map.embed_url }}" title="{{ site.map.title }}" width="960" height="320" loading="lazy" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
-        <a class="map-link" href="{{ site.map.url }}">{{ site.map.link_label }}</a>
+        <a class="map-link" href="{{ site.map.url }}" target="_blank" rel="noopener noreferrer">{{ site.map.link_label }}</a>
       </div>
 
       <!-- Latest announced programme; older programmes automatically join the archive. -->
@@ -193,7 +193,7 @@
             <h2 id="footer-institutions-title" class="footer-heading">{{ site.footer.links_label }}</h2>
             <ul class="footer-link-list">
               {% for link in site.footer.links %}
-                <li><a href="{{ link.url }}">{{ link.label }}</a></li>
+                <li><a href="{{ link.url }}" target="_blank" rel="noopener noreferrer">{{ link.label }}</a></li>
               {% endfor %}
             </ul>
           </nav>

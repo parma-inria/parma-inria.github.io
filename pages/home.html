@@ -76,7 +76,7 @@
       <section aria-labelledby="publications-title">
         <div class="section-header">
           <h2 id="publications-title" class="section-heading">{{ publications.title }}</h2>
-          <a class="section-source" href="{{ publications.source_url }}">{{ publications.source_name }}</a>
+          <a class="section-source" href="{{ publications.source_url }}" target="_blank" rel="noopener noreferrer">{{ publications.source_name }}</a>
         </div>
 
         {% if publications.items %}
@@ -84,10 +84,10 @@
             {% for paper in publications.items %}
               <article class="publication-card">
                 <p class="publication-date">{{ paper.date_label }}</p>
-                <h3><a href="{{ paper.url }}">{{ paper.title }}</a></h3>
+                <h3><a href="{{ paper.url }}" target="_blank" rel="noopener noreferrer">{{ paper.title }}</a></h3>
                 <p class="publication-authors" title="{{ paper.authors_full }}">{{ paper.authors_short }}</p>
                 <p class="publication-venue">{{ paper.venue }}</p>
-                <a class="publication-link" href="{{ paper.url }}">{{ publications.link_label }} <span aria-hidden="true">↗</span></a>
+                <a class="publication-link" href="{{ paper.url }}" target="_blank" rel="noopener noreferrer">{{ publications.link_label }} <span aria-hidden="true">↗</span></a>
               </article>
             {% endfor %}
           </div>
@@ -151,7 +151,7 @@
             <h2 id="footer-institutions-title" class="footer-heading">{{ site.footer.links_label }}</h2>
             <ul class="footer-link-list">
               {% for link in site.footer.links %}
-                <li><a href="{{ link.url }}">{{ link.label }}</a></li>
+                <li><a href="{{ link.url }}" target="_blank" rel="noopener noreferrer">{{ link.label }}</a></li>
               {% endfor %}
             </ul>
           </nav>

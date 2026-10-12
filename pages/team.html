@@ -76,7 +76,7 @@
 
                 <!-- A personal website makes the member name clickable. -->
                 <div class="member-details">
-                  <p class="member-name">{% if member.url %}<a href="{{ member.url }}">{{ member.name }}</a>{% else %}{{ member.name }}{% endif %}</p>
+                  <p class="member-name">{% if member.url %}<a href="{{ member.url }}" target="_blank" rel="noopener noreferrer">{{ member.name }}</a>{% else %}{{ member.name }}{% endif %}</p>
                   <p class="member-affiliation">{{ member.affiliation }}</p>
                 </div>
               </li>
@@ -117,7 +117,7 @@
             <h2 id="footer-institutions-title" class="footer-heading">{{ site.footer.links_label }}</h2>
             <ul class="footer-link-list">
               {% for link in site.footer.links %}
-                <li><a href="{{ link.url }}">{{ link.label }}</a></li>
+                <li><a href="{{ link.url }}" target="_blank" rel="noopener noreferrer">{{ link.label }}</a></li>
               {% endfor %}
             </ul>
           </nav>

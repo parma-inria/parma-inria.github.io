@@ -56,7 +56,7 @@
           <div class="section-header resource-section-header">
             <h2 id="{{ section.id }}-title">{{ section.title }}</h2>
             {% if loop.first %}
-              <a class="section-source" href="{{ resources.source_url }}">{{ resources.source_name }} <span aria-hidden="true">↗</span></a>
+              <a class="section-source" href="{{ resources.source_url }}" target="_blank" rel="noopener noreferrer">{{ resources.source_name }} <span aria-hidden="true">↗</span></a>
             {% endif %}
           </div>
 
@@ -65,19 +65,19 @@
             {% for resource in section.items %}
               <article class="resource-card">
                 <p class="resource-kind">{{ resource.kind }}</p>
-                <h3><a href="{{ resource.url }}">{{ resource.name }}</a></h3>
+                <h3><a href="{{ resource.url }}" target="_blank" rel="noopener noreferrer">{{ resource.name }}</a></h3>
                 <p class="resource-description prose">{{ resource.description }}</p>
 
                 <!-- Examples and documentation are optional for each resource. -->
                 {% if resource.links %}
                   <ul class="resource-links">
                     {% for link in resource.links %}
-                      <li><a href="{{ link.url }}">{{ link.label }}</a></li>
+                      <li><a href="{{ link.url }}" target="_blank" rel="noopener noreferrer">{{ link.label }}</a></li>
                     {% endfor %}
                   </ul>
                 {% endif %}
 
-                <a class="resource-repository" href="{{ resource.url }}">{{ resources.repository_label }} <span aria-hidden="true">↗</span></a>
+                <a class="resource-repository" href="{{ resource.url }}" target="_blank" rel="noopener noreferrer">{{ resources.repository_label }} <span aria-hidden="true">↗</span></a>
               </article>
             {% endfor %}
           </div>
@@ -113,7 +113,7 @@
             <h2 id="footer-institutions-title" class="footer-heading">{{ site.footer.links_label }}</h2>
             <ul class="footer-link-list">
               {% for link in site.footer.links %}
-                <li><a href="{{ link.url }}">{{ link.label }}</a></li>
+                <li><a href="{{ link.url }}" target="_blank" rel="noopener noreferrer">{{ link.label }}</a></li>
               {% endfor %}
             </ul>
           </nav>
