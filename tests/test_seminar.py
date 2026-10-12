@@ -113,18 +113,35 @@ class SeminarTests(unittest.TestCase):
             render_page("seminar", "../", fixture_sources(self.home, self.seminar), plan),
         )
 
-    def test_session_moves_from_next_to_archive_on_following_day(self):
-        on_day, home, _ = self.render(date(2026, 10, 12))
-        self.assertEqual(on_day["next"]["date"], "2026-10-12")
-        self.assertNotIn("2026-10-12", [session["date"] for session in on_day["history"][2026]])
-        self.assertIn("12 October 2026", home)
+    def test_adding_a_new_programme_immediately_archives_the_previous_one(self):
+        # Later empty calendar dates must not displace the October programme.
+        for session in self.seminar["sessions"]:
+            if session["date"] > "2026-10-12":
+                session["talks"] = []
+        before, home, _ = self.render(date(2026, 10, 9))
+        self.assertEqual(before["next"]["date"], "2026-10-12")
         self.assertIn("Current programme", home)
-        after, home, page = self.render(date(2026, 10, 13))
+
+        november = next(session for session in self.seminar["sessions"] if session["date"] == "2026-11-16")
+        november["talks"] = [talk("New speaker", "New programme")]
+        after, home, page = self.render(date(2026, 10, 9))
         self.assertEqual(after["next"]["date"], "2026-11-16")
         self.assertEqual(after["history"][2026][0]["date"], "2026-10-12")
+        self.assertNotIn("2026-11-16", [session["date"] for session in after["history"][2026]])
         self.assertIn("16 November 2026", home)
+        self.assertIn("New programme", home)
         self.assertNotIn("Current programme", home)
         self.assertIn("Current programme", page)
+
+    def test_latest_programme_stays_featured_after_its_date(self):
+        for day in (date(2026, 10, 9), date(2026, 12, 14), date(2026, 12, 15), date(2030, 9, 1)):
+            with self.subTest(day=day):
+                plan, home, page = self.render(day)
+                self.assertEqual(plan["next"]["date"], "2026-12-14")
+                self.assertIn("Later programme", home)
+                self.assertNotIn("2026-12-14", [session["date"] for session in plan["history"][2026]])
+                elements = RenderedElements(page)
+                self.assertEqual(sum(attrs.get("data-upcoming") == "true" for _, attrs in elements.elements), 1)
 
     def test_academic_year_changes_on_first_of_september(self):
         august = build.plan_seminar(self.seminar, date(2026, 8, 31))
@@ -135,31 +152,43 @@ class SeminarTests(unittest.TestCase):
         self.assertEqual(september["calendar"][0]["date"], "2026-09-01")
         self.assertEqual(september["history"][2025][0]["date"], "2026-08-31")
 
-    def test_planned_session_and_no_future_have_clear_messages(self):
-        planned, home, page = self.render(date(2026, 10, 13))
-        self.assertEqual(planned["next"]["talks"], [])
-        self.assertIn("Programme to be announced.", home)
-        self.assertIn("Programme to be announced.", page)
-        future, home, page = self.render(date(2030, 9, 1))
-        self.assertIsNone(future["next"])
-        self.assertEqual(future["calendar"], [])
+    def test_empty_calendar_slots_do_not_become_a_programme(self):
+        for session in self.seminar["sessions"]:
+            session["talks"] = []
+        plan, home, page = self.render(date(2026, 10, 9))
+        self.assertIsNone(plan["next"])
+        self.assertTrue(plan["calendar"])
+        self.assertEqual(plan["history"], {})
         self.assertIn("No upcoming session.", home)
         self.assertIn("No upcoming session.", page)
-        self.assertNotIn('<p class="session-date"></p>', home)
+        self.assertNotIn('data-upcoming="true"', page)
 
-    def test_all_announced_future_talks_and_calendar_dates_stay_visible(self):
+        self.seminar["sessions"] = []
         plan, home, page = self.render(date(2026, 10, 9))
-        self.assertEqual(plan["next"]["date"], "2026-10-12")
-        self.assertIn("Later programme", page)
-        self.assertNotIn("Later programme", home)
+        self.assertIsNone(plan["next"])
+        self.assertEqual(plan["calendar"], [])
+        self.assertIn("No upcoming session.", home)
+        self.assertIn("No upcoming session.", page)
+
+    def test_only_latest_programme_is_featured_and_calendar_dates_stay_visible(self):
+        original = copy.deepcopy(self.seminar)
+        plan, home, page = self.render(date(2026, 10, 9))
+        self.assertEqual(plan["next"]["date"], "2026-12-14")
+        self.assertIn("Later programme", home)
+        self.assertNotIn("Current programme", home)
+        featured = page.split('<section aria-labelledby="next-session-title">', 1)[1].split('</section>', 1)[0]
+        self.assertIn("Later programme", featured)
+        self.assertNotIn("Current programme", featured)
+        self.assertIn("Current programme", page)
         elements = RenderedElements(page)
-        self.assertEqual(sum(attributes.get("data-upcoming") == "true" for _, attributes in elements.elements), 2)
+        self.assertEqual(sum(attributes.get("data-upcoming") == "true" for _, attributes in elements.elements), 1)
         expected_dates = [date.fromisoformat(session["date"]).strftime("%d/%m/%Y") for session in plan["calendar"]]
         self.assertEqual(sorted(cell for cell in elements.calendar_cells if cell), sorted(expected_dates))
         self.assertEqual(elements.calendar_cells, ["01/09/2026", "14/12/2026", "12/10/2026", "05/04/2027", "16/11/2026", ""])
+        self.assertEqual(self.seminar, original)
 
     def test_editable_text_is_escaped_and_abstract_paragraphs_remain_separate(self):
-        current = next(session for session in self.seminar["sessions"] if session["date"] == "2026-10-12")
+        current = next(session for session in self.seminar["sessions"] if session["date"] == "2026-12-14")
         current["talks"][0] = {
             "time": "", "speaker": '<img src=x onerror="bad">',
             "title": "A & B", "abstract": ["x < y", "second & third"],

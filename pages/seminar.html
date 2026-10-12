@@ -79,37 +79,31 @@
         <a class="map-link" href="{{ site.map.url }}">{{ site.map.link_label }}</a>
       </div>
 
-      <!-- Upcoming sessions: dates, speakers and abstracts from content/seminar.json. -->
+      <!-- Latest announced programme; older programmes automatically join the archive. -->
       <section aria-labelledby="next-session-title">
         <h2 id="next-session-title" class="section-heading">{{ seminar.labels.next_session }}</h2>
-        {% if programme.upcoming %}
-          {% for session in programme.upcoming %}
-            <article class="session-card" data-upcoming="true">
-              <h3 class="session-date">{{ session.date_label }}</h3>
-              {% if session.talks %}
-                {% for talk in session.talks %}
-                  <article class="talk">
-                    {% if talk.meta %}
-                      <p class="talk-meta">{% if talk.time %}<strong>{{ talk.time }}</strong> {% endif %}{{ talk.speaker }}</p>
-                    {% endif %}
+        {% if programme.next %}
+          <article class="session-card" data-upcoming="true">
+            <h3 class="session-date">{{ programme.next.date_label }}</h3>
+            {% for talk in programme.next.talks %}
+              <article class="talk">
+                {% if talk.meta %}
+                  <p class="talk-meta">{% if talk.time %}<strong>{{ talk.time }}</strong> {% endif %}{{ talk.speaker }}</p>
+                {% endif %}
 
-                    {% if talk.title %}
-                      <p class="talk-title">{{ talk.title }}</p>
-                    {% endif %}
+                {% if talk.title %}
+                  <p class="talk-title">{{ talk.title }}</p>
+                {% endif %}
 
-                    {% if talk.abstract %}
-                      <p class="abstract-label">{{ seminar.labels.abstract }}</p>
-                      {% for paragraph in talk.abstract %}
-                        <p class="abstract-text">{{ paragraph }}</p>
-                      {% endfor %}
-                    {% endif %}
-                  </article>
-                {% endfor %}
-              {% else %}
-                <p>{{ seminar.labels.empty_programme }}</p>
-              {% endif %}
-            </article>
-          {% endfor %}
+                {% if talk.abstract %}
+                  <p class="abstract-label">{{ seminar.labels.abstract }}</p>
+                  {% for paragraph in talk.abstract %}
+                    <p class="abstract-text">{{ paragraph }}</p>
+                  {% endfor %}
+                {% endif %}
+              </article>
+            {% endfor %}
+          </article>
         {% else %}
           <p>{{ seminar.labels.empty_next_session }}</p>
         {% endif %}

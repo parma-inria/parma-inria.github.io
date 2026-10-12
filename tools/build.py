@@ -315,23 +315,25 @@ def academic_year_start(day):
 
 
 def plan_seminar(seminar, today=None):
-    """Derive every view from the same dates; an explicit date makes checks repeatable."""
+    """Feature the latest programme; use today's academic year for the calendar."""
     today = today or date.today()
     sessions = sorted(seminar["sessions"], key=lambda session: session["date"])
-    upcoming = [session for session in sessions if date.fromisoformat(session["date"]) >= today]
+    # Empty dates reserve calendar slots without replacing an announced programme.
+    announced = [session for session in sessions if session["talks"]]
+    current = announced[-1] if announced else None
     year = academic_year_start(today)
     calendar = [
         session for session in sessions
         if academic_year_start(date.fromisoformat(session["date"])) == year
     ]
     history = {}
-    for session in reversed(sessions):
+    # Adding a newer programme immediately moves every previous one to the archive.
+    for session in reversed(announced):
         session_day = date.fromisoformat(session["date"])
-        if session_day < today and session["talks"]:
+        if session is not current:
             history.setdefault(academic_year_start(session_day), []).append(session)
     return {
-        "next": upcoming[0] if upcoming else None,
-        "upcoming": upcoming,
+        "next": current,
         "calendar": calendar,
         "academic_year": year,
         "history": history,
@@ -480,10 +482,6 @@ def prepare_programme(seminar, plan):
     year = plan["academic_year"]
     return {
         "next": session_data(plan["next"]) if plan["next"] else None,
-        "upcoming": [
-            session_data(session) for session in plan["upcoming"]
-            if session is plan["next"] or session["talks"]
-        ],
         "calendar": [
             {"left": dates[index],
              "right": dates[midpoint + index] if midpoint + index < len(dates) else ""}

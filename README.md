@@ -127,9 +127,9 @@ Add another object to `talks` for a second presentation. Keep `abstract` as a li
 
 Archive years are collapsible: click a year to open or close its sessions. Former team members remain visible on the team page.
 
-The build automatically selects the earliest session on or after its date, including planned sessions whose programme has not yet been announced. It derives the calendar and September-to-August academic years from the dates, and groups completed sessions with talks into the archive. The file is arranged with recent dates first for convenience; the build sorts dates itself.
+The home page and the seminar's **Next Session** section show the same single programme: the session with the latest date whose `talks` list is not empty. Future dates with `"talks": []` reserve calendar slots without replacing that programme. Adding talks to a newer session immediately moves every older programme into the collapsible archive, grouped by academic year. The selected programme stays visible, even after its date, until a newer programme is added. The order of entries in the JSON does not affect this selection.
 
-These selections are calculated **when the site is generated**, using that day's date. GitHub's daily workflow regenerates the published site, and every pushed change also rebuilds it. You do not need to move old sessions manually or edit `content/home.json` when the programme changes.
+These views are calculated **when the site is generated**. Only the September-to-August calendar uses today's date to choose its academic year. GitHub's daily workflow regenerates the published site, and every pushed change also rebuilds it. You do not need to move old sessions manually or edit `content/home.json` when the programme changes.
 
 ### Changing the banner image and logo
 
