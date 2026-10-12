@@ -12,7 +12,7 @@ ROOT = Path(__file__).resolve().parents[1]
 PAGE_PATHS = (
     'index.html',
     'team-members/index.html',
-    'francais-gdt-edp-ot-ml/index.html',
+    'gdt-ot-pde-ml/index.html',
     'resources/index.html',
     'contact/index.html',
 )

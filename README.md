@@ -178,7 +178,7 @@ JSON values are inserted with `{{ field.path }}`. Repeated items use a loop:
 
 You can edit the HTML around these placeholders directly. Every loop needs `{% endfor %}` and every condition needs `{% endif %}`. Inserted values are escaped automatically. Python expressions, template includes and raw HTML from JSON are not supported.
 
-The five pages use the URLs `/`, `/team-members/`, `/francais-gdt-edp-ot-ml/`, `/resources/` and `/contact/`. The `/en/` versions are generated from the same content. The build calculates relative links for each route.
+The five pages use the URLs `/`, `/team-members/`, `/gdt-ot-pde-ml/`, `/resources/` and `/contact/`. The `/en/` versions are generated from the same content. The build calculates relative links for each route.
 
 The generated descriptive text currently uses Lorem ipsum while the team decides what to write. The home introduction already edited by Mattia and the original scientific abstracts, dates, names and contact details are preserved.
 
