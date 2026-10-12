@@ -62,6 +62,20 @@ class TranslationTests(unittest.TestCase):
         loader.start()
         self.addCleanup(loader.stop)
 
+    def test_italian_optimal_transport_term_applies_to_new_text_and_keeps_scientific_titles(self):
+        title = "Trasporto Ottimale: an original scientific title"
+        sources = {"home": {"introduction": ["A new discussion of optimal transport."]},
+                   "publications": {"items": [{"title": title}]}}
+        target = "Trasporto Ottimale; trasporto ottimale; TRASPORTO OTTIMALE; `trasporto ottimale`"
+        expected = "Trasporto Ottimo; trasporto ottimo; TRASPORTO OTTIMO; `trasporto ottimale`"
+        cache = translations.update_cache(sources, "it", lambda pieces: [target for _ in pieces], reviewed={})
+        self.assertEqual(cache["translations"][sources["home"]["introduction"][0]], expected)
+        localized = translations.localize_sources(sources, "it", cache, reviewed={})
+        self.assertEqual(localized["home"]["introduction"], [expected])
+        self.assertEqual(localized["publications"]["items"][0]["title"], title)
+        self.assertEqual(translations.preferred_terminology(target, "fr"), target)
+        self.assertEqual(translations.localize_sources(sources, "en"), sources)
+
     def test_reviewed_schema_preserves_placeholders_math_and_addresses(self):
         invalid = [
             {"language": "it", "translations": {}},

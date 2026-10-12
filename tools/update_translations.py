@@ -162,6 +162,26 @@ def read_cache(language):
     return validate_cache(cache, language)
 
 
+def preferred_terminology(text, language):
+    """Use the team's Italian terminology in translated prose, preserving code/math."""
+    if language != "it":
+        return text
+    protected = (
+        r"(```[\s\S]*?```|`[^`]*`|\$\$[\s\S]*?\$\$|\$(?:\\.|[^$])*\$|"
+        r"\\\([\s\S]*?\\\)|\\\[[\s\S]*?\\\]|"
+        r"https?://[^\s<>]+|[\w.+-]+@[\w.-]+\.[A-Za-z]{2,})"
+    )
+    def replace_term(match):
+        adjective = match[3]
+        preferred = "OTTIMO" if adjective.isupper() else "Ottimo" if adjective[0].isupper() else "ottimo"
+        return match[1] + match[2] + preferred
+    parts = re.split(protected, text)
+    return "".join(
+        part if index % 2 else re.sub(r"\b(trasporto)(\s+)(ottimale)\b", replace_term, part, flags=re.IGNORECASE)
+        for index, part in enumerate(parts)
+    )
+
+
 def validate_reviewed(reviewed, language):
     """Validate editorial corrections without restricting natural word order."""
     if (not isinstance(reviewed, dict) or set(reviewed) != {"language", "translations"}
@@ -216,7 +236,8 @@ def current_reviews(sources, language, reviewed=None):
         {"language": language, "translations": reviewed}, language,
     )
     eligible = set(collect_texts(sources))
-    return {original: target for original, target in reviewed.items() if original in eligible}
+    return {original: preferred_terminology(target, language)
+            for original, target in reviewed.items() if original in eligible}
 
 
 def _matches(path, pattern):
@@ -274,7 +295,7 @@ def localize_sources(sources, language, cache=None, reviewed=None):
         parent = localized
         for part in path[:-1]:
             parent = parent[part]
-        parent[path[-1]] = translations.get(source, source)
+        parent[path[-1]] = preferred_terminology(translations[source], language) if source in translations else source
     return localized
 
 
@@ -476,6 +497,8 @@ def update_cache(sources, language, translator=None, cache=None, reviewed=None):
                 left, body, right = _prose_piece(part)
                 parts.append(part if protected or body not in lookup else left + lookup[body].strip() + right)
             cache["translations"][text] = "".join(parts)
+    for text in texts:
+        cache["translations"][text] = preferred_terminology(cache["translations"][text], language)
     cache["source_sha256"] = hashlib.sha256(
         json.dumps(texts, ensure_ascii=False, separators=(",", ":")).encode("utf-8")
     ).hexdigest()
