@@ -6,7 +6,7 @@
     "revision": "be5a254d936f1a8c8da080406ca582a6615e6658"
   },
   "schema_version": 1,
-  "source_sha256": "5bae7a139728ecbd74b5137b0bee1f0aa93408b6d77d7c44c8065f60962f4118",
+  "source_sha256": "2dd781dc7724d1013c79f0137025cb75e402e5f06d1e756e1b83bcf7cd49195a",
   "translations": {
     "A cloud of particles forming our logo": "Una nuvola di particelle compone il nostro logo",
     "Abstract": "Abstract",
@@ -27,6 +27,7 @@
     "Contact page": "Pagina dei contatti",
     "December": "dicembre",
     "Delegation": "Ricercatori in distacco",
+    "Discover the PaMa team and its research": "Scopri il team PaMa e la sua ricerca",
     "Documentation source": "Sorgenti della documentazione",
     "English: The JKO scheme is an approximation method for finding solutions ρ of PDEs of the form “a continuity equation where the velocity field v is the negative gradient of the first variation of a functional F”. For computational reasons, one is tempted to replace the true transport cost defining W_2 by its entropic regularization (Sinkhorn approximation). When ε/τ→α, the limiting equation is the gradient flow of F with an additional term of the form αΔρ.": "Traduzione dell'abstract inglese: lo schema JKO è un metodo di approssimazione per trovare soluzioni ρ di equazioni alle derivate parziali della forma «un'equazione di continuità in cui il campo di velocità v è l'opposto del gradiente della prima variazione di un funzionale F». Per ragioni di calcolo, si può essere tentati di sostituire il costo di trasporto che definisce W_2 con la sua regolarizzazione entropica (approssimazione di Sinkhorn). Quando ε/τ→α, l'equazione limite è il flusso gradiente di F con un termine aggiuntivo della forma αΔρ.",
     "Entropic Optimal Tranport is now a common tool in machine learning through the use of Sinkhorn algorithm. It is thus commonly use in routines where backpropagation is applied. In this talk, I will discuss some properties of the derivatives of EOT and Sinkhorn’s iterates. Joint work with E. Pauwels (TSE).": "Il trasporto ottimo entropico è ormai uno strumento comune nell'apprendimento automatico grazie all'algoritmo di Sinkhorn. Viene quindi utilizzato di frequente in procedure che impiegano la retropropagazione. In questo intervento discuterò alcune proprietà delle derivate dell'EOT e delle iterate di Sinkhorn. Lavoro congiunto con E. Pauwels (TSE).",
