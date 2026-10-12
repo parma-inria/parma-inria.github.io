@@ -138,7 +138,7 @@
     }
 
     window.addEventListener("hashchange", revealCalendarTarget);
-    document.querySelectorAll(".schedule-link, .calendar-jump").forEach((link) => {
+    document.querySelectorAll(".schedule-link").forEach((link) => {
       link.addEventListener("click", () => {
         // Clicking the same date twice does not emit another hashchange.
         if (window.location.hash === link.hash) revealCalendarTarget();

@@ -198,7 +198,7 @@ JSON values are inserted with `{{ field.path }}`. Repeated items use a loop:
 
 You can edit the HTML around these placeholders directly. Every loop needs `{% endfor %}` and every condition needs `{% endif %}`. Inserted values are escaped automatically. Python expressions, template includes and raw HTML from JSON are not supported.
 
-The seminar starts with its latest announced programme and a chronological academic-year agenda. Announced dates link directly to their programme; older programmes open inside the archive, and empty calendar slots show that their programme is pending. The agenda is beside the programme on desktop and has an `All dates` shortcut on mobile. Dates, states and archive links all come from `content/seminar.json`; no calendar needs to be updated separately.
+The seminar starts with its latest announced programme and a chronological academic-year agenda. Announced dates link directly to their programme; older programmes open inside the archive, and empty calendar slots show that their programme is pending. The agenda is beside the programme on desktop and below it on mobile. Dates, states and archive links all come from `content/seminar.json`; no calendar needs to be updated separately.
 
 The five English pages use the URLs `/`, `/team-members/`, `/gdt-ot-pde-ml/`, `/resources/` and `/contact/`. Each has a French `/fr/` route, an Italian `/it/` route and an English `/en/` alias. All 20 generated pages share the same five HTML source files. The build calculates relative links for each route and keeps page navigation in the chosen language.
 

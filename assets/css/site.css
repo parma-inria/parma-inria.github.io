@@ -969,10 +969,6 @@ ul, ol {
 .programme-heading .section-heading {
   margin: 0;
 }
-.calendar-jump {
-  font-size: .86rem;
-  white-space: nowrap;
-}
 .seminar-practical .seminar-info-grid {
   margin-top: 0;
 }
@@ -1130,9 +1126,6 @@ ul, ol {
   .programme-heading .section-heading {
     margin-bottom: 8px;
   }
-  .calendar-jump {
-    margin-bottom: 12px;
-  }
 }
 @media print {
   .seminar-programme-layout {
@@ -1141,9 +1134,6 @@ ul, ol {
   .schedule-panel {
     position: static;
     margin-block: 24px;
-  }
-  .calendar-jump {
-    display: none;
   }
 }
 

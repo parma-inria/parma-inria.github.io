@@ -70,7 +70,6 @@
         <section aria-labelledby="next-session-title">
           <div class="programme-heading">
             <h2 id="next-session-title" class="section-heading">{{ seminar.labels.next_session }}</h2>
-            <a class="calendar-jump" href="#schedule-title">{{ ui.calendar_jump }} <span aria-hidden="true">→</span></a>
           </div>
           {% if programme.next %}
             <article class="session-card" id="{{ programme.next.id }}" tabindex="-1" data-upcoming="true">

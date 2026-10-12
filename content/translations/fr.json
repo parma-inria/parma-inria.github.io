@@ -6,7 +6,7 @@
     "revision": "dd7f6540a7a48a7f4db59e5c0b9c42c8eea67f18"
   },
   "schema_version": 1,
-  "source_sha256": "807fefa952508101b99403cc7c22ee964676a7584babce183a7a62e38327f4c6",
+  "source_sha256": "5bae7a139728ecbd74b5137b0bee1f0aa93408b6d77d7c44c8065f60962f4118",
   "translations": {
     "A cloud of particles forming our logo": "Un nuage de particules formant notre logo",
     "Abstract": "Résumé",
@@ -105,6 +105,7 @@
     "SOFTWARE · DOCUMENTATION · EXAMPLES": "LOGICIELS · DOCUMENTATION · EXEMPLES",
     "Schedule of the Year": "Calendrier de l’année universitaire",
     "Search by name, affiliation or role": "Rechercher par nom, affiliation ou fonction",
+    "See more": "Voir plus",
     "See the seminar program": "Voir le programme du séminaire",
     "Semi-discrete optimal transport tools, with Python examples and documentation sources.": "Outils de transport optimal semi-discret, avec des exemples en Python et les sources de la documentation.",
     "Seminar calendar": "Calendrier du séminaire",

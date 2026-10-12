@@ -161,7 +161,7 @@ def translation_sources(sources):
         **sources,
         "ui": {
             "language_label": "Language",
-            "calendar_jump": "All dates",
+            "publications_more": "See more",
             "calendar_hint": "Open available programmes by selecting a date.",
             "calendar_latest": "Latest programme",
             "calendar_available": "Programme available",
