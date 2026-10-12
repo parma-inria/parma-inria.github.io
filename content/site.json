@@ -2,7 +2,7 @@
   "name": "ParMA",
   "language": "en",
   "theme_color": "#06365a",
-  "brand_caption": "Optimal transport & particle methods",
+  "brand_caption": "Optimal Transport & Particle Methods",
   "skip_label": "Skip to content",
   "menu_label": "Menu",
   "navigation_label": "Main navigation",
@@ -17,7 +17,7 @@
         "title_lines": [
           "ParMa"
         ],
-        "lead": "Optimal Transport and Applications"
+        "lead": "Optimal Transport & Particle Methods"
       }
     },
     {
@@ -74,7 +74,7 @@
     }
   ],
   "footer": {
-    "tagline": "Optimal Transport and Applications",
+    "tagline": "Optimal Transport & Particle Methods",
     "note": "Research team at Inria Saclay, in partnership with CNRS and Université Paris-Saclay.",
     "links_label": "Institutional links",
     "links": [
