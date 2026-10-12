@@ -1,4 +1,5 @@
 {
+  "engine_version": 2,
   "language": "it",
   "model": {
     "id": "Helsinki-NLP/opus-mt-en-it",
