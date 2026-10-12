@@ -65,83 +65,105 @@
 
     <!-- Page content -->
     <main id="main" class="container content-container">
-      <!-- Organizers, mailing list and venue -->
-      <div class="info-grid seminar-info-grid">
-        <section class="info-card" aria-labelledby="organizers-title">
-          <h2 id="organizers-title">{{ seminar.labels.organizers }}</h2>
-          <ul class="organizer-list">
-            {% for organizer in seminar.organizers %}
-              <li>
-                <p>{% if organizer.url %}<a href="{{ organizer.url }}" target="_blank" rel="noopener noreferrer">{{ organizer.name }}</a>{% else %}{{ organizer.name }}{% endif %} (<a href="mailto:{{ organizer.email }}">{{ organizer.email }}</a>)</p>
-              </li>
-            {% endfor %}
-          </ul>
+      <div class="seminar-programme-layout">
+        <!-- Latest announced programme; older programmes automatically join the archive. -->
+        <section aria-labelledby="next-session-title">
+          <div class="programme-heading">
+            <h2 id="next-session-title" class="section-heading">{{ seminar.labels.next_session }}</h2>
+            <a class="calendar-jump" href="#schedule-title">{{ ui.calendar_jump }} <span aria-hidden="true">→</span></a>
+          </div>
+          {% if programme.next %}
+            <article class="session-card" id="{{ programme.next.id }}" tabindex="-1" data-upcoming="true">
+              <h3 class="session-date">{{ programme.next.date_label }}</h3>
+              {% for talk in programme.next.talks %}
+                <article class="talk">
+                  {% if talk.meta %}
+                    <p class="talk-meta">{% if talk.time %}<strong>{{ talk.time }}</strong> {% endif %}{{ talk.speaker }}</p>
+                  {% endif %}
+
+                  {% if talk.title %}
+                    <p class="talk-title" translate="no">{{ talk.title }}</p>
+                  {% endif %}
+
+                  {% if talk.abstract %}
+                    <p class="abstract-label">{{ seminar.labels.abstract }}</p>
+                    {% for paragraph in talk.abstract %}
+                      <p class="abstract-text">{{ paragraph }}</p>
+                    {% endfor %}
+                  {% endif %}
+                </article>
+              {% endfor %}
+            </article>
+          {% else %}
+            <p>{{ seminar.labels.empty_next_session }}</p>
+          {% endif %}
         </section>
 
-        <section class="info-card" aria-labelledby="venue-title">
-          <h2 id="venue-title">{{ seminar.labels.location }}</h2>
-          <p><a href="{{ seminar.venue.url }}" target="_blank" rel="noopener noreferrer">{{ seminar.venue.name }}</a></p>
-          <p>{{ seminar.venue.building }} · {{ seminar.labels.room }} {{ seminar.venue.room }}</p>
-        </section>
-      </div>
-
-      <!-- Mailing-list invitation belongs below both information cards. -->
-      <p class="mailing-list-note">{{ seminar.mailing_list_note }}</p>
-
-      <!-- Google Maps uses the shared location in content/site.json. -->
-      <div class="seminar-map map-panel">
-        <iframe class="location-map" src="{{ site.map.embed_url }}" title="{{ site.map.title }}" width="960" height="320" loading="lazy" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
-        <a class="map-link" href="{{ site.map.url }}" target="_blank" rel="noopener noreferrer">{{ site.map.link_label }}</a>
-      </div>
-
-      <!-- Latest announced programme; older programmes automatically join the archive. -->
-      <section aria-labelledby="next-session-title">
-        <h2 id="next-session-title" class="section-heading">{{ seminar.labels.next_session }}</h2>
-        {% if programme.next %}
-          <article class="session-card" data-upcoming="true">
-            <h3 class="session-date">{{ programme.next.date_label }}</h3>
-            {% for talk in programme.next.talks %}
-              <article class="talk">
-                {% if talk.meta %}
-                  <p class="talk-meta">{% if talk.time %}<strong>{{ talk.time }}</strong> {% endif %}{{ talk.speaker }}</p>
-                {% endif %}
-
-                {% if talk.title %}
-                  <p class="talk-title" translate="no">{{ talk.title }}</p>
-                {% endif %}
-
-                {% if talk.abstract %}
-                  <p class="abstract-label">{{ seminar.labels.abstract }}</p>
-                  {% for paragraph in talk.abstract %}
-                    <p class="abstract-text">{{ paragraph }}</p>
-                  {% endfor %}
-                {% endif %}
-              </article>
-            {% endfor %}
-          </article>
-        {% else %}
-          <p>{{ seminar.labels.empty_next_session }}</p>
-        {% endif %}
-      </section>
-
-      <!-- Calendar for the current academic year, using the same session dates. -->
-      <section aria-labelledby="schedule-title">
-        <h2 id="schedule-title" class="section-heading">{{ seminar.labels.schedule }}</h2>
-        <p>{{ programme.schedule_description }}</p>
-        <div class="table-wrap">
-          <table class="schedule-table" aria-label="{{ programme.schedule_description }}">
-            <tbody>
-              {% if programme.calendar %}
-                {% for row in programme.calendar %}
-                  <tr><td>{{ row.left }}</td><td>{{ row.right }}</td></tr>
+        <!-- A chronological agenda, beside the programme on desktop and below it on mobile. -->
+        <aside class="schedule-panel" aria-labelledby="schedule-title">
+          <div class="schedule-header">
+            <h2 id="schedule-title" tabindex="-1">{{ seminar.labels.schedule }}</h2>
+            <p class="schedule-year"><span>{{ seminar.labels.academic_year }}</span><strong>{{ programme.academic_year_label }}</strong></p>
+          </div>
+          <p class="schedule-hint">{{ ui.calendar_hint }}</p>
+          {% if programme.calendar %}
+            <ol class="seminar-calendar" aria-label="{{ programme.schedule_description }}">
+              {% for entry in programme.calendar %}
+                <li class="schedule-item schedule-item-{{ entry.state }}" data-date="{{ entry.date }}">
+                  {% if entry.href %}
+                    <a class="schedule-entry schedule-link" href="{{ entry.href }}">
+                  {% else %}
+                    <div class="schedule-entry">
+                  {% endif %}
+                    <time class="schedule-date" datetime="{{ entry.date }}">
+                      <span class="schedule-day">{{ entry.day }}</span>
+                      <span class="schedule-month">{{ entry.month_year }}</span>
+                    </time>
+                    <span class="schedule-status">{{ entry.status }}{% if entry.href %}<span class="schedule-arrow" aria-hidden="true">→</span>{% endif %}</span>
+                  {% if entry.href %}
+                    </a>
+                  {% else %}
+                    </div>
+                  {% endif %}
+                </li>
+              {% endfor %}
+            </ol>
+          {% else %}
+            <p>{{ ui.calendar_empty }}</p>
+          {% endif %}
+        </aside>
+        <div class="seminar-practical">
+          <!-- Organizers, mailing list and venue -->
+          <div class="info-grid seminar-info-grid">
+            <section class="info-card" aria-labelledby="organizers-title">
+              <h2 id="organizers-title">{{ seminar.labels.organizers }}</h2>
+              <ul class="organizer-list">
+                {% for organizer in seminar.organizers %}
+                  <li>
+                    <p>{% if organizer.url %}<a href="{{ organizer.url }}" target="_blank" rel="noopener noreferrer">{{ organizer.name }}</a>{% else %}{{ organizer.name }}{% endif %} (<a href="mailto:{{ organizer.email }}">{{ organizer.email }}</a>)</p>
+                  </li>
                 {% endfor %}
-              {% else %}
-                <tr><td colspan="2">{{ seminar.labels.empty_next_session }}</td></tr>
-              {% endif %}
-            </tbody>
-          </table>
+              </ul>
+            </section>
+
+            <section class="info-card" aria-labelledby="venue-title">
+              <h2 id="venue-title">{{ seminar.labels.location }}</h2>
+              <p><a href="{{ seminar.venue.url }}" target="_blank" rel="noopener noreferrer">{{ seminar.venue.name }}</a></p>
+              <p>{{ seminar.venue.building }} · {{ seminar.labels.room }} {{ seminar.venue.room }}</p>
+            </section>
+          </div>
+
+          <!-- Mailing-list invitation belongs below both information cards. -->
+          <p class="mailing-list-note">{{ seminar.mailing_list_note }}</p>
+
+          <!-- Google Maps uses the shared location in content/site.json. -->
+          <div class="seminar-map map-panel">
+            <iframe class="location-map" src="{{ site.map.embed_url }}" title="{{ site.map.title }}" width="960" height="320" loading="lazy" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+            <a class="map-link" href="{{ site.map.url }}" target="_blank" rel="noopener noreferrer">{{ site.map.link_label }}</a>
+          </div>
+
         </div>
-      </section>
+      </div>
 
       <!-- Archive by academic year: each details element starts closed. -->
       <section aria-labelledby="history-title">
@@ -152,7 +174,7 @@
 
             <div class="archive-content">
               {% for session in archive.sessions %}
-                <article class="session-card">
+                <article class="session-card" id="{{ session.id }}" tabindex="-1">
                   <h3 class="session-date">{{ session.date_label }}</h3>
                   {% for talk in session.talks %}
                     <article class="talk">

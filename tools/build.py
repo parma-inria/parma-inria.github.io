@@ -161,6 +161,12 @@ def translation_sources(sources):
         **sources,
         "ui": {
             "language_label": "Language",
+            "calendar_jump": "All dates",
+            "calendar_hint": "Open available programmes by selecting a date.",
+            "calendar_latest": "Latest programme",
+            "calendar_available": "Programme available",
+            "calendar_pending": "Programme pending",
+            "calendar_empty": "No dates announced for this academic year.",
             "schedule_description": "Seminar dates for academic year {start}–{end}",
             "member_count": "{count} members",
             "member_filtered_count": "{visible} of {total} members shown",
@@ -600,14 +606,15 @@ def render_html(source, context):
 
 
 def prepare_programme(seminar, plan, ui=None):
-    """Prepare display labels, calendar columns and archive groups for the HTML."""
+    """Prepare localized dates, linked annual agenda entries and archive groups."""
     labels = seminar["labels"]
     ui = ui or translation_sources({})["ui"]
 
     def session_data(session):
         return {
             **session,
-            "date_label": session_date_label(session, labels),
+            "id": "session-" + session["date"],
+            "date_label": session_date_label(session, labels, home=True, months=ui["months"]),
             "date_home_label": session_date_label(session, labels, home=True, months=ui["months"]),
             "talks": [
                 {**talk, "meta": " · ".join(
@@ -617,18 +624,26 @@ def prepare_programme(seminar, plan, ui=None):
             ],
         }
 
-    # Split the academic-year calendar into two columns.
-    dates = [date.fromisoformat(session["date"]).strftime("%d/%m/%Y")
-             for session in plan["calendar"]]
-    midpoint = (len(dates) + 1) // 2
+    # Every year entry follows chronological JSON-derived order. Only announced
+    # programmes have links; pending slots remain visible without implying a talk.
+    calendar = []
+    for session in plan["calendar"]:
+        day = date.fromisoformat(session["date"])
+        is_featured = bool(plan["next"] and session["date"] == plan["next"]["date"])
+        state = "latest" if is_featured else "available" if session["talks"] else "pending"
+        calendar.append({
+            "date": session["date"],
+            "day": str(day.day),
+            "month_year": f"{ui['months'][day.month - 1]} {day.year}",
+            "state": state,
+            "status": ui["calendar_" + state],
+            "href": "#session-" + session["date"] if session["talks"] else "",
+        })
     year = plan["academic_year"]
     return {
         "next": session_data(plan["next"]) if plan["next"] else None,
-        "calendar": [
-            {"left": dates[index],
-             "right": dates[midpoint + index] if midpoint + index < len(dates) else ""}
-            for index in range(midpoint)
-        ],
+        "calendar": calendar,
+        "academic_year_label": f"{year}–{year + 1}",
         "academic_year": year,
         "schedule_description": ui["schedule_description"].format(start=year, end=year + 1),
         "history": [

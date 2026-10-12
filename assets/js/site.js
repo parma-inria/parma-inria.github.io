@@ -117,8 +117,39 @@
     filterMembers();
   }
 
+  // Annual agenda links reveal the matching archived programme and keep its URL shareable.
+  function initializeSeminarCalendar() {
+    if (!document.querySelector(".seminar-calendar")) return;
+
+    function revealCalendarTarget() {
+      const id = window.location.hash.slice(1);
+      if (id !== "schedule-title" && !/^session-\d{4}-\d{2}-\d{2}$/.test(id)) return;
+      const session = document.getElementById(id);
+      if (!session) return;
+      const archive = session.closest("details");
+      if (archive) archive.open = true;
+      // Native fragment scrolling and scripted scrolling must use the same offset.
+      const header = document.querySelector(".site-header");
+      document.documentElement.style.scrollPaddingTop = `${(header?.offsetHeight || 0) + 16}px`;
+      window.requestAnimationFrame(() => {
+        session.scrollIntoView({ block: "start" });
+        session.focus({ preventScroll: true });
+      });
+    }
+
+    window.addEventListener("hashchange", revealCalendarTarget);
+    document.querySelectorAll(".schedule-link, .calendar-jump").forEach((link) => {
+      link.addEventListener("click", () => {
+        // Clicking the same date twice does not emit another hashchange.
+        if (window.location.hash === link.hash) revealCalendarTarget();
+      });
+    });
+    revealCalendarTarget();
+  }
+
   // Startup: the deferred script runs after the page markup has been parsed.
   initializeNavigation();
   initializeMemberPortraits();
   initializeMemberSearch();
+  initializeSeminarCalendar();
 })();

@@ -70,34 +70,19 @@ def render_page(page_id, prefix, sources, plan):
 
 
 class RenderedElements(HTMLParser):
-    """Read output attributes and calendar cells without relying on indentation."""
+    """Read calendar dates and output attributes independently of presentation."""
 
     def __init__(self, document):
         super().__init__()
         self.elements = []
-        self.calendar_cells = []
-        self.in_calendar = False
-        self.cell_text = None
+        self.calendar_dates = []
         self.feed(document)
 
     def handle_starttag(self, tag, attributes):
         attributes = dict(attributes)
         self.elements.append((tag, attributes))
-        if tag == "table" and attributes.get("class") == "schedule-table":
-            self.in_calendar = True
-        if tag == "td" and self.in_calendar:
-            self.cell_text = ""
-
-    def handle_data(self, text):
-        if self.cell_text is not None:
-            self.cell_text += text
-
-    def handle_endtag(self, tag):
-        if tag == "td" and self.cell_text is not None:
-            self.calendar_cells.append(self.cell_text.strip())
-            self.cell_text = None
-        if tag == "table":
-            self.in_calendar = False
+        if tag == "time" and attributes.get("class") == "schedule-date":
+            self.calendar_dates.append(attributes["datetime"])
 
 
 class SeminarTests(unittest.TestCase):
@@ -182,9 +167,16 @@ class SeminarTests(unittest.TestCase):
         self.assertIn("Current programme", page)
         elements = RenderedElements(page)
         self.assertEqual(sum(attributes.get("data-upcoming") == "true" for _, attributes in elements.elements), 1)
-        expected_dates = [date.fromisoformat(session["date"]).strftime("%d/%m/%Y") for session in plan["calendar"]]
-        self.assertEqual(sorted(cell for cell in elements.calendar_cells if cell), sorted(expected_dates))
-        self.assertEqual(elements.calendar_cells, ["01/09/2026", "14/12/2026", "12/10/2026", "05/04/2027", "16/11/2026", ""])
+        expected_dates = [session["date"] for session in plan["calendar"]]
+        self.assertEqual(elements.calendar_dates, expected_dates)
+        agenda_links = {attributes["href"] for tag, attributes in elements.elements
+                        if tag == "a" and "schedule-link" in attributes.get("class", "").split()}
+        self.assertEqual(agenda_links, {"#session-2026-09-01", "#session-2026-10-12", "#session-2026-12-14"})
+        self.assertNotIn("#session-2026-11-16", agenda_links)
+        ids = {attributes["id"] for _, attributes in elements.elements if "id" in attributes}
+        self.assertTrue(all(href[1:] in ids for href in agenda_links))
+        self.assertIn("Latest programme", page)
+        self.assertIn("Programme pending", page)
         self.assertEqual(self.seminar, original)
 
     def test_editable_text_is_escaped_and_abstract_paragraphs_remain_separate(self):
