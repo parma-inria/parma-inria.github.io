@@ -1,0 +1,9 @@
+{
+  "language": "it",
+  "model": {
+    "id": "Helsinki-NLP/opus-mt-en-it",
+    "revision": "be5a254d936f1a8c8da080406ca582a6615e6658"
+  },
+  "schema_version": 1,
+  "translations": {}
+}

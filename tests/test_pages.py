@@ -11,6 +11,8 @@ from unittest.mock import patch
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "tools"))
 import build
+import check
+import update_translations
 from test_seminar import fixture_sources, render_page, seminar_fixture
 
 
@@ -71,7 +73,7 @@ class TemplateTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as directory:
             with patch.object(build, "read_json", side_effect=lambda name: sources[name]):
                 output = build.build(Path(directory) / "site", today=date(2026, 10, 9))
-            self.assertEqual(len(list(output.rglob("*.html"))), 2 * len(build.PAGE_IDS))
+            self.assertEqual(len(list(output.rglob("*.html"))), 4 * len(build.PAGE_IDS))
             seminar = (output / "gdt-ot-pde-ml/index.html").read_text(encoding="utf-8")
             expected = sum(len(session["talks"]) for session in sources["seminar"]["sessions"])
             self.assertEqual(sum(attrs.get("class") == "talk" for _, attrs in Elements(seminar).elements), expected)
@@ -88,8 +90,77 @@ class TemplateTests(unittest.TestCase):
                 self.assertNotIn("{%", document)
                 icons = [attrs["href"] for tag, attrs in Elements(document).elements
                          if tag == "link" and attrs.get("rel") == "icon"]
-                self.assertTrue(icons[0].endswith("assets/images/parma-logo.png"))
+                self.assertTrue(icons[0].endswith("assets/images/favicon.png"))
+                self.assertTrue(icons[1].endswith("assets/images/favicon.svg"))
                 self.assertIn("class=\"brand-logo\"", document)
+
+    def test_translated_routes_keep_every_talk_and_use_equivalent_language_links(self):
+        sources = fixture_sources(seminar=seminar_fixture())
+        expected_talks = sum(len(session["talks"]) for session in sources["seminar"]["sessions"])
+        with tempfile.TemporaryDirectory() as directory:
+            with patch.object(build, "read_json", side_effect=lambda name: sources[name]):
+                output = build.build(Path(directory) / "site", today=date(2026, 10, 9))
+            self.assertEqual(check.check_site(output), [])
+            for language, folder in (("en", ""), ("en", "en/"), ("fr", "fr/"), ("it", "it/")):
+                for page in sources["site"]["pages"]:
+                    document = (output / folder / page["path"] / "index.html").read_text(encoding="utf-8")
+                    elements = Elements(document).elements
+                    self.assertIn(("html", {"lang": language}), elements)
+                    canonical = [attributes["href"] for tag, attributes in elements
+                                 if tag == "link" and attributes.get("rel") == "canonical"]
+                    canonical_folder = folder if language != "en" else ""
+                    self.assertEqual(canonical, [build.PUBLIC_URL + canonical_folder + page["path"]])
+                    alternates = {attributes["hreflang"]: attributes["href"] for tag, attributes in elements
+                                  if tag == "link" and attributes.get("rel") == "alternate"}
+                    self.assertEqual(set(alternates), {"en", "fr", "it", "x-default"})
+                    switches = [attributes for tag, attributes in elements
+                                if tag == "a" and attributes.get("hreflang")]
+                    self.assertEqual(len(switches), 3)
+                    for switch in switches:
+                        selected_folder = switch["hreflang"] + "/" if switch["hreflang"] != "en" else ""
+                        target = (output / folder / page["path"] / switch["href"]).resolve()
+                        self.assertEqual(target, (output / selected_folder / page["path"]).resolve())
+                    if page["id"] == "seminar":
+                        self.assertEqual(sum(attributes.get("class") == "talk" for _, attributes in elements), expected_talks)
+                        self.assertEqual(sum(attributes.get("data-upcoming") == "true" for _, attributes in elements), 1)
+                        self.assertTrue(all("open" not in attributes for tag, attributes in elements if tag == "details"))
+
+    def test_translation_cache_updates_prose_dates_and_search_without_changing_sources(self):
+        sources = build.translation_sources(fixture_sources(seminar=seminar_fixture()))
+        source = sources["home"]["introduction"][0]
+        cache = update_translations.empty_cache("it")
+        cache["translations"] = {
+            source: "Introduzione tradotta.",
+            "December": "dicembre",
+            "Language": "Lingua",
+            "{count} members": "{count} membri",
+            "{visible} of {total} members shown": "{visible} di {total} membri mostrati",
+            "Seminar dates for academic year {start}–{end}": "Date del seminario per l’anno accademico {start}–{end}",
+        }
+        localized = update_translations.localize_sources(sources, "it", cache=cache)
+        self.assertEqual(sources["home"]["introduction"][0], source)
+        plan = build.plan_seminar(localized["seminar"], date(2026, 10, 9))
+        page = next(item for item in localized["site"]["pages"] if item["id"] == "home")
+        context = build.page_context(page, "../", localized, plan, "it", "it")
+        document = build.render_document(page, "../", localized, plan, "it", "it")
+        self.assertIn("Introduzione tradotta.", document)
+        self.assertIn("14 dicembre 2026", document)
+        self.assertIn("Beta speaker", document)
+        self.assertEqual(context["locale"]["home_href"], "../it/")
+        self.assertTrue(all(link["href"].startswith("../it/") for link in context["navigation"]))
+        self.assertEqual(context["programme"]["next"]["date"], "2026-12-14")
+        self.assertEqual(context["programme"]["schedule_description"], "Date del seminario per l’anno accademico 2026–2027")
+        page = next(item for item in localized["site"]["pages"] if item["id"] == "team")
+        team = build.render_document(page, "../../", localized, plan, "it", "it")
+        self.assertIn('data-count-template="{count} membri"', team)
+        self.assertIn('data-filtered-template="{visible} di {total} membri mostrati"', team)
+
+    def test_external_anchor_check_rejects_same_tab_or_missing_protection(self):
+        parser = check.PageLinks()
+        parser.feed('<a href="https://example.org">Bad</a>'
+                    '<a href="https://example.org/ok" target="_blank" rel="noopener noreferrer">Good</a>'
+                    '<a href="mailto:person@example.org">Mail</a>')
+        self.assertEqual(parser.external_link_errors, ["https://example.org"])
 
     def test_build_cannot_overwrite_source_folders_or_repository_ancestors(self):
         for target in (build.ROOT, build.ROOT.parent, build.PAGES, build.CONTENT, build.ROOT / ".git"):

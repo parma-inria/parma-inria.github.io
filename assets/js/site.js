@@ -99,9 +99,14 @@
       });
 
       if (memberCount) {
-        memberCount.textContent = terms.length
-          ? `${visibleCount} of ${memberCards.length} members shown`
-          : `${memberCards.length} members`;
+        // Templates come from the English catalogue and its generated translations.
+        const template = terms.length
+          ? memberCount.dataset.filteredTemplate
+          : memberCount.dataset.countTemplate;
+        memberCount.textContent = template
+          .replaceAll("{visible}", String(visibleCount))
+          .replaceAll("{total}", String(memberCards.length))
+          .replaceAll("{count}", String(memberCards.length));
       }
 
       if (emptyState) emptyState.hidden = visibleCount > 0;

@@ -223,7 +223,7 @@ ul, ol {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 28px;
+  gap: 18px;
   min-height: 90px;
 }
 
@@ -261,6 +261,7 @@ ul, ol {
   display: flex;
   align-items: center;
   gap: 7px;
+  margin-left: auto;
 }
 
 .site-navigation a {
@@ -295,6 +296,36 @@ ul, ol {
   min-height: 44px;
   font-size: .94rem;
   font-weight: 600;
+}
+
+
+/* Language links stay compact and remain available with JavaScript disabled. */
+.language-switcher {
+  display: flex;
+  flex-shrink: 0;
+  align-items: center;
+  gap: 3px;
+  padding-left: 12px;
+  border-left: 1px solid var(--line);
+}
+
+.language-switcher a {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 32px;
+  min-height: 36px;
+  border-radius: 5px;
+  color: var(--muted);
+  font-size: .75rem;
+  font-weight: 650;
+  text-decoration: none;
+}
+
+.language-switcher a:hover,
+.language-switcher a[aria-current="true"] {
+  color: var(--blue);
+  background: var(--blue-light);
 }
 
 
@@ -1136,15 +1167,26 @@ ul, ol {
   }
   .header-row {
     min-height: 76px;
-    gap: 16px;
+    gap: 12px;
     flex-wrap: wrap;
+  }
+  .brand {
+    margin-right: auto;
+  }
+  .menu-toggle {
+    order: 3;
+  }
+  .language-switcher {
+    order: 2;
   }
   .brand-mark {
     font-size: 1.8rem;
   }
   .site-navigation {
+    order: 4;
     flex-basis: 100%;
     flex-wrap: wrap;
+    margin-left: 0;
     padding-bottom: 15px;
     gap: 5px;
   }
@@ -1231,6 +1273,20 @@ ul, ol {
 }
 
 @media (max-width: 540px) {
+  .header-row {
+    padding-block: 12px 8px;
+    gap: 8px;
+  }
+  .language-switcher {
+    order: 3;
+    flex-basis: 100%;
+    justify-content: flex-end;
+    padding-left: 0;
+    border-left: 0;
+  }
+  .menu-toggle {
+    order: 2;
+  }
   body {
     font-size: 16px;
   }
@@ -1335,7 +1391,7 @@ ul, ol {
   .site-header {
     position: static;
   }
-  .menu-toggle, .hero-actions, .members-toolbar, .jump-nav, .skip-link {
+  .menu-toggle, .language-switcher, .hero-actions, .members-toolbar, .jump-nav, .skip-link {
     display: none !important;
   }
   .hero, .site-footer {

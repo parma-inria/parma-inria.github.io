@@ -7,7 +7,7 @@ from html.parser import HTMLParser
 from pathlib import Path
 from urllib.parse import unquote, urlsplit
 
-# Required routes, including their English aliases below
+# Required English routes and the corresponding translated pages
 ROOT = Path(__file__).resolve().parents[1]
 PAGE_PATHS = (
     'index.html',
@@ -28,11 +28,18 @@ class PageLinks(HTMLParser):
         super().__init__()
         self.links = []
         self.ids = set()
+        self.external_link_errors = []
 
     def handle_starttag(self, tag, attributes):
         attributes = dict(attributes)
         if attributes.get('id'):
             self.ids.add(attributes['id'])
+        if tag == 'a':
+            url = urlsplit(attributes.get('href', ''))
+            if url.scheme in ('http', 'https') or url.netloc:
+                rel = set(attributes.get('rel', '').split())
+                if attributes.get('target') != '_blank' or not {'noopener', 'noreferrer'} <= rel:
+                    self.external_link_errors.append(attributes['href'])
         for name in ('href', 'src'):
             if attributes.get(name):
                 self.links.append(attributes[name])
@@ -48,8 +55,8 @@ def check_site(output):
     errors = []
     pages = {}
 
-    # Each source page must have both its main route and its English alias.
-    expected = list(PAGE_PATHS) + ['en/' + path for path in PAGE_PATHS]
+    # Every source page has English root/alias routes and French/Italian routes.
+    expected = [prefix + path for prefix in ('', 'en/', 'fr/', 'it/') for path in PAGE_PATHS]
     for path in expected:
         if not (output / path).is_file():
             errors.append(f'Pagina mancante: {path}. Esegui prima la generazione.')
@@ -62,6 +69,9 @@ def check_site(output):
 
     link_count = 0
     for file, page in pages.items():
+        label = file.relative_to(output).as_posix()
+        for link in page.external_link_errors:
+            errors.append(f'{label}: external link must open safely in a new tab: {link}')
         for link in page.links:
             url = urlsplit(link)
             # External websites and email links are outside this local check.

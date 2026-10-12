@@ -1,0 +1,6 @@
+# Install torch from https://download.pytorch.org/whl/cpu on GitHub's runner.
+# The site builder itself needs no third-party packages.
+torch==2.6.0
+transformers==4.57.1
+sentencepiece==0.2.1
+sacremoses==0.1.1

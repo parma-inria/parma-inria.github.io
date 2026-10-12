@@ -11,8 +11,16 @@
     <meta name="description" content="{{ page.description }}">
     <meta name="theme-color" content="{{ site.theme_color }}">
 
-    <!-- Team logo, shared styles and page interactions -->
-    <link rel="icon" href="{{ prefix }}assets/images/parma-logo.png" type="image/png">
+    <!-- Canonical route and equivalent pages in the other languages -->
+    <link rel="canonical" href="{{ locale.canonical_url }}">
+    {% for alternative in locale.alternatives %}
+      <link rel="alternate" hreflang="{{ alternative.language }}" href="{{ alternative.url }}">
+    {% endfor %}
+    <link rel="alternate" hreflang="x-default" href="{{ locale.default_url }}">
+
+    <!-- Round team mark, shared styles and page interactions -->
+    <link rel="icon" href="{{ prefix }}assets/images/favicon.png" type="image/png" sizes="64x64">
+    <link rel="icon" href="{{ prefix }}assets/images/favicon.svg" type="image/svg+xml" sizes="any">
     <link rel="stylesheet" href="{{ prefix }}assets/css/site.css">
     <script src="{{ prefix }}assets/js/site.js" defer></script>
   </head>
@@ -24,7 +32,7 @@
     <!-- Site header and navigation -->
     <header class="site-header">
       <div class="container header-row">
-        <a class="brand" href="{{ prefix }}">
+        <a class="brand" href="{{ locale.home_href }}">
           <img class="brand-logo" src="{{ prefix }}assets/images/parma-logo.png" alt="{{ site.name }}" width="1024" height="437">
           <span class="brand-caption">{{ site.brand_caption }}</span>
         </a>
@@ -34,6 +42,13 @@
         <nav id="site-navigation" class="site-navigation" aria-label="{{ site.navigation_label }}">
           {% for link in navigation %}
             <a href="{{ link.href }}"{% if link.is_current %} aria-current="page"{% endif %}>{{ link.title }}</a>
+          {% endfor %}
+        </nav>
+
+        <!-- Switching language keeps the visitor on the equivalent page. -->
+        <nav class="language-switcher" aria-label="{{ ui.language_label }}">
+          {% for alternative in locale.alternatives %}
+            <a href="{{ alternative.href }}" lang="{{ alternative.language }}" hreflang="{{ alternative.language }}" aria-label="{{ alternative.name }}"{% if alternative.is_current %} aria-current="true"{% endif %}>{{ alternative.label }}</a>
           {% endfor %}
         </nav>
       </div>
@@ -56,7 +71,7 @@
           <label for="member-search">{{ team.search.label }}</label>
           <input id="member-search" type="search" placeholder="{{ team.search.placeholder }}" autocomplete="off">
         </div>
-        <p id="member-count" aria-live="polite">{{ team.member_count }} {{ team.search.count_label }}</p>
+        <p id="member-count" aria-live="polite" data-count-template="{{ ui.member_count }}" data-filtered-template="{{ ui.member_filtered_count }}">{{ team.count_text }}</p>
       </div>
 
       <!-- Member groups: former members remain visible, without a dropdown. -->
@@ -96,7 +111,7 @@
         <!-- Three aligned columns on desktop; navigation stays grouped on mobile. -->
         <div class="footer-grid">
           <div class="footer-brand">
-            <a class="footer-home" href="{{ prefix }}">
+            <a class="footer-home" href="{{ locale.home_href }}">
               <img class="brand-logo footer-logo" src="{{ prefix }}assets/images/parma-logo.png" alt="{{ site.name }}" width="1024" height="437" loading="lazy">
             </a>
             <p class="footer-tagline">{{ site.footer.tagline }}</p>

@@ -22,12 +22,13 @@ Website for the ParMA research team at Inria Saclay, CNRS and Université Paris-
 | Complete HTML for each page | `pages/home.html`, `team.html`, `seminar.html`, `resources.html`, `contact.html` |
 | Header, footer, member cards or archive layout | The relevant complete HTML file in `pages/` |
 | Member search and mobile menu | `assets/js/site.js` |
+| Languages | Edit the same English JSON and HTML sources; translations are automatic |
 
 For data updates, start with **`content/`**. For page layout and HTML, start with **`pages/`**. Pages in **`public/`** are generated automatically: any changes made there will be overwritten the next time the site is generated.
 
 ## Working in VS Code
 
-Open this folder as your project. You only need **Python 3.10 or later**; no npm, additional Python packages or extensions are required.
+Open this folder as your project. Local builds and previews only need **Python 3.10 or later**; no npm, additional Python packages or extensions are required. GitHub installs the translation tools on its own runner.
 
 For the quickest local preview on Windows, double-click `Open local preview.cmd` in this folder. It builds the site and opens your browser. Keep its terminal window open while using the preview; closing it stops the local server. If this project's preview is already running, the launcher reopens it.
 
@@ -135,7 +136,21 @@ These views are calculated **when the site is generated**. Only the September-to
 
 Replace `assets/images/mountains.jpg` with the new photograph. In `assets/css/site.css`, `.hero.hero-home` sets the home banner height and keeps the bottom of the photograph visible. On smaller screens, the photo fits the screen width and sits below the banner text, so the landscape is less cropped.
 
-The original team logo is `assets/images/parma-logo.png`. It is used in the header, footer and browser icon. `.brand-logo` controls its displayed size.
+The original team logo is `assets/images/parma-logo.png`. It remains complete in the header and footer; `.brand-logo` controls its displayed size. The browser icon uses only the round mark: `assets/images/favicon.svg`, with `favicon.png` as a compatible fallback.
+
+## Three languages, one editable source
+
+**Write and edit only the English source files** in `content/` and the five complete layouts in `pages/`. The **EN / FR / IT** links open the equivalent page in the selected language. English uses the root URLs; French and Italian use `/fr/` and `/it/`. The existing `/en/` URLs remain usable English aliases.
+
+Every pushed change triggers GitHub to translate new or changed English text into French and Italian before building and publishing all pages. The free Helsinki-NLP Marian models run on GitHub's CPU runner. No API key, translation account or service subscription is needed. Models and translations are cached, so unchanged paragraphs are reused. The first run takes longer because it downloads the models and translates the existing text.
+
+The workflow also saves the generated translations to `content/translations/fr.json` and `it.json`. **Do not edit these generated files to maintain the site.** Pull the latest changes from GitHub to bring those snapshots into your local clone. Local previews read the snapshots without downloading models or installing translation packages; a newly edited English phrase temporarily appears in English until the next publication generates its translations.
+
+Names, email addresses, URLs, identifiers, dates, software names and protected mathematical notation stay intact. Historical abstracts already supplied in French remain in their original language. Lorem ipsum placeholders are preserved. Machine translation can need refinement for scientific prose; the editable source remains the English file.
+
+All editable page prose belongs in the English JSON files. When changing layout, keep using their placeholders in HTML rather than inserting new fixed sentences directly into a page. The few shared interface templates and month names are collected in `tools/build.py` → `translation_sources()` and use the same automatic translation cache.
+
+To check translation completeness without running a model, use `python tools/update_translations.py --check`. A publication fails before deployment if the translation step fails, so it does not replace the live site with a partially translated version.
 
 ## How are the folders organised?
 
@@ -149,7 +164,8 @@ parma-site/
 │   ├── seminar.html
 │   ├── resources.html
 │   └── contact.html
-├── content/                  ← JSON data and text
+├── content/                  ← editable English JSON data and text
+│   └── translations/         ← generated French and Italian snapshots
 ├── assets/
 │   ├── css/site.css          ← shared styling
 │   ├── js/site.js            ← menu, portraits and member search
@@ -158,7 +174,9 @@ parma-site/
 │   ├── build.py              ← generates public/
 │   ├── check.py              ← checks local files and links
 │   ├── preview.py            ← starts the preview
-│   └── update_publications.py ← refreshes the three recent HAL papers
+│   ├── update_publications.py ← refreshes the three recent HAL papers
+│   ├── update_translations.py ← refreshes French and Italian on GitHub
+│   └── translation-requirements.txt ← GitHub-only translation packages
 ├── docs/sources/             ← original imported materials
 ├── tests/                    ← checks for pages, seminar data and portraits
 ├── public/                   ← generated site, excluded from Git
@@ -178,7 +196,7 @@ JSON values are inserted with `{{ field.path }}`. Repeated items use a loop:
 
 You can edit the HTML around these placeholders directly. Every loop needs `{% endfor %}` and every condition needs `{% endif %}`. Inserted values are escaped automatically. Python expressions, template includes and raw HTML from JSON are not supported.
 
-The five pages use the URLs `/`, `/team-members/`, `/gdt-ot-pde-ml/`, `/resources/` and `/contact/`. The `/en/` versions are generated from the same content. The build calculates relative links for each route.
+The five English pages use the URLs `/`, `/team-members/`, `/gdt-ot-pde-ml/`, `/resources/` and `/contact/`. Each has a French `/fr/` route, an Italian `/it/` route and an English `/en/` alias. All 20 generated pages share the same five HTML source files. The build calculates relative links for each route and keeps page navigation in the chosen language.
 
 The generated descriptive text currently uses Lorem ipsum while the team decides what to write. The home introduction already edited by Mattia and the original scientific abstracts, dates, names and contact details are preserved.
 
@@ -188,14 +206,16 @@ In VS Code's **Source Control** panel, review your changes, write a short descri
 
 On GitHub, the **Actions** tab shows the result of the **Pubblica il sito ParMA** workflow (publish the ParMA site). The source in **Settings → Pages** must be **GitHub Actions**. A proposed change on another branch is checked before it is published on `main`.
 
-The local check verifies pages, images and site sections; when you change links to external websites, check them in your browser. GitHub also runs the checks in `tests/` before publishing. These use example data, so you can update the programme freely.
+The local check verifies all language routes, images and site sections. It also requires external website links to open in a new tab with protective `rel` attributes; when you change their destinations, check them in your browser. GitHub also runs the checks in `tests/` before publishing. These use example data, so you can update the programme freely.
 
 ## Original materials and documentation
 
 The migration preserves the scientific texts, personal links and materials from the [original Inria site](https://team.inria.fr/parma/). Their sources are documented in `docs/sources/`; that folder does not supply content to the site. Photographs, the logo and texts remain subject to their original terms of use.
 
-The site uses HTML, CSS, JavaScript and Python's standard library. Publication data is fetched from HAL during publishing. The seminar and contact pages embed Google Maps; no analytics or external fonts are added.
+Local rendering uses HTML, CSS, JavaScript and Python's standard library. Publication data is fetched from HAL and automatic translations run on GitHub during publishing. The seminar and contact pages embed Google Maps; no analytics or external fonts are added.
 
 Technical references: [publishing with GitHub Pages](https://docs.github.com/en/pages/getting-started-with-github-pages/configuring-a-publishing-source-for-your-github-pages-site), [uploading generated pages](https://github.com/actions/upload-pages-artifact), [deploying the artifact](https://github.com/actions/deploy-pages).
 
 Publication source: [HAL search API](https://api.archives-ouvertes.fr/docs/search/). Map location and sharing URL: [IMO directions](https://www.imo.universite-paris-saclay.fr/en/acces/).
+
+Translation models: [English to French](https://huggingface.co/Helsinki-NLP/opus-mt-en-fr) and [English to Italian](https://huggingface.co/Helsinki-NLP/opus-mt-en-it), distributed under Apache 2.0. The exact model revisions and package versions are recorded in `tools/update_translations.py` and `tools/translation-requirements.txt`.

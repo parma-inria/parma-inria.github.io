@@ -16,6 +16,7 @@ from datetime import date
 from urllib.parse import urlsplit
 
 import update_publications
+import update_translations
 
 # Source folders and shared date labels
 ROOT = Path(__file__).resolve().parents[1]
@@ -23,10 +24,26 @@ CONTENT = ROOT / "content"
 PAGES = ROOT / "pages"
 DEFAULT_OUTPUT = ROOT / "public"
 PAGE_IDS = {"home", "team", "seminar", "resources", "contact"}
+LANGUAGES = ("en", "fr", "it")
+PUBLIC_URL = "https://parma-inria.github.io/"
 MONTH_NAMES = (
     "January", "February", "March", "April", "May", "June", "July", "August",
     "September", "October", "November", "December",
 )
+
+
+def translation_sources(sources):
+    """Keep shared interface messages in the same English translation catalogue."""
+    return {
+        **sources,
+        "ui": {
+            "language_label": "Language",
+            "schedule_description": "Seminar dates for academic year {start}–{end}",
+            "member_count": "{count} members",
+            "member_filtered_count": "{visible} of {total} members shown",
+            "months": list(MONTH_NAMES),
+        },
+    }
 
 
 class BuildError(Exception):
@@ -340,11 +357,11 @@ def plan_seminar(seminar, today=None):
     }
 
 
-def session_date_label(session, labels, home=False):
+def session_date_label(session, labels, home=False, months=MONTH_NAMES):
     """Format one date and room label for the home or seminar page."""
     day = date.fromisoformat(session["date"])
     if home:
-        text = f"{day.day} {MONTH_NAMES[day.month - 1]} {day.year}"
+        text = f"{day.day} {months[day.month - 1]} {day.year}"
         separator = " · "
     else:
         text = day.strftime("%d/%m/%Y")
@@ -458,15 +475,16 @@ def render_html(source, context):
 # Prepare page data without generating HTML markup
 
 
-def prepare_programme(seminar, plan):
+def prepare_programme(seminar, plan, ui=None):
     """Prepare display labels, calendar columns and archive groups for the HTML."""
     labels = seminar["labels"]
+    ui = ui or translation_sources({})["ui"]
 
     def session_data(session):
         return {
             **session,
             "date_label": session_date_label(session, labels),
-            "date_home_label": session_date_label(session, labels, home=True),
+            "date_home_label": session_date_label(session, labels, home=True, months=ui["months"]),
             "talks": [
                 {**talk, "meta": " · ".join(
                     text for text in (talk["time"], talk["speaker"]) if text
@@ -488,7 +506,7 @@ def prepare_programme(seminar, plan):
             for index in range(midpoint)
         ],
         "academic_year": year,
-        "schedule_description": f"Seminar dates for academic year {year}–{year + 1}",
+        "schedule_description": ui["schedule_description"].format(start=year, end=year + 1),
         "history": [
             {
                 "id": f"seminar-archive-{index}",
@@ -519,44 +537,76 @@ def prepare_team(team, prefix):
             "member_count": sum(len(section["members"]) for section in sections)}
 
 
-def prepare_publications(publications):
+def prepare_publications(publications, months=MONTH_NAMES):
     """Prepare readable dates and citations; the card markup stays in home.html."""
+    def publication_date_label(value):
+        parts = update_publications.date_parts(value)
+        if len(parts) == 1:
+            return str(parts[0])
+        month_year = f"{months[parts[1] - 1]} {parts[0]}"
+        return month_year if len(parts) == 2 else f"{parts[2]} {month_year}"
+
     items = []
     for paper in publications["items"]:
         authors = paper["authors"]
         items.append({
             **paper,
-            "date_label": update_publications.date_label(paper["date"]),
+            "date_label": publication_date_label(paper["date"]),
             "authors_full": ", ".join(authors),
             "authors_short": ", ".join(authors[:3]) + (", et al." if len(authors) > 3 else ""),
         })
     return {**publications, "items": items}
 
 
-def page_context(page, prefix, sources, seminar_plan):
-    """Collect page data; all HTML markup remains in pages/."""
-    site = sources["site"]
-    home = sources["home"]
+def page_context(page, prefix, sources, seminar_plan, language="en", route_language=None):
+    """Prepare locale-aware links; the English page files supply every layout."""
+    if language not in LANGUAGES or route_language not in (None, *LANGUAGES):
+        raise BuildError("Unknown page language.")
+    sources = sources if "ui" in sources else translation_sources(sources)
+    site = {**sources["site"], "language": language}
+    ui = sources["ui"]
+    # Assets are shared at the root, while navigation stays inside this language.
+    locale_path = f"{route_language}/" if route_language else ""
+    home_href = prefix + locale_path
+    routes = {item["id"]: prefix + locale_path + item["path"] for item in site["pages"]}
+    alternatives = [
+        {"language": code, "label": code.upper(),
+         "name": {"en": "English", "fr": "Français", "it": "Italiano"}[code],
+         "href": prefix + (f"{code}/" if code != "en" else "") + page["path"],
+         "url": PUBLIC_URL + (f"{code}/" if code != "en" else "") + page["path"],
+         "is_current": code == language}
+        for code in LANGUAGES
+    ]
+    team = prepare_team(sources["team"], prefix)
     return {
         **sources,
-        "site": site, "page": page, "prefix": prefix,
+        "site": site, "page": page, "prefix": prefix, "routes": routes,
+        "locale": {
+            "home_href": home_href,
+            "canonical_url": PUBLIC_URL + (f"{language}/" if language != "en" else "") + page["path"],
+            "default_url": PUBLIC_URL + page["path"],
+            "alternatives": alternatives,
+        },
         "navigation": [
-            {"title": item["title"], "href": prefix + item["path"],
+            {"title": item["title"], "href": routes[item["id"]],
              "is_current": item["id"] == page["id"]}
             for item in site["pages"]
         ],
-        "home": home,
-        "publications": prepare_publications(sources["publications"]),
-        "team": prepare_team(sources["team"], prefix),
-        "programme": prepare_programme(sources["seminar"], seminar_plan),
+        "publications": prepare_publications(sources["publications"], ui["months"]),
+        "team": {
+            **team,
+            "count_text": ui["member_count"].format(count=team["member_count"]),
+        },
+        "programme": prepare_programme(sources["seminar"], seminar_plan, ui),
     }
 
 
-def render_document(page, prefix, sources, seminar_plan):
+def render_document(page, prefix, sources, seminar_plan, language="en", route_language=None):
     """Render a source page and include its filename in any template error."""
     path = PAGES / f"{page['id']}.html"
     try:
-        return render_html(read_text(path), page_context(page, prefix, sources, seminar_plan))
+        context = page_context(page, prefix, sources, seminar_plan, language, route_language)
+        return render_html(read_text(path), context)
     except BuildError as error:
         raise BuildError(f"{path}: {error}") from error
 
@@ -565,7 +615,7 @@ def render_document(page, prefix, sources, seminar_plan):
 
 
 def build(output=DEFAULT_OUTPUT, today=None):
-    """Render complete pages and their English aliases before writing."""
+    """Render English, French and Italian from the same English page sources."""
     output = Path(output).resolve()
     protected = [CONTENT, PAGES, ROOT / "tools", ROOT / "assets", ROOT / "tests",
                  ROOT / "docs", ROOT / ".github", ROOT / ".vscode", ROOT / ".git"]
@@ -575,20 +625,30 @@ def build(output=DEFAULT_OUTPUT, today=None):
     # Validate all data before generating any files.
     sources = {name: read_json(name) for name in ("site", "home", "team", "contact", "seminar", "publications", "resources")}
     validate_content(sources)
-    seminar_plan = plan_seminar(sources["seminar"], today)
+    sources = translation_sources(sources)
     if not (ROOT / "assets").is_dir():
         raise BuildError(f"Missing source folder: {ROOT / 'assets'}")
 
-    # Render both the main routes and the existing English aliases.
+    # Read saved translations only. Local previews never install or run a model.
     documents = []
-    for page in sources["site"]["pages"]:
-        route = page["path"]
-        depth = len(PurePosixPath(route).parts)
-        prefix = "../" * depth if depth else "./"
-        documents.append((Path(route) / "index.html",
-                          render_document(page, prefix, sources, seminar_plan)))
-        documents.append((Path("en") / route / "index.html",
-                          render_document(page, "../" * (depth + 1), sources, seminar_plan)))
+    for language in LANGUAGES:
+        localized = sources if language == "en" else update_translations.localize_sources(
+            sources, language, cache=update_translations.read_cache(language),
+        )
+        seminar_plan = plan_seminar(localized["seminar"], today)
+        for page in localized["site"]["pages"]:
+            route = page["path"]
+            depth = len(PurePosixPath(route).parts)
+            locale_path = f"{language}/" if language != "en" else ""
+            prefix = "../" * (depth + bool(locale_path)) or "./"
+            documents.append((Path(locale_path) / route / "index.html",
+                              render_document(page, prefix, localized, seminar_plan,
+                                              language, language if locale_path else None)))
+            # Existing English URLs remain usable and share the root's canonical URL.
+            if language == "en":
+                documents.append((Path("en") / route / "index.html",
+                                  render_document(page, "../" * (depth + 1), localized,
+                                                  seminar_plan, "en", "en")))
 
     # Write only after every page has rendered successfully.
     output.mkdir(parents=True, exist_ok=True)
@@ -599,7 +659,7 @@ def build(output=DEFAULT_OUTPUT, today=None):
         destination.write_text(document, encoding="utf-8")
     (output / ".nojekyll").write_text("", encoding="utf-8")
     print(f"Site generated in: {output}")
-    print(f"{len(sources['site']['pages'])} complete HTML pages + {len(sources['site']['pages'])} English aliases; former members remain visible.")
+    print(f"{len(sources['site']['pages'])} complete HTML sources, three languages and English aliases; former members remain visible.")
     return output
 
 
@@ -614,7 +674,7 @@ def main(argv=None):
     arguments = parser.parse_args(argv)
     try:
         build(arguments.output)
-    except (BuildError, OSError, UnicodeError) as error:
+    except (BuildError, update_translations.TranslationError, OSError, UnicodeError) as error:
         print(f"Error: {error}", file=sys.stderr)
         return 1
     return 0
