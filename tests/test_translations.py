@@ -1,6 +1,8 @@
 """Test translation selection and caching without installing or downloading models."""
 
 import copy
+from contextlib import nullcontext
+from types import SimpleNamespace
 import json
 import sys
 import tempfile
@@ -173,6 +175,20 @@ class TranslationTests(unittest.TestCase):
             with self.assertRaises(translations.TranslationError):
                 translations.read_cache("it")
 
+    def test_old_engine_and_pre_version_caches_are_safely_invalidated(self):
+        for old_version in (None, translations.ENGINE_VERSION - 1):
+            with self.subTest(old_version=old_version):
+                cache = translations.empty_cache("fr")
+                cache["translations"] = {"Team": "Équipe from old engine"}
+                if old_version is None:
+                    del cache["engine_version"]
+                else:
+                    cache["engine_version"] = old_version
+                validated = translations.validate_cache(cache, "fr")
+                self.assertEqual(validated, translations.empty_cache("fr"))
+                self.assertEqual(validated["engine_version"], translations.ENGINE_VERSION)
+                self.assertIn("Team", cache["translations"])
+
     def test_older_model_revision_invalidates_cache(self):
         cache = translations.empty_cache("fr")
         cache["model"]["revision"] = "old"
@@ -205,6 +221,38 @@ class TranslationTests(unittest.TestCase):
             translations.save_caches({"fr": cache})
             self.assertEqual(initial, path.read_bytes())
             self.assertEqual(list(Path(directory).glob("*.tmp")), [])
+
+    def test_punctuation_chunks_never_reach_the_model_and_keep_their_slots(self):
+        submitted = []
+        class FakeOutput:
+            def __init__(self, texts):
+                self.texts = texts
+                self.shape = (len(texts), 4)
+        class FakeTokenizer:
+            def encode(self, text, add_special_tokens=True):
+                return list(range(len(text.split()) + 1))
+            def __call__(self, batch, **kwargs):
+                submitted.extend(batch)
+                return {"input_texts": batch}
+            def batch_decode(self, output, **kwargs):
+                return ["TR:" + value for value in output.texts]
+        class FakeModel:
+            def generate(self, input_texts, **kwargs):
+                self.assert_prose(input_texts)
+                return FakeOutput(input_texts)
+            def assert_prose(self, texts):
+                for text in texts:
+                    if not any(character.isalpha() for character in text):
+                        raise AssertionError("Punctuation reached inference.")
+        translator = translations.MarianTranslator.__new__(translations.MarianTranslator)
+        translator.tokenizer = FakeTokenizer()
+        translator.model = FakeModel()
+        translator.torch = SimpleNamespace(inference_mode=nullcontext)
+        translator.batch_size = 1
+        translator.limit = 2
+        result = translator([". Alpha. ... Beta!", ". !!!"])
+        self.assertEqual(result, [". TR:Alpha. ... TR:Beta!", ". !!!"])
+        self.assertEqual(submitted, ["Alpha.", "Beta!"])
 
     def test_sentence_chunks_respect_model_input_limit_without_truncation(self):
         translator = translations.MarianTranslator.__new__(translations.MarianTranslator)

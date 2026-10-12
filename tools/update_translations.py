@@ -18,6 +18,8 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 CACHE_DIRECTORY = ROOT / "content" / "translations"
 SCHEMA_VERSION = 1
+# Bump when segmentation or generation behavior changes, so old outputs regenerate.
+ENGINE_VERSION = 2
 MODELS = {
     "fr": {
         "id": "Helsinki-NLP/opus-mt-en-fr",
@@ -116,6 +118,7 @@ def empty_cache(language):
         raise TranslationError(f"Unsupported translation language: {language}")
     return {
         "schema_version": SCHEMA_VERSION,
+        "engine_version": ENGINE_VERSION,
         "language": language,
         "model": dict(MODELS[language]),
         "translations": {},
@@ -130,6 +133,8 @@ def validate_cache(cache, language):
         raise TranslationError(f"Invalid cache schema or language for {language}.")
     if not isinstance(cache.get("model"), dict) or not isinstance(cache.get("translations"), dict):
         raise TranslationError(f"Missing model or translations in {language} cache.")
+    if cache.get("engine_version") != ENGINE_VERSION or cache["model"] != MODELS[language]:
+        return empty_cache(language)
     for source, translated in cache["translations"].items():
         if (not isinstance(source, str) or not source.strip()
                 or not isinstance(translated, str) or not translated.strip()):
@@ -142,8 +147,6 @@ def validate_cache(cache, language):
         not isinstance(fingerprint, str) or not re.fullmatch(r"[0-9a-f]{64}", fingerprint)
     ):
         raise TranslationError(f"Invalid source fingerprint in {language} cache.")
-    if cache["model"] != MODELS[language]:
-        return empty_cache(language)
     return copy.deepcopy(cache)
 
 
@@ -342,14 +345,21 @@ class MarianTranslator:
         return chunks
 
     def __call__(self, texts):
-        """Return one translated result per input, regardless of paragraph length."""
+        """Translate prose chunks while retaining immutable punctuation in order."""
         chunks = []
-        owners = []
+        slots = []
+        result = [[] for _ in texts]
         for owner, text in enumerate(texts):
             for chunk in self._chunks(text):
+                slot = len(result[owner])
+                # Sentence splitting after a protected name can produce "." alone.
+                # Passing it to Marian hallucinates prose; keep it verbatim instead.
+                if not any(character.isalpha() for character in chunk):
+                    result[owner].append(chunk)
+                    continue
+                result[owner].append(None)
                 chunks.append(chunk)
-                owners.append(owner)
-        result = [[] for _ in texts]
+                slots.append((owner, slot))
         for start in range(0, len(chunks), self.batch_size):
             batch = chunks[start:start + self.batch_size]
             encoded = self.tokenizer(
@@ -366,8 +376,8 @@ class MarianTranslator:
             translated = self.tokenizer.batch_decode(output, skip_special_tokens=True)
             if len(translated) != len(batch) or any(not value.strip() for value in translated):
                 raise TranslationError("The translation model returned an incomplete batch.")
-            for owner, value in zip(owners[start:start + len(batch)], translated):
-                result[owner].append(value.strip())
+            for (owner, slot), value in zip(slots[start:start + len(batch)], translated):
+                result[owner][slot] = value.strip()
             print(f"Translation chunks: {min(start + len(batch), len(chunks))}/{len(chunks)}", flush=True)
         return [" ".join(parts) for parts in result]
 

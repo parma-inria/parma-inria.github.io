@@ -6,12 +6,14 @@ Uses the Python standard library; no packages need to be installed.
 """
 
 import argparse
+import hashlib
 import html
 import json
 import re
 import shutil
 import sys
 from pathlib import Path, PurePosixPath
+from html.parser import HTMLParser
 from datetime import date
 from urllib.parse import urlsplit
 
@@ -32,8 +34,129 @@ MONTH_NAMES = (
 )
 
 
+class StaticHTMLLiterals(HTMLParser):
+    """Locate plain English HTML text without rewriting markup or comments."""
+
+    EXCLUDED_TAGS = {"script", "style", "pre", "code"}
+    VOID_TAGS = {
+        "area", "base", "br", "col", "embed", "hr", "img",
+        "input", "link", "meta", "param", "source", "track", "wbr",
+    }
+    ATTRIBUTE = re.compile(
+        r"""(?P<name>[^\s"'<>/=]+)\s*=\s*(?P<quote>["'])(?P<value>.*?)(?P=quote)""",
+        re.DOTALL,
+    )
+    TRANSLATED_ATTRIBUTES = {"aria-label", "title", "placeholder"}
+
+    def __init__(self, source):
+        # Keep entities as separate events, so original source offsets stay exact.
+        super().__init__(convert_charrefs=False)
+        self.source = source
+        self.line_starts = [0]
+        for match in re.finditer("\\n", source):
+            self.line_starts.append(match.end())
+        self.stack = []
+        self.text_ranges = []
+        self.attribute_ranges = []
+        self.feed(source)
+
+    def source_offset(self):
+        line, column = self.getpos()
+        return self.line_starts[line - 1] + column
+
+    def in_body(self):
+        return any(tag == "body" for tag, _ in self.stack)
+
+    def blocked(self):
+        return any(excluded for _, excluded in self.stack)
+
+    def handle_starttag(self, tag, attributes):
+        values = dict(attributes)
+        excluded = tag in self.EXCLUDED_TAGS or (values.get("translate") or "").lower() == "no"
+        if (self.in_body() or tag == "body") and not self.blocked() and not excluded:
+            raw = self.get_starttag_text()
+            start = self.source_offset()
+            for match in self.ATTRIBUTE.finditer(raw):
+                if match["name"].lower() in self.TRANSLATED_ATTRIBUTES:
+                    self.attribute_ranges.append(
+                        (start + match.start("value"), start + match.end("value")),
+                    )
+        if tag not in self.VOID_TAGS:
+            self.stack.append((tag, excluded))
+
+    def handle_endtag(self, tag):
+        # Recover gently from an unmatched closing tag, just as the HTML parser does.
+        for index in range(len(self.stack) - 1, -1, -1):
+            if self.stack[index][0] == tag:
+                del self.stack[index:]
+                break
+
+    def handle_startendtag(self, tag, attributes):
+        self.handle_starttag(tag, attributes)
+        if tag not in self.VOID_TAGS:
+            self.handle_endtag(tag)
+
+    def add_text_range(self, start, end):
+        if not self.in_body() or self.blocked():
+            return
+        if self.text_ranges and self.text_ranges[-1][1] == start:
+            previous, _ = self.text_ranges[-1]
+            self.text_ranges[-1] = (previous, end)
+        else:
+            self.text_ranges.append((start, end))
+
+    def handle_data(self, data):
+        start = self.source_offset()
+        self.add_text_range(start, start + len(data))
+
+    def handle_entityref(self, name):
+        start = self.source_offset()
+        end = start + len(name) + 1
+        if self.source[end:end + 1] == ";":
+            end += 1
+        self.add_text_range(start, end)
+
+    def handle_charref(self, name):
+        start = self.source_offset()
+        end = start + len(name) + 2
+        if self.source[end:end + 1] == ";":
+            end += 1
+        self.add_text_range(start, end)
+
+    def literals(self):
+        """Keep surrounding whitespace and skip nodes containing template syntax."""
+        result = []
+        for start, end in sorted(self.text_ranges + self.attribute_ranges):
+            raw = self.source[start:end]
+            if "{{" in raw or "{%" in raw:
+                continue
+            leading = len(raw) - len(raw.lstrip())
+            trailing = len(raw) - len(raw.rstrip())
+            start += leading
+            end -= trailing
+            if start >= end:
+                continue
+            text = html.unescape(self.source[start:end])
+            key = "literal_" + hashlib.sha256(text.encode("utf-8")).hexdigest()
+            result.append((start, end, key, text))
+        return result
+
+
+def html_literal_template(source):
+    """Bind static prose to trusted fields; translated text never becomes Jinja."""
+    literals = StaticHTMLLiterals(source).literals()
+    for start, end, key, _ in reversed(literals):
+        source = source[:start] + "{{ ui.html_literals." + key + " }}" + source[end:]
+    return source
+
+
 def translation_sources(sources):
-    """Keep shared interface messages in the same English translation catalogue."""
+    """Collect JSON, interface messages and plain HTML from the English sources."""
+    literals = {}
+    for page_id in sorted(PAGE_IDS):
+        source = read_text(PAGES / f"{page_id}.html")
+        for _, _, key, text in StaticHTMLLiterals(source).literals():
+            literals[key] = text
     return {
         **sources,
         "ui": {
@@ -42,6 +165,7 @@ def translation_sources(sources):
             "member_count": "{count} members",
             "member_filtered_count": "{visible} of {total} members shown",
             "months": list(MONTH_NAMES),
+            "html_literals": literals,
         },
     }
 
@@ -606,7 +730,7 @@ def render_document(page, prefix, sources, seminar_plan, language="en", route_la
     path = PAGES / f"{page['id']}.html"
     try:
         context = page_context(page, prefix, sources, seminar_plan, language, route_language)
-        return render_html(read_text(path), context)
+        return render_html(html_literal_template(read_text(path)), context)
     except BuildError as error:
         raise BuildError(f"{path}: {error}") from error
 

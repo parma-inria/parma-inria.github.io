@@ -39,6 +39,80 @@ class TemplateTests(unittest.TestCase):
         self.assertIn("&lt;img src=x onerror=&quot;bad&quot;&gt; &amp;", rendered)
         self.assertIn("{{ secret }} {% if secret %}", rendered)
 
+    def test_static_html_prose_translates_safely_and_respects_excluded_content(self):
+        source = """<!doctype html><html><head><title>Original metadata</title></head><body>
+          <!-- An English comment stays unchanged. -->
+          <p title="Ask &amp; share">  Plain &amp; accessible prose.  </p>
+          <p translate="no"><span>Scientific title in its original language.</span></p>
+          <pre>Original example.</pre><code>Original code.</code>
+          <script>const label = "Original script";</script><style>.original { color: red; }</style>
+          <p>{{ home.title }}</p>
+        </body></html>"""
+        literals = {text: key for _, _, key, text in build.StaticHTMLLiterals(source).literals()}
+        self.assertEqual(set(literals), {"Ask & share", "Plain & accessible prose."})
+        values = {
+            literals["Ask & share"]: 'Translated "attribute" & label',
+            literals["Plain & accessible prose."]: '<b>Translated prose</b> {{ secret }} {% if secret %}',
+        }
+        document = build.render_html(build.html_literal_template(source), {
+            "ui": {"html_literals": values}, "home": {"title": "A dynamic heading"},
+        })
+        self.assertIn('title="Translated &quot;attribute&quot; &amp; label"', document)
+        self.assertIn('  &lt;b&gt;Translated prose&lt;/b&gt; {{ secret }} {% if secret %}  ', document)
+        self.assertNotIn('<b>Translated prose</b>', document)
+        self.assertIn('<p>A dynamic heading</p>', document)
+        for preserved in ("Original metadata", "Scientific title in its original language.",
+                          "Original example.", "Original code.", "Original script", "An English comment"):
+            self.assertIn(preserved, document)
+
+    def test_static_html_catalogue_is_localized_for_each_translation(self):
+        page = build.read_text(build.PAGES / "home.html")
+        page = page.replace('<body>', '<body><p>A new English sentence.</p>')
+        self.assertIn('A new English sentence.', page)
+        sources = fixture_sources(seminar=seminar_fixture())
+        original_read = build.read_text
+        def read_source(path):
+            return page if path == build.PAGES / "home.html" else original_read(path)
+        with patch.object(build, "read_text", side_effect=read_source):
+            catalogue = build.translation_sources(sources)
+            self.assertIn('A new English sentence.', catalogue['ui']['html_literals'].values())
+            for language in ('fr', 'it'):
+                with self.subTest(language=language):
+                    cache = update_translations.empty_cache(language)
+                    cache['translations'] = {'A new English sentence.': 'Translated static sentence.'}
+                    localized = update_translations.localize_sources(catalogue, language, cache=cache)
+                    plan = build.plan_seminar(localized['seminar'], date(2026, 10, 9))
+                    home = next(item for item in localized['site']['pages'] if item['id'] == 'home')
+                    document = build.render_document(home, '../', localized, plan, language, language)
+                    self.assertIn('<p>Translated static sentence.</p>', document)
+                    self.assertNotIn('<p>A new English sentence.</p>', document)
+            self.assertIn('A new English sentence.', catalogue['ui']['html_literals'].values())
+
+    def test_scientific_titles_stay_original_in_each_language_and_archive(self):
+        sources = build.translation_sources(fixture_sources(seminar=seminar_fixture()))
+        paper_titles = [paper['title'] for paper in sources['publications']['items']]
+        talk_titles = [talk['title'] for session in sources['seminar']['sessions'] for talk in session['talks']]
+        for language in ('en', 'fr', 'it'):
+            with self.subTest(language=language):
+                cache = None if language == 'en' else update_translations.empty_cache(language)
+                if cache is not None:
+                    cache['translations'] = {title: 'SHOULD NEVER REPLACE A SCIENTIFIC TITLE'
+                                             for title in paper_titles + talk_titles}
+                localized = update_translations.localize_sources(sources, language, cache=cache)
+                plan = build.plan_seminar(localized['seminar'], date(2026, 10, 9))
+                for page_id, titles, tag in (('home', paper_titles, 'h3'), ('seminar', talk_titles, 'p')):
+                    page = next(item for item in localized['site']['pages'] if item['id'] == page_id)
+                    document = build.render_document(page, '../', localized, plan, language, language)
+                    for title in titles:
+                        self.assertIn(build.html.escape(title, quote=True), document)
+                    self.assertNotIn('SHOULD NEVER REPLACE A SCIENTIFIC TITLE', document)
+                    protected = [attrs for element, attrs in Elements(document).elements
+                                 if element == tag and attrs.get('translate') == 'no']
+                    self.assertEqual(len(protected), len(titles))
+                    if page_id == 'home':
+                        for talk in plan['next']['talks']:
+                            self.assertIn('<span translate="no">' + build.html.escape(talk['title'], quote=True) + '</span>', document)
+
     def test_invalid_templates_fail_before_output_is_written(self):
         for template in (
             "{% if name %}yes", "{% for x in names %}x",

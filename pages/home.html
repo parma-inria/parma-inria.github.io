@@ -99,7 +99,7 @@
             {% for paper in publications.items %}
               <article class="publication-card">
                 <p class="publication-date">{{ paper.date_label }}</p>
-                <h3><a href="{{ paper.url }}" target="_blank" rel="noopener noreferrer">{{ paper.title }}</a></h3>
+                <h3 translate="no"><a href="{{ paper.url }}" target="_blank" rel="noopener noreferrer">{{ paper.title }}</a></h3>
                 <p class="publication-authors" title="{{ paper.authors_full }}">{{ paper.authors_short }}</p>
                 <p class="publication-venue">{{ paper.venue }}</p>
                 <a class="publication-link" href="{{ paper.url }}" target="_blank" rel="noopener noreferrer">{{ publications.link_label }} <span aria-hidden="true">↗</span></a>
@@ -126,7 +126,7 @@
             <p class="session-date">{{ programme.next.date_home_label }}</p>
             {% if programme.next.talks %}
               {% for talk in programme.next.talks %}
-                <p>{% if talk.meta %}{{ talk.meta }}{% endif %}{% if talk.title %}<br>{{ talk.title }}{% endif %}</p>
+                <p>{% if talk.meta %}{{ talk.meta }}{% endif %}{% if talk.title %}<br><span translate="no">{{ talk.title }}</span>{% endif %}</p>
               {% endfor %}
             {% else %}
               <p>{{ seminar.labels.empty_programme }}</p>
