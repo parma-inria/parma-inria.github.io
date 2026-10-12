@@ -75,7 +75,22 @@
     {
       "date": "2026-11-16",
       "room": "3L15",
-      "talks": []
+      "talks": [{
+          "time": "10:00",
+          "speaker": "Julien Guerin",
+          "title": "TBA",
+          "abstract": [
+            "TBA"
+          ]
+        },
+        {
+          "time": "11:00",
+          "speaker": "TBA",
+          "title": "TBA",
+          "abstract": [
+            "TBA"
+          ]
+        }]
     },
     {
       "date": "2026-10-12",
