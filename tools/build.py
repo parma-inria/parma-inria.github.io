@@ -236,7 +236,7 @@ def validate_content(sources):
 
     # Shared navigation, page banners and footer
     require_fields(site, "content/site.json", {
-        "name": str, "language": str, "theme_color": str, "brand_caption": str,
+        "name": str, "language": str, "theme_color": str, "google_site_verification": str, "brand_caption": str,
         "skip_label": str, "menu_label": str, "navigation_label": str,
         "pages": list, "footer": dict, "map": dict,
     })
