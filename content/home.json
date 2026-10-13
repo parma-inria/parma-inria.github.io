@@ -8,7 +8,7 @@
     "Optimal Transport @ Inria Saclay"
   ],
   "introduction": [
-    "ParMA is a research team at the Inria Saclay Centre, in partnership with CNRS and Université Paris-Saclay. We study optimal    transport and its applications, with a particular focus on particle methods. Our research focuses on the application of OT techniques to the numerical resolution of problems, where one want to impose that a point cloud (representing either some data, or the result of a simulation) follows a certain probability distribution. This will for instance be done by using the Wasserstein distance as a penalization. We especially focus on the numerical analysis and resolution relying on particle discretization (i.e. point clouds)"
+    "ParMA is a research team at the Inria Saclay Centre, in partnership with CNRS and Université Paris-Saclay. We study optimal    transport and its applications, with a particular focus on particle methods. Our research focuses on the application of OT techniques to the numerical resolution of problems, where one want to impose that a point cloud (representing either some data, or the result of a simulation) follows a certain probability distribution. This will for instance be done by using the Wasserstein distance as a penalization. We especially focus on the numerical analysis and resolution relying on particle discretization (i.e. point clouds)."
   ],
   "logo_alt": "ParMA logo formed by a cloud of particles",
   "logo_caption": "A cloud of particles forming our logo",

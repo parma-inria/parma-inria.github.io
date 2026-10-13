@@ -157,9 +157,8 @@
 
             <section class="info-card" aria-labelledby="venue-title">
               <h2 id="venue-title">{{ seminar.labels.location }}</h2>
-              <p><a href="{{ seminar.venue.url }}" target="_blank" rel="noopener noreferrer">{{ seminar.venue.name }}</a></p>
+              <p><a href="{{ seminar.venue.url }}" target="_blank" rel="noopener noreferrer">{{ seminar.venue.name }}</a>, {{ ui.venue_building }} {{ seminar.venue.building }}</p>
               <p class="venue-details">
-                <span>{{ ui.venue_building }} {{ seminar.venue.building }}</span>
                 <span>{{ seminar.labels.room }} {{ seminar.venue.room }}</span>
               </p>
             </section>
