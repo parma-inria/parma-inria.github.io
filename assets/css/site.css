@@ -16,8 +16,11 @@
 /* Home, organizers and address layouts.
    Keep these rules in place to preserve the existing cascade. */
 .organizer-list {
+  display: grid;
+  gap: 18px;
+  margin: 0;
+  padding: 0;
   list-style: none;
-  padding-left: 0;
 }
 
 .brand-dot {
@@ -893,6 +896,36 @@ ul, ol {
 .mailing-list-note {
   margin-bottom: 24px;
   color: var(--muted);
+}
+
+/* Keep each name prominent and its email on a quieter line below it. */
+.organizer-list li {
+  min-width: 0;
+  margin: 0;
+}
+
+.organizer-name {
+  margin: 0;
+  font-weight: 600;
+  line-height: 1.4;
+}
+
+.organizer-email {
+  display: block;
+  width: fit-content;
+  max-width: 100%;
+  margin-top: 4px;
+  color: #5f6f7f;
+  font-size: .86rem;
+  line-height: 1.45;
+  text-decoration-color: #b8c3cd;
+  text-underline-offset: .18em;
+}
+
+.organizer-email:hover,
+.organizer-email:focus-visible {
+  color: var(--blue);
+  text-decoration-color: currentColor;
 }
 
 .organizer-list p,
