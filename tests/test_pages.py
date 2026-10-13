@@ -1,6 +1,7 @@
 """Validate the small page language and preservation of complete site content."""
 
 import json
+import shutil
 import sys
 import tempfile
 import unittest
@@ -8,6 +9,7 @@ from datetime import date
 from html.parser import HTMLParser
 from pathlib import Path
 from unittest.mock import patch
+from urllib.parse import urlsplit
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "tools"))
 import build
@@ -147,6 +149,49 @@ class TemplateTests(unittest.TestCase):
         for section in sources["team"]["sections"]:
             for member in section["members"]:
                 self.assertIn(build.html.escape(member["name"], quote=True), team)
+
+    def test_asset_updates_refresh_cached_styles_on_every_route(self):
+        sources = fixture_sources(seminar=seminar_fixture())
+
+        def linked_assets(output):
+            links = {}
+            for file in output.rglob("*.html"):
+                elements = Elements(file.read_text(encoding="utf-8")).elements
+                stylesheet = next(attrs["href"] for tag, attrs in elements
+                                  if tag == "link" and attrs.get("rel") == "stylesheet")
+                script = next(attrs["src"] for tag, attrs in elements
+                              if tag == "script" and "src" in attrs)
+                links[file.relative_to(output)] = (stylesheet, script)
+            return links
+
+        with tempfile.TemporaryDirectory() as directory:
+            temporary = Path(directory)
+            source = temporary / "source"
+            output = temporary / "site"
+            shutil.copytree(build.ROOT / "assets", source / "assets")
+            with patch.object(build, "ROOT", source), patch.object(
+                build, "read_json", side_effect=lambda name: sources[name],
+            ):
+                build.build(output, today=date(2026, 10, 9))
+                original = linked_assets(output)
+                build.build(output, today=date(2026, 10, 9))
+                self.assertEqual(linked_assets(output), original)
+
+                stylesheet = source / "assets/css/site.css"
+                with stylesheet.open("a", encoding="utf-8") as file:
+                    file.write("\n/* A newly published style change. */\n")
+                build.build(output, today=date(2026, 10, 9))
+                updated = linked_assets(output)
+                self.assertEqual(set(updated), set(original))
+                self.assertEqual(len(updated), 20)
+                for route, (css_url, js_url) in updated.items():
+                    with self.subTest(route=route):
+                        old_css, old_js = original[route]
+                        self.assertNotEqual(css_url, old_css)
+                        self.assertEqual(urlsplit(css_url).path, urlsplit(old_css).path)
+                        self.assertTrue(urlsplit(css_url).query)
+                        self.assertEqual(js_url, old_js)
+                self.assertEqual(check.check_site(output), [])
 
     def test_complete_build_keeps_routes_data_and_real_team_logo(self):
         sources = fixture_sources()

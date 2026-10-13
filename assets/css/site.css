@@ -949,6 +949,13 @@ ul, ol {
   margin-bottom: 13px;
 }
 
+/* Give the building and room their own labeled lines. */
+.venue-details {
+  display: grid;
+  gap: 4px;
+  line-height: 1.55;
+}
+
 .info-card p:last-child, .info-card ul:last-child {
   margin-bottom: 0;
 }

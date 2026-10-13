@@ -167,6 +167,7 @@ def translation_sources(sources):
             "calendar_available": "Programme available",
             "calendar_pending": "Programme pending",
             "calendar_empty": "No dates announced for this academic year.",
+            "venue_building": "Building",
             "schedule_description": "Seminar dates for academic year {start}–{end}",
             "member_count": "{count} members",
             "member_filtered_count": "{visible} of {total} members shown",
@@ -697,6 +698,12 @@ def prepare_publications(publications, months=MONTH_NAMES):
     return {**publications, "items": items}
 
 
+def asset_url(relative_path, prefix):
+    """Include a content version so browsers reload an asset after edits."""
+    version = hashlib.sha256((ROOT / relative_path).read_bytes()).hexdigest()[:12]
+    return f"{prefix}{relative_path}?v={version}"
+
+
 def page_context(page, prefix, sources, seminar_plan, language="en", route_language=None):
     """Prepare locale-aware links; the English page files supply every layout."""
     if language not in LANGUAGES or route_language not in (None, *LANGUAGES):
@@ -727,6 +734,10 @@ def page_context(page, prefix, sources, seminar_plan, language="en", route_langu
         **sources,
         "site": site, "page": page, "prefix": prefix, "routes": routes,
         "footer_tagline_lines": footer_tagline_lines,
+        "assets": {
+            "stylesheet_url": asset_url("assets/css/site.css", prefix),
+            "script_url": asset_url("assets/js/site.js", prefix),
+        },
         "locale": {
             "home_href": home_href,
             "canonical_url": PUBLIC_URL + (f"{language}/" if language != "en" else "") + page["path"],

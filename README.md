@@ -186,7 +186,7 @@ parma-site/
 └── .github/workflows/        ← automatic publishing
 ```
 
-Each file in `pages/` contains the whole document: head, header, banner, main content and footer, including the member cards and seminar archive. There are no separate layouts or partial files. Header and footer changes must be applied to all five pages; styling is shared in `assets/css/site.css`.
+Each file in `pages/` contains the whole document: head, header, banner, main content and footer, including the member cards and seminar archive. There are no separate layouts or partial files. Header and footer changes must be applied to all five pages; styling is shared in `assets/css/site.css`. Generated CSS and JavaScript links include a version based on the file contents, so browsers load updated files after edits. Keep editing the same source files; the version is calculated automatically.
 
 JSON values are inserted with `{{ field.path }}`. Repeated items use a loop:
 

@@ -6,7 +6,7 @@
     "revision": "dd7f6540a7a48a7f4db59e5c0b9c42c8eea67f18"
   },
   "schema_version": 1,
-  "source_sha256": "2dd781dc7724d1013c79f0137025cb75e402e5f06d1e756e1b83bcf7cd49195a",
+  "source_sha256": "bf046e62c6c8e948a1ba670ff2b7604504be6c5662e1abef7c071a483864a9cd",
   "translations": {
     "A cloud of particles forming our logo": "Un nuage de particules formant notre logo",
     "Abstract": "Résumé",
@@ -16,6 +16,7 @@
     "Analyzing shapes is a key step to understand biological functions and properties of cells and proteins. Subtle shape variations and conformations can have a significant impact on the interactions with the shape environment. In order to capture theses variations, we developed optimal transport based alignment tools and metrics, enabling to quantify shape heterogeneity and classify morphotypes. In particular I will present the numerical challenges involved in both alignment and metric computation, as well as examples of biological data classification.": "L’analyse des formes est une étape essentielle pour comprendre les fonctions et les propriétés biologiques des cellules et des protéines. De subtiles variations de forme ou de conformation peuvent avoir un effet important sur leurs interactions avec leur environnement. Pour saisir ces variations, nous avons développé des outils d’alignement et des métriques fondés sur le transport optimal, qui permettent de quantifier l’hétérogénéité des formes et de classer les morphotypes. Je présenterai en particulier les défis numériques liés à l’alignement et au calcul de ces métriques, ainsi que des exemples de classification de données biologiques.",
     "April": "avril",
     "August": "août",
+    "Building": "Bâtiment",
     "Building 307 · Room 3L15": "Bâtiment 307 · Salle 3L15",
     "C++": "C++",
     "C++ tests and examples": "Tests et exemples en C++",

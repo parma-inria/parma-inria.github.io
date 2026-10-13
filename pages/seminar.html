@@ -24,8 +24,8 @@
     <!-- Round team mark, shared styles and page interactions -->
     <link rel="icon" href="{{ prefix }}assets/images/favicon.png" type="image/png" sizes="64x64">
     <link rel="icon" href="{{ prefix }}assets/images/favicon.svg" type="image/svg+xml" sizes="any">
-    <link rel="stylesheet" href="{{ prefix }}assets/css/site.css">
-    <script src="{{ prefix }}assets/js/site.js" defer></script>
+    <link rel="stylesheet" href="{{ assets.stylesheet_url }}">
+    <script src="{{ assets.script_url }}" defer></script>
   </head>
 
   <body>
@@ -158,7 +158,10 @@
             <section class="info-card" aria-labelledby="venue-title">
               <h2 id="venue-title">{{ seminar.labels.location }}</h2>
               <p><a href="{{ seminar.venue.url }}" target="_blank" rel="noopener noreferrer">{{ seminar.venue.name }}</a></p>
-              <p>{{ seminar.venue.building }} · {{ seminar.labels.room }} {{ seminar.venue.room }}</p>
+              <p class="venue-details">
+                <span>{{ ui.venue_building }} {{ seminar.venue.building }}</span>
+                <span>{{ seminar.labels.room }} {{ seminar.venue.room }}</span>
+              </p>
             </section>
           </div>
 

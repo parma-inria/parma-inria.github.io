@@ -8,6 +8,7 @@
     "Analyzing shapes is a key step to understand biological functions and properties of cells and proteins. Subtle shape variations and conformations can have a significant impact on the interactions with the shape environment. In order to capture theses variations, we developed optimal transport based alignment tools and metrics, enabling to quantify shape heterogeneity and classify morphotypes. In particular I will present the numerical challenges involved in both alignment and metric computation, as well as examples of biological data classification.": "L'analisi delle forme è fondamentale per comprendere le funzioni biologiche e le proprietà di cellule e proteine. Piccole variazioni di forma e di conformazione possono incidere notevolmente sulle interazioni con l'ambiente circostante. Per cogliere queste variazioni, abbiamo sviluppato strumenti di allineamento e metriche basati sul trasporto ottimo, che consentono di quantificare l'eterogeneità delle forme e classificare i morfotipi. Presenterò in particolare le difficoltà numeriche legate all'allineamento e al calcolo delle metriche, insieme ad alcuni esempi di classificazione di dati biologici.",
     "April": "aprile",
     "August": "agosto",
+    "Building": "Edificio",
     "Building 307 · Room 3L15": "Edificio 307 · Sala 3L15",
     "C++": "C++",
     "C++ tests and examples": "Test ed esempi in C++",
