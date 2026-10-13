@@ -114,7 +114,12 @@
             <a class="footer-home" href="{{ locale.home_href }}">
               <img class="brand-logo footer-logo" src="{{ prefix }}assets/images/parma-logo.png" alt="{{ site.name }}" width="1024" height="437" loading="lazy">
             </a>
-            <p class="footer-tagline">{{ site.footer.tagline }}</p>
+            <!-- Keep the two parts of the team tagline on separate lines. -->
+            <p class="footer-tagline">
+              {% for line in footer_tagline_lines %}
+                <span class="footer-tagline-line">{{ line }}</span>
+              {% endfor %}
+            </p>
           </div>
 
           <nav class="footer-navigation" aria-labelledby="footer-navigation-title">

@@ -704,6 +704,12 @@ def page_context(page, prefix, sources, seminar_plan, language="en", route_langu
     sources = sources if "ui" in sources else translation_sources(sources)
     site = {**sources["site"], "language": language}
     ui = sources["ui"]
+    # Break after the conjunction without changing the English translation source.
+    tagline = site["footer"]["tagline"]
+    conjunction = {"en": r"\s(?:&|and)\s", "fr": r"\s(?:&|et)\s", "it": r"\s(?:&|e)\s"}[language]
+    tagline_break = re.search(conjunction, tagline)
+    footer_tagline_lines = ([tagline[:tagline_break.end()].rstrip(), tagline[tagline_break.end():].strip()]
+                            if tagline_break else [tagline])
     # Assets are shared at the root, while navigation stays inside this language.
     locale_path = f"{route_language}/" if route_language else ""
     home_href = prefix + locale_path
@@ -720,6 +726,7 @@ def page_context(page, prefix, sources, seminar_plan, language="en", route_langu
     return {
         **sources,
         "site": site, "page": page, "prefix": prefix, "routes": routes,
+        "footer_tagline_lines": footer_tagline_lines,
         "locale": {
             "home_href": home_href,
             "canonical_url": PUBLIC_URL + (f"{language}/" if language != "en" else "") + page["path"],
