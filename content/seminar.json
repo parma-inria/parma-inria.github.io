@@ -55,7 +55,22 @@
     {
       "date": "2027-03-22",
       "room": "3L15",
-      "talks": []
+      "talks": [{
+          "time": "10:00",
+          "speaker": "Charles Erbar",
+          "title": "TBA",
+          "abstract": [
+            "TBA"
+          ]
+        },
+        {
+          "time": "11:00",
+          "speaker": "TBA",
+          "title": "TBA",
+          "abstract": [
+            "TBA"
+          ]
+        }]
     },
     {
       "date": "2027-01-22",
