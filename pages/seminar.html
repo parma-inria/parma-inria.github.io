@@ -180,40 +180,6 @@
         </div>
       </div>
 
-      <!-- Later programmes remain available without replacing the next session. -->
-      {% if programme.upcoming %}
-        <section aria-labelledby="upcoming-sessions-title">
-          <h2 id="upcoming-sessions-title" class="section-heading">{{ ui.other_upcoming_sessions }}</h2>
-          {% for session in programme.upcoming %}
-            <details class="seminar-archive upcoming-session" id="{{ session.id }}" tabindex="-1">
-              <summary>{{ session.date_label }}</summary>
-              <div class="archive-content">
-                <article class="session-card" aria-label="{{ session.date_label }}">
-                  {% for talk in session.talks %}
-                    <article class="talk">
-                      {% if talk.meta %}
-                        <p class="talk-meta">{% if talk.time %}<strong>{{ talk.time }}</strong> {% endif %}{{ talk.speaker }}</p>
-                      {% endif %}
-
-                      {% if talk.title %}
-                        <p class="talk-title" translate="no">{{ talk.title }}</p>
-                      {% endif %}
-
-                      {% if talk.abstract %}
-                        <p class="abstract-label">{{ seminar.labels.abstract }}</p>
-                        {% for paragraph in talk.abstract %}
-                          <p class="abstract-text">{{ paragraph }}</p>
-                        {% endfor %}
-                      {% endif %}
-                    </article>
-                  {% endfor %}
-                </article>
-              </div>
-            </details>
-          {% endfor %}
-        </section>
-      {% endif %}
-
       <!-- Archive by academic year: each details element starts closed. -->
       <section aria-labelledby="history-title">
         <h2 id="history-title" class="section-heading">{{ seminar.labels.history }}</h2>

@@ -128,7 +128,7 @@ Add another object to `talks` for a second presentation. Keep `abstract` as a li
 
 Archive years are collapsible: click a year to open or close its sessions. Former team members remain visible on the team page.
 
-The home page and the seminar's **Next Session** section show the same date: the first session on or after today, even if its programme is still being prepared. Later programmes appear under **Other upcoming sessions** and open directly from the calendar. Adding speakers to December or March does not replace an earlier upcoming November date. A programme enters the collapsible archive only on the day after its date, grouped by academic year. The order of entries in the JSON does not affect this selection.
+The home page and the seminar's **Next Session** section show the same date: the first session on or after today, even if its programme is still being prepared. Only this one future programme is displayed. Later dates stay in the calendar; their programme details remain in the JSON and appear automatically when their date becomes the next session. Adding speakers to December or March does not replace an earlier upcoming November date. A programme enters the collapsible archive only on the day after its date, grouped by academic year. The order of entries in the JSON does not affect this selection.
 
 These views are calculated **when the site is generated**. Today's date determines the next session, past programmes and the September-to-August academic year. GitHub's daily workflow regenerates the published site, and every pushed change also rebuilds it. You do not need to move old sessions manually or edit `content/home.json` when the programme changes.
 
@@ -198,7 +198,7 @@ JSON values are inserted with `{{ field.path }}`. Repeated items use a loop:
 
 You can edit the HTML around these placeholders directly. Every loop needs `{% endfor %}` and every condition needs `{% endif %}`. Inserted values are escaped automatically. Python expressions, template includes and raw HTML from JSON are not supported.
 
-The seminar starts with the nearest upcoming session and a chronological academic-year agenda. Dates with programmes link directly to them: later programmes open under **Other upcoming sessions**, while past programmes open inside the archive. The next date remains linked even when its programme is pending; other empty calendar slots stay visible without a link. The agenda is beside the programme on desktop and below it on mobile. Dates, states and archive links all come from `content/seminar.json`; no calendar needs to be updated separately.
+The seminar starts with the nearest upcoming session and a chronological academic-year agenda. The next date links to its programme, even while it is being prepared, and past programmes open inside the archive. Later dates stay visible without links or programme details. The agenda is beside the programme on desktop and below it on mobile. Dates, states and archive links all come from `content/seminar.json`; no calendar needs to be updated separately.
 
 The five English pages use the URLs `/`, `/team-members/`, `/gdt-ot-pde-ml/`, `/resources/` and `/contact/`. Each has a French `/fr/` route, an Italian `/it/` route and an English `/en/` alias. All 20 generated pages share the same five HTML source files. The build calculates relative links for each route and keeps page navigation in the chosen language.
 

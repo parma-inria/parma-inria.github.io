@@ -1130,7 +1130,7 @@ ul, ol {
   color: var(--blue-deep);
   font-weight: 650;
 }
-.session-card:focus-visible, .upcoming-session:focus-visible, #schedule-title:focus-visible {
+.session-card:focus-visible, #schedule-title:focus-visible {
   outline: 3px solid #e6a638;
   outline-offset: 4px;
 }

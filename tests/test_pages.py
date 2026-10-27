@@ -15,7 +15,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "tools"))
 import build
 import check
 import update_translations
-from test_seminar import fixture_sources, render_page, seminar_fixture
+from test_seminar import fixture_sources, render_page, seminar_fixture, visible_sessions
 
 
 class TemplateTests(unittest.TestCase):
@@ -108,7 +108,10 @@ class TemplateTests(unittest.TestCase):
                                              for title in paper_titles + talk_titles}
                 localized = update_translations.localize_sources(sources, language, cache=cache)
                 plan = build.plan_seminar(localized['seminar'], date(2026, 10, 9))
-                for page_id, titles, tag in (('home', paper_titles, 'h3'), ('seminar', talk_titles, 'p')):
+                self.assertEqual([talk['title'] for session in localized['seminar']['sessions']
+                                  for talk in session['talks']], talk_titles)
+                visible_titles = [talk['title'] for session in visible_sessions(plan) for talk in session['talks']]
+                for page_id, titles, tag in (('home', paper_titles, 'h3'), ('seminar', visible_titles, 'p')):
                     page = next(item for item in localized['site']['pages'] if item['id'] == page_id)
                     document = build.render_document(page, '../', localized, plan, language, language)
                     for title in titles:
@@ -200,9 +203,10 @@ class TemplateTests(unittest.TestCase):
                 output = build.build(Path(directory) / "site", today=date(2026, 10, 9))
             self.assertEqual(len(list(output.rglob("*.html"))), 4 * len(build.PAGE_IDS))
             seminar = (output / "gdt-ot-pde-ml/index.html").read_text(encoding="utf-8")
-            expected = sum(len(session["talks"]) for session in sources["seminar"]["sessions"])
+            plan = build.plan_seminar(sources["seminar"], date(2026, 10, 9))
+            expected = sum(len(session["talks"]) for session in visible_sessions(plan))
             self.assertEqual(sum(attrs.get("class") == "talk" for _, attrs in Elements(seminar).elements), expected)
-            for session in sources["seminar"]["sessions"]:
+            for session in visible_sessions(plan):
                 for talk in session["talks"]:
                     for paragraph in talk["abstract"]:
                         self.assertIn(build.html.escape(paragraph, quote=True), seminar)
@@ -219,9 +223,10 @@ class TemplateTests(unittest.TestCase):
                 self.assertTrue(icons[1].endswith("assets/images/favicon.svg"))
                 self.assertIn("class=\"brand-logo\"", document)
 
-    def test_translated_routes_keep_every_talk_and_use_equivalent_language_links(self):
+    def test_translated_routes_keep_visible_talks_and_use_equivalent_language_links(self):
         sources = fixture_sources(seminar=seminar_fixture())
-        expected_talks = sum(len(session["talks"]) for session in sources["seminar"]["sessions"])
+        plan = build.plan_seminar(sources["seminar"], date(2026, 10, 9))
+        expected_talks = sum(len(session["talks"]) for session in visible_sessions(plan))
         with tempfile.TemporaryDirectory() as directory:
             with patch.object(build, "read_json", side_effect=lambda name: sources[name]):
                 output = build.build(Path(directory) / "site", today=date(2026, 10, 9))

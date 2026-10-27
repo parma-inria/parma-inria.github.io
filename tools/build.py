@@ -165,8 +165,7 @@ def translation_sources(sources):
             "calendar_hint": "Open available programmes by selecting a date.",
             "calendar_next": "Next session",
             "calendar_past": "Past session",
-            "other_upcoming_sessions": "Other upcoming sessions",
-            "calendar_available": "Programme available",
+            "calendar_upcoming": "Upcoming session",
             "calendar_pending": "Programme pending",
             "calendar_empty": "No dates announced for this academic year.",
             "venue_building": "Building",
@@ -484,7 +483,6 @@ def plan_seminar(seminar, today=None):
     return {
         "today": today,
         "next": current,
-        "upcoming": [session for session in future[1:] if session["talks"]],
         "calendar": calendar,
         "academic_year": year,
         "history": history,
@@ -628,8 +626,8 @@ def prepare_programme(seminar, plan, ui=None):
             ],
         }
 
-    # Link every rendered programme, including an empty next-session placeholder.
-    # Other empty dates stay visible in the chronological calendar without a link.
+    # Only the next programme and past archives have links. Later dates stay
+    # in the calendar while their programme details remain in the source JSON.
     calendar = []
     for session in plan["calendar"]:
         day = date.fromisoformat(session["date"])
@@ -639,19 +637,18 @@ def prepare_programme(seminar, plan, ui=None):
         elif day < plan["today"]:
             state = "past"
         else:
-            state = "available" if session["talks"] else "pending"
+            state = "upcoming" if session["talks"] else "pending"
         calendar.append({
             "date": session["date"],
             "day": str(day.day),
             "month_year": f"{ui['months'][day.month - 1]} {day.year}",
             "state": state,
             "status": ui["calendar_" + state],
-            "href": "#session-" + session["date"] if is_featured or session["talks"] else "",
+            "href": "#session-" + session["date"] if is_featured or (day < plan["today"] and session["talks"]) else "",
         })
     year = plan["academic_year"]
     return {
         "next": session_data(plan["next"]) if plan["next"] else None,
-        "upcoming": [session_data(session) for session in plan["upcoming"]],
         "calendar": calendar,
         "academic_year_label": f"{year}–{year + 1}",
         "academic_year": year,

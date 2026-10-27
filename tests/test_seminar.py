@@ -69,6 +69,13 @@ def render_page(page_id, prefix, sources, plan):
     return build.render_document(page, prefix, sources, plan)
 
 
+def visible_sessions(plan):
+    """The page contains the next programme and past archived programmes."""
+    return ([plan["next"]] if plan["next"] else []) + [
+        session for group in plan["history"].values() for session in group
+    ]
+
+
 class RenderedElements(HTMLParser):
     """Read calendar dates and output attributes independently of presentation."""
 
@@ -110,12 +117,12 @@ class SeminarTests(unittest.TestCase):
         })
         after, home, page = self.render(date(2026, 10, 9))
         self.assertEqual(after["next"]["date"], "2026-10-12")
-        self.assertEqual([session["date"] for session in after["upcoming"]],
-                         ["2026-11-16", "2026-12-14", "2027-03-22"])
         self.assertNotIn("November programme", home)
         self.assertNotIn("March programme", home)
-        self.assertIn("November programme", page)
-        self.assertIn("March programme", page)
+        self.assertNotIn("November programme", page)
+        self.assertNotIn("March programme", page)
+        self.assertEqual(november["talks"][0]["title"], "November programme")
+        self.assertEqual(self.seminar["sessions"][-1]["talks"][0]["title"], "March programme")
         self.assertTrue(all(session["date"] < "2026-10-09"
                             for group in after["history"].values() for session in group))
 
@@ -138,7 +145,6 @@ class SeminarTests(unittest.TestCase):
                 self.assertEqual(plan["next"]["date"] if plan["next"] else None, expected)
                 history = [session for group in plan["history"].values() for session in group]
                 self.assertTrue(all(session["date"] < day.isoformat() for session in history))
-                self.assertTrue(all(session["date"] > expected for session in plan["upcoming"]))
                 elements = RenderedElements(page)
                 self.assertEqual(sum(attrs.get("data-upcoming") == "true" for _, attrs in elements.elements),
                                  int(expected is not None))
@@ -166,7 +172,6 @@ class SeminarTests(unittest.TestCase):
         plan, home, page = self.render(date(2026, 10, 9))
         self.assertEqual(plan["next"]["date"], "2026-10-12")
         self.assertEqual(plan["history"], {})
-        self.assertEqual(plan["upcoming"], [])
         self.assertIn("Programme to be announced.", home)
         self.assertIn("Programme to be announced.", page)
         agenda = {entry["date"]: entry for entry in build.prepare_programme(self.seminar, plan)["calendar"]}
@@ -184,7 +189,7 @@ class SeminarTests(unittest.TestCase):
         self.assertIn("No upcoming session.", home)
         self.assertIn("No upcoming session.", page)
 
-    def test_nearest_programme_and_calendar_links_keep_all_talks_available(self):
+    def test_only_nearest_programme_is_visible_with_all_calendar_dates(self):
         original = copy.deepcopy(self.seminar)
         plan, home, page = self.render(date(2026, 10, 9))
         self.assertEqual(plan["next"]["date"], "2026-10-12")
@@ -193,24 +198,40 @@ class SeminarTests(unittest.TestCase):
         featured = page.split('<section aria-labelledby="next-session-title">', 1)[1].split('</section>', 1)[0]
         self.assertIn("Current programme", featured)
         self.assertNotIn("Later programme", featured)
-        future = page.split('<section aria-labelledby="upcoming-sessions-title">', 1)[1].split('</section>', 1)[0]
-        self.assertIn("Later programme", future)
+        self.assertNotIn("Later programme", page)
+        self.assertNotIn('aria-labelledby="upcoming-sessions-title"', page)
         archive = page.split('<section aria-labelledby="history-title">', 1)[1]
         self.assertNotIn("Later programme", archive)
         self.assertNotIn("Current programme", archive)
         elements = RenderedElements(page)
         self.assertEqual(sum(attrs.get("data-upcoming") == "true" for _, attrs in elements.elements), 1)
         self.assertEqual(sum(attrs.get("class") == "talk" for _, attrs in elements.elements),
-                         sum(len(session["talks"]) for session in self.seminar["sessions"]))
+                         sum(len(session["talks"]) for session in visible_sessions(plan)))
         self.assertEqual(elements.calendar_dates, [session["date"] for session in plan["calendar"]])
         agenda_links = {attrs["href"] for tag, attrs in elements.elements
                         if tag == "a" and "schedule-link" in attrs.get("class", "").split()}
-        self.assertEqual(agenda_links, {"#session-2026-09-01", "#session-2026-10-12", "#session-2026-12-14"})
+        self.assertEqual(agenda_links, {"#session-2026-09-01", "#session-2026-10-12"})
+        agenda = {entry["date"]: entry for entry in build.prepare_programme(self.seminar, plan)["calendar"]}
+        self.assertEqual(agenda["2026-12-14"]["state"], "upcoming")
+        self.assertEqual(agenda["2026-12-14"]["href"], "")
         ids = [attrs["id"] for _, attrs in elements.elements if "id" in attrs]
         self.assertEqual(len(ids), len(set(ids)))
         self.assertTrue(all(href[1:] in ids for href in agenda_links))
         self.assertIn("Past session", page)
         self.assertIn("Programme pending", page)
+        self.assertEqual(self.seminar, original)
+
+    def test_later_details_stay_in_json_until_their_date_becomes_next(self):
+        original = copy.deepcopy(self.seminar)
+        _, _, october = self.render(date(2026, 10, 9))
+        self.assertNotIn("Later programme", october)
+        _, december_home, december = self.render(date(2026, 12, 14))
+        self.assertIn("Later programme", december_home)
+        self.assertIn("Later programme", december)
+        after, after_home, archive = self.render(date(2026, 12, 15))
+        self.assertNotIn("Later programme", after_home)
+        self.assertIn("Later programme", archive)
+        self.assertIn("2026-12-14", [session["date"] for session in after["history"][2026]])
         self.assertEqual(self.seminar, original)
 
     def test_editable_text_is_escaped_and_abstract_paragraphs_remain_separate(self):
