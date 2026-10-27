@@ -85,7 +85,22 @@
     {
       "date": "2026-12-14",
       "room": "3L15",
-      "talks": []
+      "talks": [{
+          "time": "10:00",
+          "speaker": "Sofiane Cherf",
+          "title": "TBA",
+          "abstract": [
+            "TBA"
+          ]
+        },
+        {
+          "time": "11:00",
+          "speaker": "TBA",
+          "title": "TBA",
+          "abstract": [
+            "TBA"
+          ]
+        }]
     },
     {
       "date": "2026-11-16",
