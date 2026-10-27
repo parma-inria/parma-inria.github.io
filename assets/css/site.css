@@ -1117,20 +1117,20 @@ ul, ol {
   background: var(--blue-light);
   color: var(--blue-deep);
 }
-.schedule-item-latest .schedule-entry {
+.schedule-item-next .schedule-entry {
   border-color: #a9cde6;
   background: var(--blue-light);
 }
-.schedule-item-latest .schedule-day {
+.schedule-item-next .schedule-day {
   border-color: var(--blue);
   background: var(--blue);
   color: var(--white);
 }
-.schedule-item-latest .schedule-status {
+.schedule-item-next .schedule-status {
   color: var(--blue-deep);
   font-weight: 650;
 }
-.session-card:focus-visible, #schedule-title:focus-visible {
+.session-card:focus-visible, .upcoming-session:focus-visible, #schedule-title:focus-visible {
   outline: 3px solid #e6a638;
   outline-offset: 4px;
 }

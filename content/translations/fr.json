@@ -6,7 +6,7 @@
     "revision": "dd7f6540a7a48a7f4db59e5c0b9c42c8eea67f18"
   },
   "schema_version": 1,
-  "source_sha256": "14526fdf58fc96d6b6b8622aa809c20c5a8131f986bb86221834898e882ac87e",
+  "source_sha256": "621594e57fc739cb0682ccb5f4b1af993a2cd10898d74055e2bec76a6138e4c9",
   "translations": {
     "A cloud of particles forming our logo": "Un nuage de particules formant notre logo",
     "Abstract": "Résumé",
@@ -83,11 +83,13 @@
     "Optimal Transport & Particle Methods": "Transport optimal et méthodes particulaires",
     "Optimal Transport @ Inria Saclay": "Transport optimal à Inria Saclay",
     "Organizers": "Organisateurs",
+    "Other upcoming sessions": "Autres séances à venir",
     "Our team": "Notre équipe",
     "ParMA is a research team at the Inria Saclay Centre, in partnership with CNRS and Université Paris-Saclay. We study optimal    transport and its applications, with a particular focus on particle methods. Our research focuses on the application of OT techniques to the numerical resolution of problems, where one want to impose that a point cloud (representing either some data, or the result of a simulation) follows a certain probability distribution. This will for instance be done by using the Wasserstein distance as a penalization. We especially focus on the numerical analysis and resolution relying on particle discretization (i.e. point clouds)": "ParMA est une équipe de recherche du centre Inria Saclay, en partenariat avec le CNRS et l’Université Paris-Saclay. Nous étudions le transport optimal et ses applications, avec un intérêt particulier pour les méthodes particulaires. Nos recherches portent sur l’utilisation des techniques de transport optimal (OT) pour résoudre numériquement des problèmes dans lesquels on souhaite qu’un nuage de points, représentant des données ou le résultat d’une simulation, suive une distribution de probabilité donnée. On peut, par exemple, utiliser la distance de Wasserstein comme terme de pénalisation. Nous nous intéressons particulièrement à l’analyse numérique et à la résolution de ces problèmes par des discrétisations particulaires, c’est-à-dire des nuages de points.",
     "ParMA is a research team at the Inria Saclay Centre, in partnership with CNRS and Université Paris-Saclay. We study optimal    transport and its applications, with a particular focus on particle methods. Our research focuses on the application of OT techniques to the numerical resolution of problems, where one want to impose that a point cloud (representing either some data, or the result of a simulation) follows a certain probability distribution. This will for instance be done by using the Wasserstein distance as a penalization. We especially focus on the numerical analysis and resolution relying on particle discretization (i.e. point clouds).": "ParMA est une équipe de recherche du centre Inria Saclay, en partenariat avec le CNRS et l’Université Paris-Saclay. Nous étudions le transport optimal et ses applications, avec un intérêt particulier pour les méthodes particulaires. Nos recherches portent sur l’utilisation des techniques de transport optimal (OT) pour résoudre numériquement des problèmes dans lesquels on souhaite qu’un nuage de points, représentant des données ou le résultat d’une simulation, suive une distribution de probabilité donnée. On peut, par exemple, utiliser la distance de Wasserstein comme terme de pénalisation. Nous nous intéressons particulièrement à l’analyse numérique et à la résolution de ces problèmes par des discrétisations particulaires, c’est-à-dire des nuages de points.",
     "ParMA logo formed by a cloud of particles": "Logo de ParMA formé par un nuage de particules",
     "ParMa": "ParMa",
+    "Past session": "Séance passée",
     "Permanent researchers": "Chercheurs permanents",
     "PhD students": "Doctorants",
     "Postdoctoral researchers": "Chercheurs postdoctoraux",

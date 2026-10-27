@@ -69,7 +69,7 @@
     <!-- Page content -->
     <main id="main" class="container content-container">
       <div class="seminar-programme-layout">
-        <!-- Latest announced programme; older programmes automatically join the archive. -->
+        <!-- The nearest date stays featured; only completed dates join the archive. -->
         <section aria-labelledby="next-session-title">
           <div class="programme-heading">
             <h2 id="next-session-title" class="section-heading">{{ seminar.labels.next_session }}</h2>
@@ -77,24 +77,28 @@
           {% if programme.next %}
             <article class="session-card" id="{{ programme.next.id }}" tabindex="-1" data-upcoming="true">
               <h3 class="session-date">{{ programme.next.date_label }}</h3>
-              {% for talk in programme.next.talks %}
-                <article class="talk">
-                  {% if talk.meta %}
-                    <p class="talk-meta">{% if talk.time %}<strong>{{ talk.time }}</strong> {% endif %}{{ talk.speaker }}</p>
-                  {% endif %}
+              {% if programme.next.talks %}
+                {% for talk in programme.next.talks %}
+                  <article class="talk">
+                    {% if talk.meta %}
+                      <p class="talk-meta">{% if talk.time %}<strong>{{ talk.time }}</strong> {% endif %}{{ talk.speaker }}</p>
+                    {% endif %}
 
-                  {% if talk.title %}
-                    <p class="talk-title" translate="no">{{ talk.title }}</p>
-                  {% endif %}
+                    {% if talk.title %}
+                      <p class="talk-title" translate="no">{{ talk.title }}</p>
+                    {% endif %}
 
-                  {% if talk.abstract %}
-                    <p class="abstract-label">{{ seminar.labels.abstract }}</p>
-                    {% for paragraph in talk.abstract %}
-                      <p class="abstract-text">{{ paragraph }}</p>
-                    {% endfor %}
-                  {% endif %}
-                </article>
-              {% endfor %}
+                    {% if talk.abstract %}
+                      <p class="abstract-label">{{ seminar.labels.abstract }}</p>
+                      {% for paragraph in talk.abstract %}
+                        <p class="abstract-text">{{ paragraph }}</p>
+                      {% endfor %}
+                    {% endif %}
+                  </article>
+                {% endfor %}
+              {% else %}
+                <p>{{ seminar.labels.empty_programme }}</p>
+              {% endif %}
             </article>
           {% else %}
             <p>{{ seminar.labels.empty_next_session }}</p>
@@ -175,6 +179,40 @@
 
         </div>
       </div>
+
+      <!-- Later programmes remain available without replacing the next session. -->
+      {% if programme.upcoming %}
+        <section aria-labelledby="upcoming-sessions-title">
+          <h2 id="upcoming-sessions-title" class="section-heading">{{ ui.other_upcoming_sessions }}</h2>
+          {% for session in programme.upcoming %}
+            <details class="seminar-archive upcoming-session" id="{{ session.id }}" tabindex="-1">
+              <summary>{{ session.date_label }}</summary>
+              <div class="archive-content">
+                <article class="session-card" aria-label="{{ session.date_label }}">
+                  {% for talk in session.talks %}
+                    <article class="talk">
+                      {% if talk.meta %}
+                        <p class="talk-meta">{% if talk.time %}<strong>{{ talk.time }}</strong> {% endif %}{{ talk.speaker }}</p>
+                      {% endif %}
+
+                      {% if talk.title %}
+                        <p class="talk-title" translate="no">{{ talk.title }}</p>
+                      {% endif %}
+
+                      {% if talk.abstract %}
+                        <p class="abstract-label">{{ seminar.labels.abstract }}</p>
+                        {% for paragraph in talk.abstract %}
+                          <p class="abstract-text">{{ paragraph }}</p>
+                        {% endfor %}
+                      {% endif %}
+                    </article>
+                  {% endfor %}
+                </article>
+              </div>
+            </details>
+          {% endfor %}
+        </section>
+      {% endif %}
 
       <!-- Archive by academic year: each details element starts closed. -->
       <section aria-labelledby="history-title">

@@ -163,7 +163,9 @@ def translation_sources(sources):
             "language_label": "Language",
             "publications_more": "See more",
             "calendar_hint": "Open available programmes by selecting a date.",
-            "calendar_latest": "Latest programme",
+            "calendar_next": "Next session",
+            "calendar_past": "Past session",
+            "other_upcoming_sessions": "Other upcoming sessions",
             "calendar_available": "Programme available",
             "calendar_pending": "Programme pending",
             "calendar_empty": "No dates announced for this academic year.",
@@ -463,25 +465,26 @@ def academic_year_start(day):
 
 
 def plan_seminar(seminar, today=None):
-    """Feature the latest programme; use today's academic year for the calendar."""
+    """Feature the nearest upcoming date and archive only past programmes."""
     today = today or date.today()
     sessions = sorted(seminar["sessions"], key=lambda session: session["date"])
-    # Empty dates reserve calendar slots without replacing an announced programme.
-    announced = [session for session in sessions if session["talks"]]
-    current = announced[-1] if announced else None
+    future = [session for session in sessions if date.fromisoformat(session["date"]) >= today]
+    current = future[0] if future else None
     year = academic_year_start(today)
     calendar = [
         session for session in sessions
         if academic_year_start(date.fromisoformat(session["date"])) == year
     ]
     history = {}
-    # Adding a newer programme immediately moves every previous one to the archive.
-    for session in reversed(announced):
+    # A future speaker announcement never moves an earlier future date to history.
+    for session in reversed(sessions):
         session_day = date.fromisoformat(session["date"])
-        if session is not current:
+        if session_day < today and session["talks"]:
             history.setdefault(academic_year_start(session_day), []).append(session)
     return {
+        "today": today,
         "next": current,
+        "upcoming": [session for session in future[1:] if session["talks"]],
         "calendar": calendar,
         "academic_year": year,
         "history": history,
@@ -625,24 +628,30 @@ def prepare_programme(seminar, plan, ui=None):
             ],
         }
 
-    # Every year entry follows chronological JSON-derived order. Only announced
-    # programmes have links; pending slots remain visible without implying a talk.
+    # Link every rendered programme, including an empty next-session placeholder.
+    # Other empty dates stay visible in the chronological calendar without a link.
     calendar = []
     for session in plan["calendar"]:
         day = date.fromisoformat(session["date"])
         is_featured = bool(plan["next"] and session["date"] == plan["next"]["date"])
-        state = "latest" if is_featured else "available" if session["talks"] else "pending"
+        if is_featured:
+            state = "next"
+        elif day < plan["today"]:
+            state = "past"
+        else:
+            state = "available" if session["talks"] else "pending"
         calendar.append({
             "date": session["date"],
             "day": str(day.day),
             "month_year": f"{ui['months'][day.month - 1]} {day.year}",
             "state": state,
             "status": ui["calendar_" + state],
-            "href": "#session-" + session["date"] if session["talks"] else "",
+            "href": "#session-" + session["date"] if is_featured or session["talks"] else "",
         })
     year = plan["academic_year"]
     return {
         "next": session_data(plan["next"]) if plan["next"] else None,
+        "upcoming": [session_data(session) for session in plan["upcoming"]],
         "calendar": calendar,
         "academic_year_label": f"{year}–{year + 1}",
         "academic_year": year,

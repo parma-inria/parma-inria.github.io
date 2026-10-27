@@ -256,7 +256,7 @@ class TemplateTests(unittest.TestCase):
         cache = update_translations.empty_cache("it")
         cache["translations"] = {
             source: "Introduzione tradotta.",
-            "December": "dicembre",
+            "October": "ottobre",
             "Language": "Lingua",
             "{count} members": "{count} membri",
             "{visible} of {total} members shown": "{visible} di {total} membri mostrati",
@@ -269,11 +269,11 @@ class TemplateTests(unittest.TestCase):
         context = build.page_context(page, "../", localized, plan, "it", "it")
         document = build.render_document(page, "../", localized, plan, "it", "it")
         self.assertIn("Introduzione tradotta.", document)
-        self.assertIn("14 dicembre 2026", document)
-        self.assertIn("Beta speaker", document)
+        self.assertIn("12 ottobre 2026", document)
+        self.assertIn("Alpha speaker", document)
         self.assertEqual(context["locale"]["home_href"], "../it/")
         self.assertTrue(all(link["href"].startswith("../it/") for link in context["navigation"]))
-        self.assertEqual(context["programme"]["next"]["date"], "2026-12-14")
+        self.assertEqual(context["programme"]["next"]["date"], "2026-10-12")
         self.assertEqual(context["programme"]["schedule_description"], "Date del seminario per l’anno accademico 2026–2027")
         page = next(item for item in localized["site"]["pages"] if item["id"] == "team")
         team = build.render_document(page, "../../", localized, plan, "it", "it")
