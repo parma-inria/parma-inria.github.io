@@ -108,9 +108,9 @@
       "talks": [{
           "time": "10:00",
           "speaker": "Julien Guérin",
-          "title": "TBA",
+          "title": "Quantitative stability of classical, entropic, and doubly entropic Wasserstein barycenters",
           "abstract": [
-            "TBA"
+            "Wasserstein barycenters, generalizing the notion of the Euclidean mean to the space of probability measures endowed with the optimal transport distance, have garnered increased attention from the mathematical community for over a decade due to their relevance in synthesizing data from imaging, statistics, and machine learning. Given the noisy nature of data in these fields, the stability of these Wasserstein barycenters with respect to input measures naturally arises as an interesting theoretical question, requiring precise quantitative estimates. We will discuss the conditions for this quantitative stability and presenting explicit convergence rates in the Wasserstein distance. We will also address certain variants, such as entropic and doubly entropic barycenters, which prove particularly relevant for algorithmic tractability and yield finer regularity controls, notably within Sobolev spaces."
           ]
         },
         {
