@@ -12,7 +12,7 @@
           "kind": "Software library",
           "description": "A fast, differentiable library for semi-discrete optimal transport.",
           "summary_lines": [
-            "Computes semi-discrete transport between discrete measures and continuous densities.",
+            "Computes semi-discrete Optimal Transport between discrete measures and continuous densities.",
             "Includes power diagrams and distributions such as images, Gaussian mixtures, meshes and polytopes.",
             "Supports NumPy, JAX, PyTorch and CuPy, with CPU and GPU backends."
           ],
