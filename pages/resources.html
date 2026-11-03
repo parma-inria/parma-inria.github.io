@@ -68,37 +68,21 @@
 
     <!-- Page content -->
     <main id="main" class="container content-container">
-      <!-- Each section and its resource cards are edited in content/resources.json. -->
+      <!-- The gallery and its remote images are edited in content/resources.json. -->
       {% for section in resources.sections %}
         <section class="resource-section" aria-labelledby="{{ section.id }}-title">
           <div class="section-header resource-section-header">
             <h2 id="{{ section.id }}-title">{{ section.title }}</h2>
-            {% if loop.first %}
-              <a class="section-source" href="{{ resources.source_url }}" target="_blank" rel="noopener noreferrer">{{ resources.source_name }} <span aria-hidden="true">↗</span></a>
-            {% endif %}
           </div>
-
-          <!-- Keep the complete card markup here; JSON only supplies its content. -->
-          <div class="resource-grid">
-            {% for resource in section.items %}
-              <article class="resource-card">
-                <p class="resource-kind">{{ resource.kind }}</p>
-                <h3><a href="{{ resource.url }}" target="_blank" rel="noopener noreferrer">{{ resource.name }}</a></h3>
-                <p class="resource-description prose">{{ resource.description }}</p>
-
-                <!-- Examples and documentation are optional for each resource. -->
-                {% if resource.links %}
-                  <ul class="resource-links">
-                    {% for link in resource.links %}
-                      <li><a href="{{ link.url }}" target="_blank" rel="noopener noreferrer">{{ link.label }}</a></li>
-                    {% endfor %}
-                  </ul>
-                {% endif %}
-
-                <a class="resource-repository" href="{{ resource.url }}" target="_blank" rel="noopener noreferrer">{{ resources.repository_label }} <span aria-hidden="true">↗</span></a>
-              </article>
-            {% endfor %}
-          </div>
+          {% for resource in section.items %}
+            <p class="resource-description prose">{{ resource.description }}</p>
+            <div class="resource-gallery">
+              {% for image in resource.images %}
+                <img src="{{ image.url }}" alt="{{ image.alt }}" loading="lazy">
+              {% endfor %}
+            </div>
+            <a class="resource-visit" href="{{ resource.url }}" target="_blank" rel="noopener noreferrer">{{ resources.repository_label }} <span aria-hidden="true">↗</span></a>
+          {% endfor %}
         </section>
       {% endfor %}
     </main>

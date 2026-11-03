@@ -153,6 +153,22 @@ class TemplateTests(unittest.TestCase):
             for member in section["members"]:
                 self.assertIn(build.html.escape(member["name"], quote=True), team)
 
+    def test_resources_show_remote_images_and_one_gallery_link(self):
+        sources = fixture_sources(seminar=seminar_fixture())
+        plan = build.plan_seminar(sources["seminar"], date(2026, 10, 9))
+        document = render_page("resources", "../", sources, plan)
+        main = document.split('<main id="main"', 1)[1].split("</main>", 1)[0]
+        elements = Elements(main)
+        resource = sources["resources"]["sections"][0]["items"][0]
+        links = [attributes["href"] for tag, attributes in elements.elements
+                 if tag == "a" and attributes.get("href", "").startswith("http")]
+        images = [attributes["src"] for tag, attributes in elements.elements if tag == "img"]
+
+        self.assertEqual(links, ["https://sdot-team.github.io/sdot/examples/"])
+        self.assertEqual(images, [image["url"] for image in resource["images"]])
+        self.assertTrue(all(image.startswith("https://sdot-team.github.io/sdot/examples/img/")
+                            for image in images))
+
     def test_asset_updates_refresh_cached_styles_on_every_route(self):
         sources = fixture_sources(seminar=seminar_fixture())
 

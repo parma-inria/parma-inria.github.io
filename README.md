@@ -78,11 +78,9 @@ Remote photographs update when the person replaces the image at the same address
 
 In JSON files, keep the quotation marks and commas: commas separate items, but there must be no comma after the last item in a list. Use `[]` for an empty list.
 
-### Adding material to Resources
+### Resources page
 
-The Resources page links to the sd-ot software, examples and related repositories. Edit **`content/resources.json`** to add material, update a description or change a link. Each object in `sections` has a title and an `items` list. Each item has `name`, `kind`, `description`, `url` and optional extra `links`; use `"links": []` when none are needed.
-
-The complete page markup is in `pages/resources.html`. Its banner introduction remains Lorem ipsum until the team chooses the text. The brief resource descriptions are based on the linked repositories. Resources are maintained manually; the daily HAL refresh only updates recent publications.
+The Resources page presents the SDot examples gallery. Edit **`content/resources.json`** to change its description, destination or illustrations. Image URLs point directly to SDot and are loaded by the browser; the build does not download them. The complete page markup is in `pages/resources.html`, and its introduction is in `content/site.json` → `pages` → `resources`.
 
 ### Recent publications
 

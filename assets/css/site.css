@@ -599,7 +599,7 @@ ul, ol {
 }
 
 
-/* Resource cards: software, examples and related repositories. */
+/* Remote SDot example gallery. */
 .resource-section {
   margin-bottom: 45px;
 }
@@ -618,65 +618,30 @@ ul, ol {
   font-size: 1.5rem;
 }
 
-.resource-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(min(100%, 280px), 1fr));
-  gap: 22px;
-}
-
-.resource-card {
-  display: flex;
-  flex-direction: column;
-  min-width: 0;
-  padding: 27px;
-  border: 1px solid var(--line);
-  border-top: 3px solid var(--blue);
-  border-radius: 0 0 var(--radius) var(--radius);
-  background: var(--white);
-}
-
-.resource-kind {
-  margin-bottom: 12px;
-  color: var(--muted);
-  font-size: .8rem;
-  font-weight: 650;
-}
-
-.resource-card h3 {
-  margin-bottom: 14px;
-  font-size: 1.35rem;
-  overflow-wrap: anywhere;
-}
-
-.resource-card h3 a {
-  color: var(--blue-deep);
-  text-decoration: none;
-}
-
-.resource-card h3 a:hover {
-  text-decoration: underline;
-}
-
 .resource-description {
-  margin-bottom: 18px;
+  max-width: 760px;
+  margin-bottom: 24px;
   color: var(--muted);
-  font-size: .95rem;
 }
 
-.resource-links {
-  margin-bottom: 25px;
-  padding-left: 19px;
-  font-size: .9rem;
+.resource-gallery {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 16px;
 }
 
-.resource-links li + li {
-  margin-top: 7px;
+.resource-gallery img {
+  display: block;
+  width: 100%;
+  aspect-ratio: 4 / 3;
+  border: 1px solid var(--line);
+  object-fit: cover;
 }
 
-.resource-repository {
+.resource-visit {
   align-self: flex-start;
-  margin-top: auto;
-  padding-top: 8px;
+  display: inline-block;
+  margin-top: 24px;
   font-size: .9rem;
   font-weight: 650;
 }
@@ -1523,6 +1488,10 @@ ul, ol {
   .member-grid, .info-grid {
     grid-template-columns: 1fr;
   }
+  .resource-gallery {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 12px;
+  }
   .member-grid {
     gap: 12px;
   }
@@ -1607,7 +1576,7 @@ ul, ol {
   .hero-content, .content-container {
     padding-block: 22px;
   }
-  .member-card, .session-card, .info-card, .publication-card, .resource-card {
+  .member-card, .session-card, .info-card, .publication-card {
     break-inside: avoid;
   }
   .container {

@@ -51,13 +51,13 @@
       "id": "resources",
       "path": "resources/",
       "title": "Resources",
-      "description": "Software, documentation and examples for semi-discrete optimal transport from sd-ot.",
+      "description": "Explore the SDot examples gallery.",
       "hero": {
         "eyebrow": "SOFTWARE · DOCUMENTATION · EXAMPLES",
         "title_lines": [
           "Resources"
         ],
-        "lead": "Open repositories, documentation and examples for semi-discrete optimal transport from sd-ot, provided by the ParMA team."
+        "lead": "Explore the SDot gallery of examples in semi-discrete optimal transport."
       }
     },
     {

@@ -352,6 +352,12 @@ def validate_content(sources):
             for link in item["links"]:
                 require_fields(link, location + " → items.links", {"label": str, "url": str})
                 require_web_url(link["url"], location + " → items.links.url")
+            images = item.get("images", [])
+            if not isinstance(images, list):
+                raise BuildError(location + " → items.images: debe essere una lista.")
+            for image in images:
+                require_fields(image, location + " → items.images", {"url": str, "alt": str})
+                require_web_url(image["url"], location + " → items.images.url")
 
     # The saved publication snapshot is valid even when a preview is offline.
     try:
