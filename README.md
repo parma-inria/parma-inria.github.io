@@ -80,7 +80,7 @@ In JSON files, keep the quotation marks and commas: commas separate items, but t
 
 ### Resources page
 
-The Resources page presents the SDot examples gallery. Edit **`content/resources.json`** to change its description, destination or illustrations. Image URLs point directly to SDot and are loaded by the browser; the build does not download them. The complete page markup is in `pages/resources.html`, and its introduction is in `content/site.json` → `pages` → `resources`.
+The Resources page presents the SDot library followed by its examples gallery. Edit **`content/resources.json`** to change a resource's summary, destination or illustrations. Image URLs point directly to SDot and are loaded by the browser; the build does not download them. The complete page markup is in `pages/resources.html`, and its banner text is in `content/site.json` → `pages` → `resources`.
 
 ### Recent publications
 

@@ -618,6 +618,24 @@ ul, ol {
   font-size: 1.5rem;
 }
 
+.resource-item + .resource-item {
+  margin-top: 36px;
+}
+
+.resource-item-title {
+  margin-bottom: 14px;
+  font-size: 1.2rem;
+}
+
+.resource-summary {
+  max-width: 760px;
+  margin-bottom: 24px;
+}
+
+.resource-summary-line {
+  margin-bottom: 6px;
+}
+
 .resource-description {
   max-width: 760px;
   margin-bottom: 24px;

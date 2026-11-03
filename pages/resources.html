@@ -62,7 +62,9 @@
       <div class="container hero-content">
         <p class="eyebrow">{{ page.hero.eyebrow }}</p>
         <h1 id="page-title">{% for line in page.hero.title_lines %}{{ line }}{% if loop.last %}{% else %}<br>{% endif %}{% endfor %}</h1>
-        <p class="hero-lead prose">{{ page.hero.lead }}</p>
+        {% if page.hero.lead %}
+          <p class="hero-lead prose">{{ page.hero.lead }}</p>
+        {% endif %}
       </div>
     </section>
 
@@ -75,13 +77,26 @@
             <h2 id="{{ section.id }}-title">{{ section.title }}</h2>
           </div>
           {% for resource in section.items %}
-            <p class="resource-description prose">{{ resource.description }}</p>
-            <div class="resource-gallery">
-              {% for image in resource.images %}
-                <img src="{{ image.url }}" alt="{{ image.alt }}" loading="lazy">
-              {% endfor %}
-            </div>
-            <a class="resource-visit" href="{{ resource.url }}" target="_blank" rel="noopener noreferrer">{{ resources.repository_label }} <span aria-hidden="true">↗</span></a>
+            <article class="resource-item">
+              <h3 class="resource-item-title">{{ resource.name }}</h3>
+              {% if resource.summary_lines %}
+                <div class="resource-summary prose">
+                  {% for line in resource.summary_lines %}
+                    <p class="resource-summary-line">{{ line }}</p>
+                  {% endfor %}
+                </div>
+              {% else %}
+                <p class="resource-description prose">{{ resource.description }}</p>
+              {% endif %}
+              {% if resource.images %}
+                <div class="resource-gallery">
+                  {% for image in resource.images %}
+                    <img src="{{ image.url }}" alt="{{ image.alt }}" loading="lazy">
+                  {% endfor %}
+                </div>
+              {% endif %}
+              <a class="resource-visit" href="{{ resource.url }}" target="_blank" rel="noopener noreferrer">{{ resource.link_label }} <span aria-hidden="true">↗</span></a>
+            </article>
           {% endfor %}
         </section>
       {% endfor %}

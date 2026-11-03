@@ -346,9 +346,16 @@ def validate_content(sources):
         section_ids.add(section["id"])
         for item in section["items"]:
             require_fields(item, location + " → items", {
-                "name": str, "kind": str, "description": str, "url": str, "links": list,
+                "name": str, "kind": str, "description": str, "url": str,
+                "link_label": str, "links": list,
             })
             require_web_url(item["url"], location + " → items.url")
+            if "summary_lines" in item:
+                summary_lines = item["summary_lines"]
+                if not isinstance(summary_lines, list) or any(
+                    not isinstance(line, str) or not line for line in summary_lines
+                ):
+                    raise BuildError(location + " → items.summary_lines: usa una lista di testi.")
             for link in item["links"]:
                 require_fields(link, location + " → items.links", {"label": str, "url": str})
                 require_web_url(link["url"], location + " → items.links.url")

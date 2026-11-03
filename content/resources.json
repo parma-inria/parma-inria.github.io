@@ -1,16 +1,38 @@
 {
-  "source_name": "SDot examples",
-  "source_url": "https://sdot-team.github.io/sdot/examples/",
-  "repository_label": "Explore the examples",
+  "source_name": "SDot",
+  "source_url": "https://sdot-team.github.io/sdot/",
+  "repository_label": "Visit the resource",
   "sections": [
     {
-      "id": "sdot-examples",
-      "title": "SDot examples",
+      "id": "sdot-library",
+      "title": "Software library",
       "items": [
         {
-          "name": "Explore SDot examples",
+          "name": "SDot",
+          "kind": "Software library",
+          "description": "A fast, differentiable library for semi-discrete optimal transport.",
+          "summary_lines": [
+            "Computes semi-discrete transport between discrete measures and continuous densities.",
+            "Includes power diagrams and distributions such as images, Gaussian mixtures, meshes and polytopes.",
+            "Supports NumPy, JAX, PyTorch and CuPy, with CPU and GPU backends."
+          ],
+          "link_label": "Visit the SDot library",
+          "url": "https://sdot-team.github.io/sdot/",
+          "links": [],
+          "images": []
+        }
+      ]
+    },
+    {
+      "id": "sdot-examples",
+      "title": "Examples",
+      "items": [
+        {
+          "name": "SDot examples gallery",
           "kind": "Interactive gallery",
           "description": "Explore features and applications of semi-discrete optimal transport through the SDot examples gallery.",
+          "summary_lines": [],
+          "link_label": "Browse all examples",
           "url": "https://sdot-team.github.io/sdot/examples/",
           "links": [],
           "images": [
