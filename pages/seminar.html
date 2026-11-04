@@ -233,12 +233,6 @@
         <p class="calendar-dialog-selection" data-calendar-selection></p>
         <p data-calendar-scope></p>
         <p id="calendar-dialog-hint" class="calendar-help">{{ ui.calendar_subscription_hint }}</p>
-        {% if programme.calendar_reminder_schedule %}
-          <p class="calendar-help">
-            <strong>{{ programme.calendar_reminder_schedule }}</strong><br>
-            {{ ui.calendar_reminder_alerts }}
-          </p>
-        {% endif %}
         <div class="calendar-provider-links">
           <a class="button" data-calendar-native translate="no">Apple Calendar / Outlook</a>
           <a class="button button-secondary" href="https://calendar.google.com/calendar/u/0/r/settings/addbyurl" target="_blank" rel="noopener noreferrer" translate="no">Google Calendar</a>
