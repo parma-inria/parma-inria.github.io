@@ -147,7 +147,7 @@
     revealCalendarTarget();
   }
 
-  // Subscription links use one modal, while their native webcal fallback needs no JS.
+  // iOS can subscribe through webcal; other platforms use the provider chooser.
   function initializeCalendarSubscriptions() {
     const dialog = document.getElementById("calendar-subscription");
     if (!dialog || typeof dialog.showModal !== "function") return;
@@ -155,10 +155,14 @@
     const input = dialog.querySelector("#calendar-subscription-url");
     const status = dialog.querySelector(".calendar-copy-status");
     let opener = null;
+    const opensAppleCalendar = /iPad|iPhone|iPod/.test(navigator.userAgent)
+      || (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1);
 
     document.querySelectorAll("[data-calendar-subscribe]").forEach((link) => {
       link.addEventListener("click", (event) => {
-        event.preventDefault();
+        // Let iOS follow the native subscription link. Keep the chooser ready
+        // behind the app prompt so returning to the browser offers alternatives.
+        if (!opensAppleCalendar) event.preventDefault();
         opener = link;
         input.value = link.dataset.feedUrl;
         dialog.querySelector("[data-calendar-native]").href = link.href;

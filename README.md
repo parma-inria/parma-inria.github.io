@@ -167,6 +167,8 @@ Add another object to `talks` for a second presentation. Keep `abstract` as a li
 
 The seminar calendar has a **Follow all sessions** button and a calendar button beside every date. Visitors subscribe to the whole seminar or to one session. The same feeds serve all three languages; scientific titles and the programme retain their original text.
 
+On iPhone and iPad, both kinds of button open the native Calendar subscription prompt. The browser keeps the provider chooser available as a fallback. Google Calendar's mobile app cannot add a new URL subscription: subscribe once using a computer browser, then display that calendar in the mobile app. This applies to Google Calendar on both Android and iOS.
+
 **Keep each session's `calendar_id` unchanged**, even when you change its date. Give a new session a new unique ID, for example `gdt-2027-07-05`. This permanent ID keeps both the event and its subscription link stable when a session is rescheduled. Edit only `content/seminar.json`; published changes automatically update the feeds.
 
 The `calendar` object sets the default hours, **10:00–12:00 in Europe/Paris**, including summer time. A session can override them with `"start_time": "14:00"` and `"end_time": "16:00"`. Historical afternoon sessions without confirmed end times use `"all_day": true`; their original talk times remain in the event description. Set `"cancelled": true` to cancel a session while retaining it in the site's date list. Deleting a session also sends a cancellation to existing calendar subscribers.
