@@ -30,7 +30,22 @@ For data updates, start with **`content/`**. For page layout and HTML, start wit
 
 Open this folder as your project. Local builds and previews only need **Python 3.10 or later**; no npm, additional Python packages or extensions are required. GitHub installs the translation tools on its own runner.
 
-For the quickest local preview on Windows, double-click `Open local preview.cmd` in this folder. It builds the site and opens your browser. Keep its terminal window open while using the preview; closing it stops the local server. If this project's preview is already running, the launcher reopens it.
+For the quickest local preview, double-click the launcher for your computer:
+
+- **Windows:** `Open local preview.cmd`.
+- **macOS:** `Open local preview.command`.
+
+Both launchers build the site and open the default browser. Keep the terminal window open while using the preview; closing it stops the local server. If this project's preview is already running, the launcher reopens it. Press **Ctrl+C** in the terminal to stop it.
+
+The Mac launcher needs Python 3.10 or later. It checks `python3` on your PATH and the standard Homebrew/Python installation locations. If Python is missing, it displays the official download address. No additional Python packages are needed.
+
+If the Mac file loses its executable permission after being copied or downloaded, open Terminal in the project folder and run this once:
+
+```sh
+chmod +x "Open local preview.command"
+```
+
+Then double-click it again. Keep the launcher in the project folder alongside `content/`, `pages/` and `tools/`. For the manual commands below, use `python3` on macOS.
 
 The files in `pages/` are editable source documents. To view the rendered site, use the local preview rather than opening those source files directly.
 
