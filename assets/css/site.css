@@ -953,6 +953,11 @@ ul, ol {
   margin-bottom: 37px;
 }
 
+/* An unpaired contact fills the row beneath the two main contacts. */
+.contact-grid > .info-card:last-child:nth-child(odd) {
+  grid-column: 1 / -1;
+}
+
 .seminar-info-grid {
   grid-template-columns: minmax(0, 1.7fr) minmax(0, 1fr);
   margin-bottom: 18px;
