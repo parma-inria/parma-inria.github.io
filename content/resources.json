@@ -11,7 +11,7 @@
         "Supports NumPy, JAX, PyTorch and CuPy, with CPU and GPU backends."
       ],
       "url": "https://sdot-team.github.io/sdot/",
-      "link_label": "Visit the SDot library",
+      "link_label": "Visit the SDot website",
       "materials": [
         {
           "id": "examples",
