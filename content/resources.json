@@ -4,7 +4,7 @@
       "id": "sdot",
       "name": "SDot",
       "kind": "Software library",
-      "description": "A fast, differentiable library for semi-discrete optimal transport.",
+      "description": "A library for semi-discrete optimal transport",
       "summary_lines": [
         "Computes semi-discrete Optimal Transport between discrete measures and continuous densities.",
         "Includes power diagrams and distributions such as images, Gaussian mixtures, meshes and polytopes.",

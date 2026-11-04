@@ -2,7 +2,7 @@
   "language": "it",
   "translations": {
     "A cloud of particles forming our logo": "Una nuvola di particelle compone il nostro logo",
-    "A fast, differentiable library for semi-discrete optimal transport.": "Una libreria veloce e differenziabile per il trasporto ottimo semi-discreto.",
+    "A library for semi-discrete optimal transport": "Una libreria per il trasporto ottimo semi-discreto",
     "Abstract": "Abstract",
     "Academic Year": "Anno accademico",
     "Additional C++ source code, tests and presentation files.": "Ulteriore codice sorgente C++, test e file delle presentazioni.",

@@ -6,10 +6,10 @@
     "revision": "be5a254d936f1a8c8da080406ca582a6615e6658"
   },
   "schema_version": 1,
-  "source_sha256": "fa3a05e6f6f992ff8dc7c9d4dbed26a7a19af9bccac7faaa45d8ea29dca9b28f",
+  "source_sha256": "b7d9fbc23289251c041bfeb1209801ac7d6e7ba21b9ada9bc27cc7309816a7ac",
   "translations": {
     "A cloud of particles forming our logo": "Una nuvola di particelle compone il nostro logo",
-    "A fast, differentiable library for semi-discrete optimal transport.": "Una libreria veloce e differenziabile per il trasporto ottimo semi-discreto.",
+    "A library for semi-discrete optimal transport": "Una libreria per il trasporto ottimo semi-discreto",
     "Abstract": "Abstract",
     "Academic Year": "Anno accademico",
     "Additional C++ source code, tests and presentation files.": "Ulteriore codice sorgente C++, test e file delle presentazioni.",
