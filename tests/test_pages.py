@@ -159,8 +159,9 @@ class TemplateTests(unittest.TestCase):
         plan = build.plan_seminar(sources["seminar"], date(2026, 10, 9))
         document = render_page("resources", "../", sources, plan)
         main = document.split('<main id="main"', 1)[1].split("</main>", 1)[0]
-        elements = Elements(main)
-        library = sources["resources"]["items"][0]
+        library = next(item for item in sources["resources"]["items"] if item["id"] == "sdot")
+        panel = main.split('id="resource-sdot"', 1)[1].split('</article>', 1)[0]
+        elements = Elements(panel)
         examples = library["materials"][0]
         links = [attrs for tag, attrs in elements.elements if tag == "a"]
         images = [attrs["src"] for tag, attrs in elements.elements if tag == "img"]
@@ -177,7 +178,8 @@ class TemplateTests(unittest.TestCase):
 
     def test_second_resource_gets_its_own_panel_and_nested_materials(self):
         sources = fixture_sources(seminar=seminar_fixture())
-        original = copy.deepcopy(sources["resources"]["items"][0])
+        original = copy.deepcopy(next(item for item in sources["resources"]["items"] if item["id"] == "sdot"))
+        sources["resources"]["items"] = [copy.deepcopy(original)]
         sources["resources"]["items"].append({
             "id": "another-library", "name": "Another library", "kind": "Software library",
             "description": "An independent resource.", "summary_lines": [],

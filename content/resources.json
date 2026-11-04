@@ -39,6 +39,16 @@
           ]
         }
       ]
+    },
+    {
+      "id": "geogram",
+      "name": "Geogram",
+      "kind": "Software library",
+      "description": "Geogram is a programming library with geometric algorithms.",
+      "summary_lines": [],
+      "url": "https://github.com/BrunoLevy/geogram",
+      "link_label": "View on GitHub",
+      "materials": []
     }
   ]
 }
