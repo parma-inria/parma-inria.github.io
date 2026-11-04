@@ -36,7 +36,8 @@ class PageLinks(HTMLParser):
             self.ids.add(attributes['id'])
         if tag == 'a':
             url = urlsplit(attributes.get('href', ''))
-            if url.scheme in ('http', 'https') or url.netloc:
+            # webcal opens a calendar app, rather than an external webpage.
+            if url.scheme in ('http', 'https') or (not url.scheme and url.netloc):
                 rel = set(attributes.get('rel', '').split())
                 if attributes.get('target') != '_blank' or not {'noopener', 'noreferrer'} <= rel:
                     self.external_link_errors.append(attributes['href'])
@@ -74,6 +75,9 @@ def check_site(output):
             errors.append(f'{label}: external link must open safely in a new tab: {link}')
         for link in page.links:
             url = urlsplit(link)
+            # Our app subscription links must resolve to a generated feed.
+            if url.scheme == 'webcal' and url.netloc == 'parma-inria.github.io':
+                url = url._replace(scheme='', netloc='')
             # External websites and email links are outside this local check.
             if url.scheme or url.netloc:
                 continue

@@ -147,9 +147,64 @@
     revealCalendarTarget();
   }
 
+  // Subscription links use one modal, while their native webcal fallback needs no JS.
+  function initializeCalendarSubscriptions() {
+    const dialog = document.getElementById("calendar-subscription");
+    if (!dialog || typeof dialog.showModal !== "function") return;
+
+    const input = dialog.querySelector("#calendar-subscription-url");
+    const status = dialog.querySelector(".calendar-copy-status");
+    let opener = null;
+
+    document.querySelectorAll("[data-calendar-subscribe]").forEach((link) => {
+      link.addEventListener("click", (event) => {
+        event.preventDefault();
+        opener = link;
+        input.value = link.dataset.feedUrl;
+        dialog.querySelector("[data-calendar-native]").href = link.href;
+        dialog.querySelector("[data-calendar-selection]").textContent = link.dataset.calendarTitle;
+        dialog.querySelector("[data-calendar-scope]").textContent = link.dataset.calendarScope;
+        status.textContent = "";
+        dialog.showModal();
+      });
+    });
+
+    dialog.addEventListener("close", () => opener?.focus({ preventScroll: true }));
+    dialog.addEventListener("keydown", (event) => {
+      if (event.key !== "Tab") return;
+      const controls = [...dialog.querySelectorAll("a[href], button, input")]
+        .filter((control) => !control.disabled && control.getClientRects().length);
+      const first = controls[0];
+      const last = controls[controls.length - 1];
+      if (event.shiftKey && document.activeElement === first) {
+        event.preventDefault();
+        last.focus();
+      } else if (!event.shiftKey && document.activeElement === last) {
+        event.preventDefault();
+        first.focus();
+      }
+    });
+
+    dialog.querySelector("[data-calendar-copy]").addEventListener("click", async () => {
+      const value = input.value;
+      try {
+        if (!navigator.clipboard?.writeText) throw new Error("Clipboard unavailable");
+        await navigator.clipboard.writeText(value);
+        if (input.value === value) status.textContent = dialog.dataset.copySuccess;
+      } catch {
+        // Selecting the complete URL also works in local previews and restricted browsers.
+        if (input.value !== value) return;
+        input.focus();
+        input.select();
+        status.textContent = dialog.dataset.copyFallback;
+      }
+    });
+  }
+
   // Startup: the deferred script runs after the page markup has been parsed.
   initializeNavigation();
   initializeMemberPortraits();
   initializeMemberSearch();
   initializeSeminarCalendar();
+  initializeCalendarSubscriptions();
 })();

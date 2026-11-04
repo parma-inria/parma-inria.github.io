@@ -44,6 +44,9 @@ jobs:
           python -m pip install -r tools/translation-requirements.txt
       - name: Aggiorna le pubblicazioni da HAL
         run: python tools/update_publications.py --allow-stale
+      # Stable calendar revisions let subscribers receive edits and cancellations.
+      - name: Aggiorna gli abbonamenti al calendario
+        run: python tools/update_calendar.py
       # English is the only editable source; translate new or changed text once.
       - name: Aggiorna francese e italiano
         run: |
@@ -63,6 +66,7 @@ jobs:
           name: generated-content
           path: |
             content/publications.json
+            content/calendar-state.json
             content/translations/fr.json
             content/translations/it.json
           if-no-files-found: error
@@ -75,7 +79,7 @@ jobs:
 
   # Only trusted main-branch events may commit generated snapshots.
   save-publications:
-    name: Salva pubblicazioni e traduzioni
+    name: Salva calendari, pubblicazioni e traduzioni
     if: github.ref == 'refs/heads/main' && contains(fromJSON('["push", "schedule", "workflow_dispatch"]'), github.event_name)
     needs: build
     runs-on: ubuntu-latest
@@ -97,6 +101,7 @@ jobs:
         run: |
           python tools/update_translations.py --save-to-git
           python tools/update_publications.py --save-to-git
+          python tools/update_calendar.py --save-to-git
           git push origin HEAD:main
 
   deploy:

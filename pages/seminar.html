@@ -112,6 +112,11 @@
             <p class="schedule-year"><span>{{ seminar.labels.academic_year }}</span><strong>{{ programme.academic_year_label }}</strong></p>
           </div>
           <p class="schedule-hint">{{ ui.calendar_hint }}</p>
+          <!-- Without JavaScript, webcal still opens the calendar subscription. -->
+          <a class="calendar-subscribe calendar-subscribe-all" href="{{ programme.calendar_webcal_url }}" data-calendar-subscribe data-feed-url="{{ programme.calendar_feed_url }}" data-calendar-title="{{ ui.calendar_subscribe_all }}" data-calendar-scope="{{ ui.calendar_all_scope }}">
+            <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><path d="M7 3v4m10-4v4M4 10h16M5 5h14a1 1 0 0 1 1 1v14H4V6a1 1 0 0 1 1-1Zm7 8v5m-2.5-2.5h5" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            <span>{{ ui.calendar_subscribe_all }}</span>
+          </a>
           {% if programme.calendar %}
             <ol class="seminar-calendar" aria-label="{{ programme.schedule_description }}">
               {% for entry in programme.calendar %}
@@ -131,6 +136,10 @@
                   {% else %}
                     </div>
                   {% endif %}
+                  <!-- This control is a sibling of the programme link. -->
+                  <a class="calendar-subscribe calendar-subscribe-day" href="{{ entry.webcal_url }}" aria-label="{{ entry.subscribe_label }}" title="{{ entry.subscribe_label }}" data-calendar-subscribe data-feed-url="{{ entry.feed_url }}" data-calendar-title="{{ entry.calendar_title }}" data-calendar-scope="{{ ui.calendar_single_scope }}">
+                    <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><path d="M7 3v4m10-4v4M4 10h16M5 5h14a1 1 0 0 1 1 1v14H4V6a1 1 0 0 1 1-1Zm7 8v5m-2.5-2.5h5" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                  </a>
                 </li>
               {% endfor %}
             </ol>
@@ -215,6 +224,25 @@
           </details>
         {% endfor %}
       </section>
+      <!-- One accessible chooser serves the full calendar and every session. -->
+      <dialog class="calendar-dialog" id="calendar-subscription" aria-labelledby="calendar-dialog-title" aria-describedby="calendar-dialog-hint" data-copy-success="{{ ui.calendar_copied }}" data-copy-fallback="{{ ui.calendar_copy_fallback }}">
+        <form method="dialog" class="calendar-dialog-heading">
+          <h2 id="calendar-dialog-title">{{ ui.calendar_subscription_title }}</h2>
+          <button class="calendar-close" type="submit" aria-label="{{ ui.calendar_close }}">×</button>
+        </form>
+        <p class="calendar-dialog-selection" data-calendar-selection></p>
+        <p data-calendar-scope></p>
+        <p id="calendar-dialog-hint" class="calendar-help">{{ ui.calendar_subscription_hint }}</p>
+        <div class="calendar-provider-links">
+          <a class="button" data-calendar-native translate="no">Apple Calendar / Outlook</a>
+          <a class="button button-secondary" href="https://calendar.google.com/calendar/u/0/r/settings/addbyurl" target="_blank" rel="noopener noreferrer" translate="no">Google Calendar</a>
+        </div>
+        <label class="calendar-url-label" for="calendar-subscription-url">{{ ui.calendar_link_label }}</label>
+        <input id="calendar-subscription-url" type="url" readonly spellcheck="false">
+        <button class="calendar-copy button button-secondary" type="button" data-calendar-copy>{{ ui.calendar_copy }}</button>
+        <p class="calendar-copy-status" role="status" aria-live="polite"></p>
+        <p class="calendar-help">{{ ui.calendar_provider_hint }}</p>
+      </dialog>
     </main>
 
     <!-- Shared footer: team identity, page navigation and institutional links -->

@@ -138,6 +138,7 @@ To add a session, insert an object into `sessions`:
 
 ```json
 {
+  "calendar_id": "gdt-2027-07-05",
   "date": "2027-07-05",
   "room": "3L15",
   "talks": [
@@ -155,6 +156,20 @@ To add a session, insert an object into `sessions`:
 ```
 
 Add another object to `talks` for a second presentation. Keep `abstract` as a list of paragraphs; use `[]` if no abstract has been provided. To reserve a date before the programme is ready, use `"talks": []` in the session. Update that same entry when the speakers are confirmed, rather than adding the date again. An empty `room` omits the room from that session's heading.
+
+### Calendar subscriptions
+
+The seminar calendar has a **Follow all sessions** button and a calendar button beside every date. Visitors subscribe to the whole seminar or to one session. The same feeds serve all three languages; scientific titles and the programme retain their original text.
+
+**Keep each session's `calendar_id` unchanged**, even when you change its date. Give a new session a new unique ID, for example `gdt-2027-07-05`. This permanent ID keeps both the event and its subscription link stable when a session is rescheduled. Edit only `content/seminar.json`; published changes automatically update the feeds.
+
+The `calendar` object sets the default hours, **10:00–12:00 in Europe/Paris**, including summer time. A session can override them with `"start_time": "14:00"` and `"end_time": "16:00"`. Historical afternoon sessions without confirmed end times use `"all_day": true`; their original talk times remain in the event description. Set `"cancelled": true` to cancel a session while retaining it in the site's date list. Deleting a session also sends a cancellation to existing calendar subscribers.
+
+GitHub records event revisions in the generated `content/calendar-state.json`; do not edit or delete this snapshot. It keeps unchanged events stable and retains cancelled subscriptions. The main feed is `https://parma-inria.github.io/calendar/gdt-ot-pde-ml.ics`; individual feeds use `/calendar/sessions/<calendar_id>.ics`. Local previews generate the same files without accessing any calendar account.
+
+Visitors must **subscribe**, rather than download and import an event once, to receive updates. The chooser opens Apple Calendar / Outlook through a subscription link and provides a copyable URL for other applications. In Google Calendar on a computer, choose **Other calendars → From URL**; in Outlook on the web, choose **Add calendar → Subscribe from web**. Refresh timing belongs to the calendar application and can take several hours or longer than a day. See the [Google](https://support.google.com/calendar/answer/37100?hl=en), [Apple](https://support.apple.com/guide/calendar/subscribe-to-calendars-icl1022/mac) and [Microsoft](https://support.microsoft.com/en-us/outlook/import-or-subscribe-to-a-calendar-in-outlook-com-or-outlook-on-the-web) instructions.
+
+### Seminar archive
 
 Archive years are collapsible: click a year to open or close its sessions. Former team members remain visible on the team page.
 

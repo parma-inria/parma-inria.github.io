@@ -1131,6 +1131,125 @@ ul, ol {
 .schedule-item + .schedule-item {
   margin-top: 5px;
 }
+.schedule-item {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 44px;
+  gap: 6px;
+  align-items: center;
+}
+.calendar-subscribe {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 9px;
+  min-height: 44px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  color: var(--blue);
+  background: var(--white);
+  text-decoration: none;
+}
+.calendar-subscribe:hover {
+  border-color: var(--blue);
+  background: var(--blue-light);
+}
+.calendar-subscribe:focus-visible {
+  outline: 3px solid #e6a638;
+  outline-offset: 3px;
+}
+.calendar-subscribe-all {
+  width: 100%;
+  margin-bottom: 14px;
+  padding: 9px 12px;
+  font-size: .85rem;
+  font-weight: 650;
+  line-height: 1.4;
+}
+.calendar-subscribe svg {
+  flex-shrink: 0;
+}
+.calendar-subscribe-day {
+  width: 44px;
+}
+
+/* The native modal keeps keyboard focus inside the subscription chooser. */
+.calendar-dialog {
+  width: min(30rem, calc(100vw - 32px));
+  max-height: calc(100dvh - 32px);
+  padding: 26px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  color: var(--ink);
+  background: var(--white);
+}
+.calendar-dialog::backdrop {
+  background: rgb(6 36 58 / 45%);
+}
+.calendar-dialog-heading {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 14px;
+}
+.calendar-dialog-heading h2 {
+  margin: 0;
+  font-size: 1.3rem;
+}
+.calendar-close {
+  flex-shrink: 0;
+  width: 44px;
+  height: 44px;
+  border: 0;
+  border-radius: 7px;
+  color: var(--ink);
+  background: var(--surface);
+  font-size: 1.6rem;
+  cursor: pointer;
+}
+.calendar-dialog-selection {
+  font-weight: 700;
+  color: var(--blue);
+}
+.calendar-provider-links {
+  display: grid;
+  gap: 10px;
+  margin-block: 20px;
+}
+.calendar-provider-links .button {
+  text-align: center;
+}
+.calendar-url-label {
+  display: block;
+  margin-bottom: 6px;
+  font-size: .85rem;
+  font-weight: 650;
+}
+#calendar-subscription-url {
+  width: 100%;
+  min-width: 0;
+  padding: 10px;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  color: var(--ink);
+  background: var(--surface);
+  font: inherit;
+  font-size: .8rem;
+}
+.calendar-copy {
+  width: 100%;
+  margin-top: 10px;
+  cursor: pointer;
+}
+.calendar-help, .calendar-copy-status {
+  color: var(--muted);
+  font-size: .82rem;
+  line-height: 1.55;
+}
+.calendar-copy-status {
+  min-height: 1.5em;
+  margin-block: 6px;
+}
 .schedule-entry {
   position: relative;
   display: block;

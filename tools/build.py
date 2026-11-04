@@ -19,6 +19,7 @@ from urllib.parse import urlsplit
 
 import update_publications
 import update_translations
+import update_calendar
 
 # Source folders and shared date labels
 ROOT = Path(__file__).resolve().parents[1]
@@ -168,6 +169,19 @@ def translation_sources(sources):
             "calendar_upcoming": "Upcoming session",
             "calendar_pending": "Programme pending",
             "calendar_empty": "No dates announced for this academic year.",
+            "calendar_cancelled": "Cancelled",
+            "calendar_subscribe_all": "Follow all sessions",
+            "calendar_subscription_title": "Add to your calendar",
+            "calendar_subscription_hint": "Subscribe to receive future changes automatically. Updates may take several hours, depending on your calendar app.",
+            "calendar_all_scope": "Follow all seminar dates, including new sessions.",
+            "calendar_single_scope": "Follow updates to this session only.",
+            "calendar_link_label": "Subscription link",
+            "calendar_copy": "Copy subscription link",
+            "calendar_copied": "Link copied.",
+            "calendar_copy_fallback": "Select and copy the link above.",
+            "calendar_close": "Close",
+            "calendar_provider_hint": "For Google Calendar, copy the link and add it using From URL on a computer. In Outlook, choose Add calendar → Subscribe from web.",
+            "calendar_date_button": "Follow the session on {date}",
             "venue_building": "Building",
             "schedule_description": "Seminar dates for academic year {start}–{end}",
             "member_count": "{count} members",
@@ -474,6 +488,10 @@ def validate_seminar(seminar):
                 raise BuildError(f"{talk_where}.time: usa un orario HH:MM, per esempio 10:00, oppure un testo vuoto.")
             if not all(isinstance(paragraph, str) for paragraph in talk["abstract"]):
                 raise BuildError(f"{talk_where}.abstract: usa un elenco di paragrafi di testo, oppure [].")
+    try:
+        update_calendar.validate_calendar(seminar)
+    except (ValueError, KeyError, TypeError) as error:
+        raise BuildError(str(error)) from error
 
 
 def academic_year_start(day):
@@ -485,7 +503,8 @@ def plan_seminar(seminar, today=None):
     """Feature the nearest upcoming date and archive only past programmes."""
     today = today or date.today()
     sessions = sorted(seminar["sessions"], key=lambda session: session["date"])
-    future = [session for session in sessions if date.fromisoformat(session["date"]) >= today]
+    future = [session for session in sessions
+              if date.fromisoformat(session["date"]) >= today and not session.get("cancelled")]
     current = future[0] if future else None
     year = academic_year_start(today)
     calendar = [
@@ -650,7 +669,9 @@ def prepare_programme(seminar, plan, ui=None):
     for session in plan["calendar"]:
         day = date.fromisoformat(session["date"])
         is_featured = bool(plan["next"] and session["date"] == plan["next"]["date"])
-        if is_featured:
+        if session.get("cancelled"):
+            state = "cancelled"
+        elif is_featured:
             state = "next"
         elif day < plan["today"]:
             state = "past"
@@ -663,11 +684,19 @@ def prepare_programme(seminar, plan, ui=None):
             "state": state,
             "status": ui["calendar_" + state],
             "href": "#session-" + session["date"] if is_featured or (day < plan["today"] and session["talks"]) else "",
+            "feed_url": update_calendar.feed_url(session),
+            "calendar_title": f"{day.day} {ui['months'][day.month - 1]} {day.year}",
+            "webcal_url": update_calendar.feed_url(session).replace("https://", "webcal://", 1),
+            "subscribe_label": ui["calendar_date_button"].format(
+                date=f"{day.day} {ui['months'][day.month - 1]} {day.year}",
+            ),
         })
     year = plan["academic_year"]
     return {
         "next": session_data(plan["next"]) if plan["next"] else None,
         "calendar": calendar,
+        "calendar_feed_url": update_calendar.feed_url(),
+        "calendar_webcal_url": update_calendar.feed_url().replace("https://", "webcal://", 1),
         "academic_year_label": f"{year}–{year + 1}",
         "academic_year": year,
         "schedule_description": ui["schedule_description"].format(start=year, end=year + 1),
@@ -806,6 +835,12 @@ def build(output=DEFAULT_OUTPUT, today=None):
     # Validate all data before generating any files.
     sources = {name: read_json(name) for name in ("site", "home", "team", "contact", "seminar", "publications", "resources")}
     validate_content(sources)
+    try:
+        calendar_state = update_calendar.update_state(
+            sources["seminar"], update_calendar.read_state(CONTENT / "calendar-state.json"),
+        )
+    except (ValueError, KeyError, TypeError) as error:
+        raise BuildError(f"Invalid calendar revision data: {error}") from error
     sources = translation_sources(sources)
     if not (ROOT / "assets").is_dir():
         raise BuildError(f"Missing source folder: {ROOT / 'assets'}")
@@ -838,6 +873,8 @@ def build(output=DEFAULT_OUTPUT, today=None):
         destination = output / relative_path
         destination.parent.mkdir(parents=True, exist_ok=True)
         destination.write_text(document, encoding="utf-8")
+    # All languages share the same original-language subscription feeds.
+    update_calendar.write_feeds(output, sources["seminar"], calendar_state)
     (output / ".nojekyll").write_text("", encoding="utf-8")
     print(f"Site generated in: {output}")
     print(f"{len(sources['site']['pages'])} complete HTML sources, three languages and English aliases; former members remain visible.")
