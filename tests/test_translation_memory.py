@@ -183,6 +183,14 @@ class TranslationMemoryTests(unittest.TestCase):
             target,
         )
 
+    def test_all_old_occurrences_change_even_when_the_new_term_is_already_present(self):
+        source = "A gradient flow and another gradient flow describe evolution."
+        target = "Un flot de gradient et un flot décrivent l’évolution."
+        updated = translations.adapt_review(
+            source, target, "fr", sources_for(source), term(), term(french="flot")
+        )
+        self.assertEqual(updated, "Un flot et un flot décrivent l’évolution.")
+
     def test_math_and_code_stay_unchanged_when_reviewed_prose_is_adapted(self):
         source = r"A gradient flow uses $flot de gradient$, `flot de gradient` and \(flot de gradient\)."
         target = r"Un flot de gradient utilise $flot de gradient$, `flot de gradient` et \(flot de gradient\)."
@@ -193,6 +201,93 @@ class TranslationMemoryTests(unittest.TestCase):
             updated,
             r"Un écoulement de gradient utilise $flot de gradient$, `flot de gradient` et \(flot de gradient\).",
         )
+
+
+class OverlappingTranslationMemoryTests(unittest.TestCase):
+    @staticmethod
+    def terms():
+        return [
+            {"en": "optimal transport", "fr": "transport optimal", "it": "trasporto ottimo"},
+            {"en": "semi-discrete optimal transport", "fr": "transport optimal semi-discret", "it": "trasporto ottimo semi-discreto"},
+        ]
+
+    def test_changed_shorter_term_does_not_change_an_unchanged_longer_term(self):
+        previous = self.terms()
+        glossary = copy.deepcopy(previous)
+        glossary[0]["it"] = "trasporto OT"
+        for source, target, expected in (
+            ("We study optimal transport and semi-discrete optimal transport.",
+             "Studiamo il trasporto ottimo e il trasporto ottimo semi-discreto.",
+             "Studiamo il trasporto OT e il trasporto ottimo semi-discreto."),
+            ("We study semi-discrete optimal transport and optimal transport.",
+             "Studiamo il trasporto ottimo semi-discreto e il trasporto ottimo.",
+             "Studiamo il trasporto ottimo semi-discreto e il trasporto OT."),
+        ):
+            with self.subTest(source=source):
+                self.assertEqual(translations.adapt_review(
+                    source, target, "it", sources_for(source), previous, glossary), expected)
+
+    def test_changing_both_overlapping_terms_does_not_cascade_replacements(self):
+        previous = self.terms()
+        glossary = copy.deepcopy(previous)
+        glossary[0]["it"] = "trasporto OT"
+        glossary[1]["it"] = "trasporto semi-discreto"
+        source = "We study optimal transport and semi-discrete optimal transport."
+        target = "Studiamo il trasporto ottimo e il trasporto ottimo semi-discreto."
+        self.assertEqual(translations.adapt_review(
+            source, target, "it", sources_for(source), previous, glossary),
+            "Studiamo il trasporto OT e il trasporto semi-discreto.")
+
+    def test_a_changed_term_needs_its_own_winning_target_match(self):
+        previous = self.terms()
+        glossary = copy.deepcopy(previous)
+        glossary[0]["it"] = "trasporto OT"
+        source = "We study optimal transport and semi-discrete optimal transport."
+        target = "Studiamo questa disciplina e il trasporto ottimo semi-discreto."
+        self.assertIsNone(translations.adapt_review(
+            source, target, "it", sources_for(source), previous, glossary))
+
+    def test_shared_target_with_conflicting_preferences_regenerates(self):
+        previous = [
+            {"en": "gradient flow", "fr": "flux", "it": "flusso"},
+            {"en": "particle method", "fr": "flux", "it": "flusso"},
+        ]
+        glossary = copy.deepcopy(previous)
+        glossary[0]["fr"] = "flot de gradient"
+        source = "A gradient flow uses a particle method."
+        self.assertIsNone(translations.adapt_review(
+            source, "Un flux utilise un flux.", "fr", sources_for(source), previous, glossary))
+
+    def test_shared_target_with_the_same_new_preference_is_unambiguous(self):
+        previous = [
+            {"en": "gradient flow", "fr": "flux", "it": "flusso"},
+            {"en": "particle method", "fr": "flux", "it": "flusso"},
+        ]
+        glossary = copy.deepcopy(previous)
+        for row in glossary:
+            row["fr"] = "flot"
+        source = "A gradient flow uses a particle method."
+        self.assertEqual(translations.adapt_review(
+            source, "Un flux utilise un flux.", "fr", sources_for(source), previous, glossary),
+            "Un flot utilise un flot.")
+
+    def test_new_target_shorter_than_old_target_replaces_all_old_occurrences(self):
+        previous = term()
+        glossary = term(french="flot")
+        source = "A gradient flow and a gradient flow describe evolution."
+        target = "Un flot de gradient et un flot décrivent l’évolution."
+        self.assertEqual(translations.adapt_review(
+            source, target, "fr", sources_for(source), previous, glossary),
+            "Un flot et un flot décrivent l’évolution.")
+
+    def test_target_ui_placeholders_and_naked_tex_remain_immutable(self):
+        previous = term(french="count")
+        glossary = term(french="flot")
+        source = r"A gradient flow uses {count}, \count{count} and x^{count}."
+        target = r"Un count utilise {count}, \count{count} et x^{count}."
+        self.assertEqual(translations.adapt_review(
+            source, target, "fr", sources_for(source), previous, glossary),
+            r"Un flot utilise {count}, \count{count} et x^{count}.")
 
 
 if __name__ == "__main__":

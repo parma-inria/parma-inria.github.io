@@ -93,7 +93,7 @@ ENGLISH_MARKERS = {
     "with", "which", "our", "by", "on", "from",
 }
 TECHNICAL_IDENTIFIERS = {
-    "ParMA", "ParMa", "Inria", "INRIA", "CNRS", "IMO", "sd-ot", "sdot",
+    "ParMA", "Inria", "INRIA", "CNRS", "IMO", "sd-ot", "sdot",
     "pysdot", "Python", "C++", "Conda", "GitHub", "Google Maps", "GdT",
     "OT–PDE–ML", "OT-PDE-ML", "OT", "PDE", "ML", "PCA", "MMD", "EOT",
     "UOT", "JKO", "SGD", "ODEs", "ResNet", "PDEs", "SW", "ISTA",
@@ -171,26 +171,6 @@ def read_cache(language):
     return validate_cache(cache, language)
 
 
-def preferred_terminology(text, language, glossary=None):
-    """Normalize a common model variant using the preference in the glossary."""
-    glossary = read_glossary() if glossary is None else glossary
-    term = next((entry for entry in glossary if entry["en"].casefold() == "optimal transport"), None)
-    if language != "it" or term is None:
-        return text
-    protected = (
-        r"(```[\s\S]*?```|`[^`]*`|\$\$[\s\S]*?\$\$|\$(?:\\.|[^$])*\$|"
-        r"\\\([\s\S]*?\\\)|\\\[[\s\S]*?\\\]|"
-        r"https?://[^\s<>]+|[\w.+-]+@[\w.-]+\.[A-Za-z]{2,})"
-    )
-    def replace_term(match):
-        return preferred_case(match.group(), term[language])
-    parts = re.split(protected, text)
-    return "".join(
-        part if index % 2 else re.sub(r"\btrasporto\s+(?:ottimale|ottimo)\b", replace_term, part, flags=re.IGNORECASE)
-        for index, part in enumerate(parts)
-    )
-
-
 def validate_reviewed(reviewed, language):
     """Validate editorial corrections without restricting natural word order."""
     if (not isinstance(reviewed, dict) or set(reviewed) != {"language", "translations"}
@@ -255,39 +235,82 @@ def read_reviewed(language):
     return read_memory()["languages"].get(language, {})
 
 
-def _replace_term(text, old, new):
-    """Replace a complete translated term outside math, code and addresses."""
-    immutable = (
-        r"(```[\s\S]*?```|`[^`]*`|\$\$[\s\S]*?\$\$|\$(?:\\.|[^$])*\$|"
+def _review_term_matches(target, vocabulary):
+    """Find recognized target terms outside immutable spans, retaining their owners."""
+    immutable = re.compile(
+        r"```[\s\S]*?```|`[^`]*`|\$\$[\s\S]*?\$\$|\$(?:\\.|[^$])*\$|"
         r"\\\([\s\S]*?\\\)|\\\[[\s\S]*?\\\]|"
-        r"https?://[^\s<>]+|[\w.+-]+@[\w.-]+\.[A-Za-z]{2,})"
+        r"\{[A-Za-z_][A-Za-z0-9_]*\}|[A-Za-z]+(?:[_^]\{[^{}]*\})+|"
+        r"\\[A-Za-z]+(?:\{[^{}]*\})*|"
+        r"https?://[^\s<>]+|[\w.+-]+@[\w.-]+\.[A-Za-z]{2,}"
     )
-    pattern = re.compile(r"(?<!\w)" + re.escape(old) + r"(?!\w)", re.IGNORECASE)
-    count = 0
-    parts = re.split(immutable, text)
-    for index in range(0, len(parts), 2):
-        parts[index], replaced = pattern.subn(lambda match: preferred_case(match.group(), new), parts[index])
-        count += replaced
-    return "".join(parts), count
+    prose = []
+    cursor = 0
+    for match in immutable.finditer(target):
+        prose.append((cursor, target[cursor:match.start()]))
+        cursor = match.end()
+    prose.append((cursor, target[cursor:]))
+    candidates = {}
+    for phrase, owners in vocabulary.items():
+        expression = re.compile(r"(?<!\w)" + re.escape(phrase) + r"(?!\w)", re.IGNORECASE)
+        for offset, part in prose:
+            for match in expression.finditer(part):
+                bounds = (offset + match.start(), offset + match.end())
+                candidates.setdefault(bounds, set()).update(owners)
+    return candidates
 
 
 def adapt_review(source, target, language, sources, previous, glossary):
-    """Apply changed terminology without retranslating unrelated reviewed prose."""
+    """Change recognized vocabulary without overwriting longer explicit preferences."""
     old_terms = {term["en"].casefold(): term for term in previous}
-    for term in matched_terms(source, sources, protected_segments, glossary):
-        old = old_terms.get(term["en"].casefold())
-        if old and old[language] == term[language]:
+    current = {term["en"].casefold(): term
+               for term in matched_terms(source, sources, protected_segments, glossary)}
+    changed = {key for key, term in current.items()
+               if key not in old_terms or old_terms[key][language] != term[language]}
+    if not changed:
+        return target
+
+    vocabulary = {}
+    def recognize(key, phrase):
+        vocabulary.setdefault(phrase.casefold(), set()).add(key)
+
+    # Reserve every old source-winning expression, even if a new longer source
+    # term now covers it. Unknown alignments will regenerate rather than guess.
+    for term in matched_terms(source, sources, protected_segments, previous):
+        recognize(term["en"].casefold(), term[language])
+    for key, term in current.items():
+        recognize(key, term[language])
+        if key in old_terms:
+            recognize(key, old_terms[key][language])
+
+    candidates = _review_term_matches(target, vocabulary)
+    winners = []
+    recognized = set()
+    for (start, end), owners in sorted(
+            candidates.items(), key=lambda item: (-(item[0][1] - item[0][0]), item[0][0])):
+        if any(start < right and left < end for left, right, _ in winners):
             continue
-        # A preference already present in the saved wording needs no change.
-        if _replace_term(target, term[language], term[language])[1]:
-            continue
-        if old is None:
+        original = target[start:end]
+        replacements = {
+            preferred_case(original, current[key][language]) if key in changed else original
+            for key in owners
+        }
+        # A shared translation can belong to different English terms. If their
+        # requested outputs disagree, sentence-level inference must disambiguate.
+        if len(replacements) != 1:
             return None
-        target, count = _replace_term(target, old[language], term[language])
-        if not count:
-            # Regenerate this one sentence rather than guess at an inflection.
-            return None
-    return target
+        winners.append((start, end, replacements.pop()))
+        recognized.update(owners)
+    if not changed.issubset(recognized):
+        return None
+
+    parts = []
+    cursor = 0
+    for start, end, replacement in sorted(winners):
+        parts.extend((target[cursor:start], replacement))
+        cursor = end
+    parts.append(target[cursor:])
+    return "".join(parts)
 
 
 def current_reviews(sources, language, reviewed=None, glossary=None):
@@ -305,7 +328,7 @@ def current_reviews(sources, language, reviewed=None, glossary=None):
         if original in eligible:
             adapted = adapt_review(original, target, language, sources, previous, glossary)
             if adapted is not None:
-                current[original] = preferred_terminology(adapted, language, glossary)
+                current[original] = adapted
     return current
 
 
@@ -371,7 +394,7 @@ def localize_sources(sources, language, cache=None, reviewed=None, glossary=None
         parent = localized
         for part in path[:-1]:
             parent = parent[part]
-        parent[path[-1]] = preferred_terminology(translations[source], language, glossary) if source in translations else source
+        parent[path[-1]] = translations.get(source, source)
     return localized
 
 
@@ -578,8 +601,6 @@ def update_cache(sources, language, translator=None, cache=None, reviewed=None, 
             cache["translations"].update(translate_plans(plans, infer, _needs_translation, _prose_piece))
         except ValueError as error:
             raise TranslationError(str(error)) from error
-    for text in texts:
-        cache["translations"][text] = preferred_terminology(cache["translations"][text], language, glossary)
     cache["glossary"] = copy.deepcopy(glossary)
     cache["source_sha256"] = hashlib.sha256(
         json.dumps(texts, ensure_ascii=False, separators=(",", ":")).encode("utf-8")

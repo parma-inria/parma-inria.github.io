@@ -75,16 +75,12 @@ class TranslationTests(unittest.TestCase):
         title = "Trasporto Ottimale: an original scientific title"
         sources = {"home": {"introduction": ["A new discussion of optimal transport."]},
                    "publications": {"items": [{"title": title}]}}
-        target = "Trasporto Ottimale; trasporto ottimale; TRASPORTO OTTIMALE; `trasporto ottimale`"
-        expected = "Trasporto ottimo; trasporto ottimo; TRASPORTO OTTIMO; `trasporto ottimale`"
         glossary = [{"en": "optimal transport", "fr": "transport optimal", "it": "trasporto ottimo"}]
-        self.assertEqual(translations.preferred_terminology(target, "it", glossary), expected)
         cache = translations.update_cache(sources, "it", lambda pieces: ["TR:" + value for value in pieces], reviewed={}, glossary=glossary)
         self.assertIn("trasporto ottimo", cache["translations"][sources["home"]["introduction"][0]])
         localized = translations.localize_sources(sources, "it", cache, reviewed={}, glossary=glossary)
         self.assertEqual(localized["home"]["introduction"], [cache["translations"][sources["home"]["introduction"][0]]])
         self.assertEqual(localized["publications"]["items"][0]["title"], title)
-        self.assertEqual(translations.preferred_terminology(target, "fr"), target)
         self.assertEqual(translations.localize_sources(sources, "en"), sources)
 
     def test_reviewed_schema_preserves_placeholders_math_and_addresses(self):

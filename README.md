@@ -1,6 +1,7 @@
 # ParMA — project guide
 
 Website for the ParMA research team at Inria Saclay, CNRS and Université Paris-Saclay.
+Use **ParMA** for the team's name in every language.
 
 **Live site:** [parma-inria.github.io](https://parma-inria.github.io/) · **Project:** [GitHub](https://github.com/parma-inria/parma-inria.github.io)
 
