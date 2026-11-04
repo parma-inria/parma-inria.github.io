@@ -175,6 +175,8 @@ def translation_sources(sources):
             "calendar_subscription_hint": "Subscribe to receive future changes automatically. Updates may take several hours, depending on your calendar app.",
             "calendar_all_scope": "Follow all seminar dates, including new sessions.",
             "calendar_single_scope": "Follow updates to this session only.",
+            "calendar_reminder_schedule": "Reminders: previous Friday at {friday} and event day at {event_day} (Paris time).",
+            "calendar_reminder_alerts": "Enable alerts for this subscribed calendar in your app to receive reminders.",
             "calendar_link_label": "Subscription link",
             "calendar_copy": "Copy subscription link",
             "calendar_copied": "Link copied.",
@@ -648,6 +650,7 @@ def prepare_programme(seminar, plan, ui=None):
     """Prepare localized dates, linked annual agenda entries and archive groups."""
     labels = seminar["labels"]
     ui = ui or translation_sources({})["ui"]
+    reminders = update_calendar.settings(seminar).get("reminders")
 
     def session_data(session):
         return {
@@ -697,6 +700,9 @@ def prepare_programme(seminar, plan, ui=None):
         "calendar": calendar,
         "calendar_feed_url": update_calendar.feed_url(),
         "calendar_webcal_url": update_calendar.feed_url().replace("https://", "webcal://", 1),
+        "calendar_reminder_schedule": ui["calendar_reminder_schedule"].format(
+            friday=reminders["friday_time"], event_day=reminders["event_day_time"],
+        ) if reminders else "",
         "academic_year_label": f"{year}–{year + 1}",
         "academic_year": year,
         "schedule_description": ui["schedule_description"].format(start=year, end=year + 1),

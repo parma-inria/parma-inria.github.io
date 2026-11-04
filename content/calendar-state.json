@@ -256,7 +256,7 @@
       "sequence": 0
     },
     "gdt-2026-11-16": {
-      "modified": "20261104T134722Z",
+      "modified": "20261104T140956Z",
       "payload": {
         "all_day": false,
         "cancelled": false,
@@ -264,14 +264,18 @@
         "description": "GdT OT-PDE-ML — ParMA\n\n10:00 — Julien Guérin\nQuantitative stability of classical, entropic, and doubly entropic Wasserstein barycenters\nWasserstein barycenters, generalizing the notion of the Euclidean mean to the space of probability measures endowed with the optimal transport distance, have garnered increased attention from the mathematical community for over a decade due to their relevance in synthesizing data from imaging, statistics, and machine learning. Given the noisy nature of data in these fields, the stability of these Wasserstein barycenters with respect to input measures naturally arises as an interesting theoretical question, requiring precise quantitative estimates. We will discuss the conditions for this quantitative stability and presenting explicit convergence rates in the Wasserstein distance. We will also address certain variants, such as entropic and doubly entropic barycenters, which prove particularly relevant for algorithmic tractability and yield finer regularity controls, notably within Sobolev spaces.\n\n11:00 — Alessandro Cosenza\nSmall noise limit for Entropic Variational Mean Field Games\nVariational mean-field games are a class of mean-field games whose equilibria can be characterized as minimizers of a global energy functional combining agents’ individual costs and collective interactions. In the classical formulation, the energy functional resembles the (Eulerian) Benamou-Brenier type formula for entropic optimal transport, with the addition of a convex term which encompasses the interaction between the agents. In analogy with entropic OT,  Benamou, Carlier, Di Marino and Nenna recently proposed an equivalent (Lagrangian) entropy-minimization formulation of the problem.  The aim of this talk is two-fold.  First, we investigate the small-noise Gamma limit for the lagrangian entropy-minimization formulation, establishing Gamma convergence of noisy second order mean-field games towards its deterministic first order counterpart. This also translates into a dynamical proof of the convergence of entropic OT to classical OT.  Secondly, we study the original Eulerian problem. We prove a first order energy expansion, which establishes a selection principle for minimizers of the deterministic problem. This is joint work with Luca Nenna.\n\nhttps://parma-inria.github.io/gdt-ot-pde-ml/",
         "end_time": "12:00",
         "location": "Institut de Mathématique d’Orsay (IMO), Building 307, Room 3L15, Orsay, France",
+        "reminders": [
+          "20261113T080000Z",
+          "20261116T060000Z"
+        ],
         "start_time": "10:00",
         "summary": "GdT OT-PDE-ML — ParMA",
         "url": "https://parma-inria.github.io/gdt-ot-pde-ml/"
       },
-      "sequence": 0
+      "sequence": 1
     },
     "gdt-2026-12-14": {
-      "modified": "20261104T134722Z",
+      "modified": "20261104T140956Z",
       "payload": {
         "all_day": false,
         "cancelled": false,
@@ -279,14 +283,18 @@
         "description": "GdT OT-PDE-ML — ParMA\n\n10:00 — Sofiane Cherf\nTBA\nTBA\n\n11:00 — TBA\nTBA\nTBA\n\nhttps://parma-inria.github.io/gdt-ot-pde-ml/",
         "end_time": "12:00",
         "location": "Institut de Mathématique d’Orsay (IMO), Building 307, Room 3L15, Orsay, France",
+        "reminders": [
+          "20261211T080000Z",
+          "20261214T060000Z"
+        ],
         "start_time": "10:00",
         "summary": "GdT OT-PDE-ML — ParMA",
         "url": "https://parma-inria.github.io/gdt-ot-pde-ml/"
       },
-      "sequence": 0
+      "sequence": 1
     },
     "gdt-2027-01-18": {
-      "modified": "20261104T134722Z",
+      "modified": "20261104T140956Z",
       "payload": {
         "all_day": false,
         "cancelled": false,
@@ -294,14 +302,18 @@
         "description": "GdT OT-PDE-ML — ParMA\n\nProgramme to be announced.\n\nhttps://parma-inria.github.io/gdt-ot-pde-ml/",
         "end_time": "12:00",
         "location": "Institut de Mathématique d’Orsay (IMO), Building 307, Room 3L15, Orsay, France",
+        "reminders": [
+          "20270115T080000Z",
+          "20270118T060000Z"
+        ],
         "start_time": "10:00",
         "summary": "GdT OT-PDE-ML — ParMA",
         "url": "https://parma-inria.github.io/gdt-ot-pde-ml/"
       },
-      "sequence": 0
+      "sequence": 1
     },
     "gdt-2027-02-22": {
-      "modified": "20261104T134722Z",
+      "modified": "20261104T140956Z",
       "payload": {
         "all_day": false,
         "cancelled": false,
@@ -309,14 +321,18 @@
         "description": "GdT OT-PDE-ML — ParMA\n\nProgramme to be announced.\n\nhttps://parma-inria.github.io/gdt-ot-pde-ml/",
         "end_time": "12:00",
         "location": "Institut de Mathématique d’Orsay (IMO), Building 307, Room 3L15, Orsay, France",
+        "reminders": [
+          "20270219T080000Z",
+          "20270222T060000Z"
+        ],
         "start_time": "10:00",
         "summary": "GdT OT-PDE-ML — ParMA",
         "url": "https://parma-inria.github.io/gdt-ot-pde-ml/"
       },
-      "sequence": 0
+      "sequence": 1
     },
     "gdt-2027-03-22": {
-      "modified": "20261104T134722Z",
+      "modified": "20261104T140956Z",
       "payload": {
         "all_day": false,
         "cancelled": false,
@@ -324,14 +340,18 @@
         "description": "GdT OT-PDE-ML — ParMA\n\n10:00 — Charles Erbar\nTBA\nTBA\n\n11:00 — TBA\nTBA\nTBA\n\nhttps://parma-inria.github.io/gdt-ot-pde-ml/",
         "end_time": "12:00",
         "location": "Institut de Mathématique d’Orsay (IMO), Building 307, Room 3L15, Orsay, France",
+        "reminders": [
+          "20270319T080000Z",
+          "20270322T060000Z"
+        ],
         "start_time": "10:00",
         "summary": "GdT OT-PDE-ML — ParMA",
         "url": "https://parma-inria.github.io/gdt-ot-pde-ml/"
       },
-      "sequence": 0
+      "sequence": 1
     },
     "gdt-2027-04-26": {
-      "modified": "20261104T134722Z",
+      "modified": "20261104T140956Z",
       "payload": {
         "all_day": false,
         "cancelled": false,
@@ -339,14 +359,18 @@
         "description": "GdT OT-PDE-ML — ParMA\n\nProgramme to be announced.\n\nhttps://parma-inria.github.io/gdt-ot-pde-ml/",
         "end_time": "12:00",
         "location": "Institut de Mathématique d’Orsay (IMO), Building 307, Room 3L15, Orsay, France",
+        "reminders": [
+          "20270423T070000Z",
+          "20270426T050000Z"
+        ],
         "start_time": "10:00",
         "summary": "GdT OT-PDE-ML — ParMA",
         "url": "https://parma-inria.github.io/gdt-ot-pde-ml/"
       },
-      "sequence": 0
+      "sequence": 1
     },
     "gdt-2027-05-24": {
-      "modified": "20261104T134722Z",
+      "modified": "20261104T140956Z",
       "payload": {
         "all_day": false,
         "cancelled": false,
@@ -354,14 +378,18 @@
         "description": "GdT OT-PDE-ML — ParMA\n\nProgramme to be announced.\n\nhttps://parma-inria.github.io/gdt-ot-pde-ml/",
         "end_time": "12:00",
         "location": "Institut de Mathématique d’Orsay (IMO), Building 307, Room 3L15, Orsay, France",
+        "reminders": [
+          "20270521T070000Z",
+          "20270524T050000Z"
+        ],
         "start_time": "10:00",
         "summary": "GdT OT-PDE-ML — ParMA",
         "url": "https://parma-inria.github.io/gdt-ot-pde-ml/"
       },
-      "sequence": 0
+      "sequence": 1
     },
     "gdt-2027-06-21": {
-      "modified": "20261104T134722Z",
+      "modified": "20261104T140956Z",
       "payload": {
         "all_day": false,
         "cancelled": false,
@@ -369,11 +397,15 @@
         "description": "GdT OT-PDE-ML — ParMA\n\nProgramme to be announced.\n\nhttps://parma-inria.github.io/gdt-ot-pde-ml/",
         "end_time": "12:00",
         "location": "Institut de Mathématique d’Orsay (IMO), Building 307, Room 3L15, Orsay, France",
+        "reminders": [
+          "20270618T070000Z",
+          "20270621T050000Z"
+        ],
         "start_time": "10:00",
         "summary": "GdT OT-PDE-ML — ParMA",
         "url": "https://parma-inria.github.io/gdt-ot-pde-ml/"
       },
-      "sequence": 0
+      "sequence": 1
     }
   },
   "schema_version": 1

@@ -6,6 +6,7 @@ No network, external calendar account or Python package is required.
 """
 
 import argparse
+import calendar
 import copy
 import json
 import re
@@ -60,7 +61,56 @@ def settings(seminar):
         raise ValueError("seminar.calendar.name must be nonempty text.")
     if values["timezone"] != "Europe/Paris":
         raise ValueError("The seminar calendar timezone must be Europe/Paris.")
+    reminders = values.get("reminders")
+    if reminders is not None:
+        if not isinstance(reminders, dict):
+            raise ValueError("calendar.reminders must be an object or null.")
+        for key in ("friday_time", "event_day_time"):
+            value = reminders.get(key)
+            if not isinstance(value, str) or not TIME_PATTERN.fullmatch(value):
+                raise ValueError("calendar.reminders." + key + " must use HH:MM.")
+        first = reminders.get("from_date")
+        if not isinstance(first, str) or not re.fullmatch(r"\d{4}-\d{2}-\d{2}", first):
+            raise ValueError("calendar.reminders.from_date must use YYYY-MM-DD.")
+        date.fromisoformat(first)
     return values
+
+
+def paris_utc(day, clock):
+    """Convert a local reminder using the feed's embedded Paris DST rules.
+
+    Convert Friday and event-day alarms separately: a DST change can happen
+    between them. This also works on Windows without an optional tzdata package.
+    """
+    hour, minute = map(int, clock.split(":"))
+    local = datetime(day.year, day.month, day.day, hour, minute)
+
+    def last_sunday(month):
+        last = date(day.year, month, calendar.monthrange(day.year, month)[1])
+        return last - timedelta(days=(last.weekday() + 1) % 7)
+
+    spring, autumn = last_sunday(3), last_sunday(10)
+    if hour == 2 and day in (spring, autumn):
+        raise ValueError("A reminder at 02:00–02:59 is ambiguous or nonexistent on a Paris clock-change day.")
+    summer = (spring < day < autumn
+              or (day == spring and hour >= 3)
+              or (day == autumn and hour < 2))
+    utc = local - timedelta(hours=2 if summer else 1)
+    return utc.strftime("%Y%m%dT%H%M%SZ")
+
+
+def reminder_triggers(session, config):
+    """Keep exact wall-clock reminders stable, including after rescheduling."""
+    reminders = config.get("reminders")
+    if not reminders or session.get("cancelled") or session["date"] < reminders["from_date"]:
+        return []
+    day = date.fromisoformat(session["date"])
+    # Friday must be strictly before the session, even for a Friday event.
+    friday = day - timedelta(days=(day.weekday() - 4) % 7 or 7)
+    return [
+        paris_utc(friday, reminders["friday_time"]),
+        paris_utc(day, reminders["event_day_time"]),
+    ]
 
 
 def session_times(session, config):
@@ -95,6 +145,7 @@ def validate_calendar(seminar):
         for flag in ("cancelled", "all_day"):
             if type(session.get(flag, False)) is not bool:
                 raise ValueError("Session " + flag + " must be true or false.")
+        reminder_triggers(session, config)
 
 
 def event_payload(seminar, session):
@@ -117,13 +168,17 @@ def event_payload(seminar, session):
     else:
         paragraphs.append("Programme to be announced.")
     paragraphs.append(SEMINAR_URL)
-    return {
+    payload = {
         "date": session["date"], "start_time": start, "end_time": end,
         "summary": config["name"], "description": "\n\n".join(paragraphs),
         "location": location, "url": SEMINAR_URL,
         "cancelled": session.get("cancelled", False),
         "all_day": session.get("all_day", False),
     }
+    reminders = reminder_triggers(session, config)
+    if reminders:
+        payload["reminders"] = reminders
+    return payload
 
 
 def read_state(path=STATE):
@@ -145,6 +200,13 @@ def read_state(path=STATE):
             raise ValueError("Invalid saved calendar event.")
         date.fromisoformat(payload["date"])
         session_times(payload, DEFAULTS)
+        reminders = payload.get("reminders", [])
+        if not isinstance(reminders, list) or len(reminders) not in (0, 2):
+            raise ValueError("Invalid saved calendar reminders.")
+        for trigger in reminders:
+            if not isinstance(trigger, str) or not re.fullmatch(r"\d{8}T\d{6}Z", trigger):
+                raise ValueError("Saved reminders must contain UTC timestamps.")
+            datetime.strptime(trigger, "%Y%m%dT%H%M%SZ")
     return state
 
 
@@ -221,8 +283,18 @@ def render_feed(state, identifiers, name):
             "SUMMARY:" + escape_text(payload["summary"]),
             "DESCRIPTION:" + escape_text(payload["description"]),
             "LOCATION:" + escape_text(payload["location"]),
-            "URL:" + payload["url"], "TRANSP:OPAQUE", "END:VEVENT",
+            "URL:" + payload["url"], "TRANSP:OPAQUE",
         ))
+        # These are display alerts only, not invitations or outgoing emails.
+        if not payload["cancelled"]:
+            for trigger in payload.get("reminders", []):
+                lines.extend((
+                    "BEGIN:VALARM", "ACTION:DISPLAY",
+                    "TRIGGER;VALUE=DATE-TIME:" + trigger,
+                    "DESCRIPTION:" + escape_text(payload["summary"] + " - " + payload["date"]),
+                    "END:VALARM",
+                ))
+        lines.append("END:VEVENT")
     lines.append("END:VCALENDAR")
     return ("\r\n".join(fold_line(line) for line in lines) + "\r\n").encode("utf-8")
 

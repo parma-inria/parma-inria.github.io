@@ -3,7 +3,12 @@
     "name": "GdT OT-PDE-ML — ParMA",
     "timezone": "Europe/Paris",
     "start_time": "10:00",
-    "end_time": "12:00"
+    "end_time": "12:00",
+    "reminders": {
+      "friday_time": "09:00",
+      "event_day_time": "07:00",
+      "from_date": "2026-11-04"
+    }
   },
   "organizers": [
     {

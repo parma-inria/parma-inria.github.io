@@ -64,10 +64,19 @@ def unfold(payload):
 
 
 def event_components(payload):
-    return [
-        dict(line.split(":", 1) for line in body.split("\r\n"))
-        for body in re.findall(r"BEGIN:VEVENT\r\n(.*?)\r\nEND:VEVENT", unfold(payload), re.DOTALL)
-    ]
+    events = []
+    for body in re.findall(r"BEGIN:VEVENT\r\n(.*?)\r\nEND:VEVENT", unfold(payload), re.DOTALL):
+        properties, nesting = {}, 0
+        for line in body.split("\r\n"):
+            if line.startswith("BEGIN:"):
+                nesting += 1
+            elif line.startswith("END:"):
+                nesting -= 1
+            elif nesting == 0:
+                name, value = line.split(":", 1)
+                properties[name] = value
+        events.append(properties)
+    return events
 
 
 def decode_text(value):
