@@ -1,11 +1,6 @@
 {
   "calendar": {
     "name": "GdT OT-PDE-ML — ParMA",
-    "test_reminder": {
-      "session_id": "gdt-2026-11-16",
-      "trigger_utc": "20261104T142055Z",
-      "expires_utc": "20261104T145055Z"
-    },
     "timezone": "Europe/Paris",
     "start_time": "10:00",
     "end_time": "12:00",
