@@ -80,7 +80,24 @@ In JSON files, keep the quotation marks and commas: commas separate items, but t
 
 ### Resources page
 
-The Resources page presents the SDot library followed by its examples gallery. Edit **`content/resources.json`** to change a resource's summary, destination or illustrations. Image URLs point directly to SDot and are loaded by the browser; the build does not download them. The complete page markup is in `pages/resources.html`, and its banner text is in `content/site.json` → `pages` → `resources`.
+The Resources page uses one panel per resource. Edit **`content/resources.json`**: top-level `items` are independent resources, and each resource's `materials` contains its documentation, examples or tutorials. SDot's examples gallery belongs inside SDot. Image URLs load directly from the original site; the build does not download them.
+
+To add a resource, append another object to `items`, with a different lowercase `id`. Use `summary_lines: []` when no feature list is needed and `materials: []` when there are no nested links yet. For example:
+
+```json
+{
+  "id": "another-resource",
+  "name": "Resource name",
+  "kind": "Software library",
+  "description": "Short description.",
+  "summary_lines": [],
+  "url": "https://example.org/",
+  "link_label": "Visit the resource",
+  "materials": []
+}
+```
+
+Nested materials have their own `id`, `title`, `description`, `url`, `link_label` and `images` list. Each image has a `url` and a visible `caption`. Write descriptions, features, captions and link labels in English; they are translated automatically. Resource names, IDs and URLs remain unchanged. The complete page markup is in `pages/resources.html`, and its banner text is in `content/site.json` → `pages` → `resources`.
 
 ### Recent publications
 

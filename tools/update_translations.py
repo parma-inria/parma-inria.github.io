@@ -65,8 +65,9 @@ TEXT_PATHS = {
     "team": ("search.*", "sections.*.title"),
     "seminar": ("mailing_list_note", "labels.*", "sessions.*.talks.*.abstract.*"),
     "resources": (
-        "source_name", "repository_label", "sections.*.title", "sections.*.items.*.kind",
-        "sections.*.items.*.description", "sections.*.items.*.links.*.label",
+        "items.*.kind", "items.*.description", "items.*.summary_lines.*", "items.*.link_label",
+        "items.*.materials.*.title", "items.*.materials.*.description",
+        "items.*.materials.*.link_label", "items.*.materials.*.images.*.caption",
     ),
     "publications": ("title", "link_label", "empty_message"),
     "contact": (
@@ -313,6 +314,9 @@ def _protected_names(sources):
             for institution in member.get("affiliation", "").split(","):
                 if len(institution.strip()) > 3:
                     names.add(institution.strip())
+    for resource in sources.get("resources", {}).get("items", []):
+        if resource.get("name"):
+            names.add(resource["name"])
     for person in sources.get("contact", {}).get("contacts", []):
         if person.get("name"):
             names.add(person["name"])

@@ -331,40 +331,45 @@ def validate_content(sources):
     require_web_url(contact["location"]["url"], "content/contact.json → location.url")
     validate_seminar(sources["seminar"])
 
-    # Resource descriptions and links stay in one editable JSON file.
+    # Each independent resource owns its nested examples and documentation.
     resources = sources["resources"]
-    require_fields(resources, "content/resources.json", {
-        "source_name": str, "source_url": str, "repository_label": str, "sections": list,
-    })
-    require_web_url(resources["source_url"], "content/resources.json → source_url")
-    section_ids = set()
-    for index, section in enumerate(resources["sections"]):
-        location = f"content/resources.json → sections[{index}]"
-        require_fields(section, location, {"id": str, "title": str, "items": list})
-        if not re.fullmatch(r"[a-z][a-z0-9-]*", section["id"]) or section["id"] in section_ids:
-            raise BuildError(f"{location}: use a unique lowercase section ID.")
-        section_ids.add(section["id"])
-        for item in section["items"]:
-            require_fields(item, location + " → items", {
-                "name": str, "kind": str, "description": str, "url": str,
-                "link_label": str, "links": list,
+    require_fields(resources, "content/resources.json", {"items": list})
+    resource_ids = set()
+    element_ids = set()
+    for index, resource in enumerate(resources["items"]):
+        location = f"content/resources.json → items[{index}]"
+        require_fields(resource, location, {
+            "id": str, "name": str, "kind": str, "description": str,
+            "summary_lines": list, "url": str, "link_label": str, "materials": list,
+        })
+        if not re.fullmatch(r"[a-z][a-z0-9-]*", resource["id"]) or resource["id"] in resource_ids:
+            raise BuildError(f"{location}: use a unique lowercase resource ID.")
+        resource_ids.add(resource["id"])
+        for element_id in (f"resource-{resource['id']}", f"resource-{resource['id']}-title"):
+            if element_id in element_ids:
+                raise BuildError(f"{location}: choose an ID that gives this resource a unique page anchor.")
+            element_ids.add(element_id)
+        require_web_url(resource["url"], location + ".url")
+        if any(not isinstance(line, str) or not line.strip() for line in resource["summary_lines"]):
+            raise BuildError(f"{location}.summary_lines: use a list of nonempty texts, or [].")
+        material_ids = set()
+        for material_index, material in enumerate(resource["materials"]):
+            where = f"{location}.materials[{material_index}]"
+            require_fields(material, where, {
+                "id": str, "title": str, "description": str,
+                "url": str, "link_label": str, "images": list,
             })
-            require_web_url(item["url"], location + " → items.url")
-            if "summary_lines" in item:
-                summary_lines = item["summary_lines"]
-                if not isinstance(summary_lines, list) or any(
-                    not isinstance(line, str) or not line for line in summary_lines
-                ):
-                    raise BuildError(location + " → items.summary_lines: usa una lista di testi.")
-            for link in item["links"]:
-                require_fields(link, location + " → items.links", {"label": str, "url": str})
-                require_web_url(link["url"], location + " → items.links.url")
-            images = item.get("images", [])
-            if not isinstance(images, list):
-                raise BuildError(location + " → items.images: debe essere una lista.")
-            for image in images:
-                require_fields(image, location + " → items.images", {"url": str, "alt": str})
-                require_web_url(image["url"], location + " → items.images.url")
+            if not re.fullmatch(r"[a-z][a-z0-9-]*", material["id"]) or material["id"] in material_ids:
+                raise BuildError(f"{where}: use a unique lowercase material ID within this resource.")
+            material_ids.add(material["id"])
+            heading_id = f"resource-{resource['id']}-{material['id']}-title"
+            if heading_id in element_ids:
+                raise BuildError(f"{where}: choose IDs that give this material a unique page anchor.")
+            element_ids.add(heading_id)
+            require_web_url(material["url"], where + ".url")
+            for image in material["images"]:
+                require_fields(image, where + ".images", {"url": str, "caption": str})
+                require_web_url(image["url"], where + ".images.url")
 
     # The saved publication snapshot is valid even when a preview is offline.
     try:

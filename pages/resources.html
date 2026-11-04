@@ -70,35 +70,55 @@
 
     <!-- Page content -->
     <main id="main" class="container content-container">
-      <!-- The gallery and its remote images are edited in content/resources.json. -->
-      {% for section in resources.sections %}
-        <section class="resource-section" aria-labelledby="{{ section.id }}-title">
-          <div class="section-header resource-section-header">
-            <h2 id="{{ section.id }}-title">{{ section.title }}</h2>
-          </div>
-          {% for resource in section.items %}
-            <article class="resource-item">
-              <h3 class="resource-item-title">{{ resource.name }}</h3>
-              {% if resource.summary_lines %}
-                <div class="resource-summary prose">
-                  {% for line in resource.summary_lines %}
-                    <p class="resource-summary-line">{{ line }}</p>
-                  {% endfor %}
-                </div>
-              {% else %}
-                <p class="resource-description prose">{{ resource.description }}</p>
-              {% endif %}
-              {% if resource.images %}
-                <div class="resource-gallery">
-                  {% for image in resource.images %}
-                    <img src="{{ image.url }}" alt="{{ image.alt }}" loading="lazy">
-                  {% endfor %}
-                </div>
-              {% endif %}
-              <a class="resource-visit" href="{{ resource.url }}" target="_blank" rel="noopener noreferrer">{{ resource.link_label }} <span aria-hidden="true">↗</span></a>
-            </article>
-          {% endfor %}
-        </section>
+      <!-- Each resource owns its overview and nested documentation or examples. -->
+      {% for resource in resources.items %}
+        <article class="resource-project" id="resource-{{ resource.id }}" aria-labelledby="resource-{{ resource.id }}-title">
+          <header class="resource-heading">
+            <div>
+              {% if resource.kind %}<p class="eyebrow resource-kind">{{ resource.kind }}</p>{% endif %}
+              <h2 class="resource-title" id="resource-{{ resource.id }}-title">{{ resource.name }}</h2>
+            </div>
+            <a class="button resource-primary" href="{{ resource.url }}" target="_blank" rel="noopener noreferrer">{{ resource.link_label }} <span aria-hidden="true">&#8599;</span></a>
+          </header>
+
+          {% if resource.description %}
+            <p class="resource-intro prose">{{ resource.description }}</p>
+          {% endif %}
+          {% if resource.summary_lines %}
+            <ul class="resource-features">
+              {% for line in resource.summary_lines %}
+                <li>{{ line }}</li>
+              {% endfor %}
+            </ul>
+          {% endif %}
+
+          {% if resource.materials %}
+            <div class="resource-materials">
+              {% for material in resource.materials %}
+                <section class="resource-material" aria-labelledby="resource-{{ resource.id }}-{{ material.id }}-title">
+                  <div class="resource-material-heading">
+                    <h3 id="resource-{{ resource.id }}-{{ material.id }}-title">{{ material.title }}</h3>
+                    <a class="resource-visit" href="{{ material.url }}" target="_blank" rel="noopener noreferrer">{{ material.link_label }} <span aria-hidden="true">&#8599;</span></a>
+                  </div>
+                  {% if material.description %}
+                    <p class="resource-material-description prose">{{ material.description }}</p>
+                  {% endif %}
+                  {% if material.images %}
+                    <!-- Illustration captions provide the accessible image labels. -->
+                    <div class="resource-gallery">
+                      {% for image in material.images %}
+                        <figure class="resource-example">
+                          <img src="{{ image.url }}" alt="" loading="lazy">
+                          <figcaption>{{ image.caption }}</figcaption>
+                        </figure>
+                      {% endfor %}
+                    </div>
+                  {% endif %}
+                </section>
+              {% endfor %}
+            </div>
+          {% endif %}
+        </article>
       {% endfor %}
     </main>
 

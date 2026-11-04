@@ -1,5 +1,6 @@
 """Validate the small page language and preservation of complete site content."""
 
+import copy
 import json
 import shutil
 import sys
@@ -153,25 +154,58 @@ class TemplateTests(unittest.TestCase):
             for member in section["members"]:
                 self.assertIn(build.html.escape(member["name"], quote=True), team)
 
-    def test_resources_show_library_summary_and_remote_examples(self):
+    def test_resources_nest_remote_examples_inside_their_library(self):
         sources = fixture_sources(seminar=seminar_fixture())
         plan = build.plan_seminar(sources["seminar"], date(2026, 10, 9))
         document = render_page("resources", "../", sources, plan)
         main = document.split('<main id="main"', 1)[1].split("</main>", 1)[0]
         elements = Elements(main)
-        library = sources["resources"]["sections"][0]["items"][0]
-        examples = sources["resources"]["sections"][1]["items"][0]
-        links = [attributes["href"] for tag, attributes in elements.elements
-                 if tag == "a" and attributes.get("href", "").startswith("http")]
-        images = [attributes["src"] for tag, attributes in elements.elements if tag == "img"]
-
-        self.assertEqual(links, [library["url"], examples["url"]])
+        library = sources["resources"]["items"][0]
+        examples = library["materials"][0]
+        links = [attrs for tag, attrs in elements.elements if tag == "a"]
+        images = [attrs["src"] for tag, attrs in elements.elements if tag == "img"]
+        self.assertEqual([link["href"] for link in links], [library["url"], examples["url"]])
+        self.assertTrue(all(link.get("target") == "_blank" and "noopener" in link.get("rel", "") for link in links))
         self.assertEqual(images, [image["url"] for image in examples["images"]])
-        self.assertTrue(all(image.startswith("https://sdot-team.github.io/sdot/examples/img/")
-                            for image in images))
+        self.assertTrue(all(image.startswith("https://sdot-team.github.io/sdot/examples/img/") for image in images))
+        self.assertIn('<h2 class="resource-title" id="resource-sdot-title">SDot</h2>', main)
+        self.assertIn('<h3 id="resource-sdot-examples-title">Examples</h3>', main)
         for line in library["summary_lines"]:
             self.assertIn(build.html.escape(line, quote=True), main)
-        self.assertNotIn("Explore the SDot gallery of examples in semi-discrete optimal transport.", document)
+        for image in examples["images"]:
+            self.assertIn(build.html.escape(image["caption"], quote=True), main)
+
+    def test_second_resource_gets_its_own_panel_and_nested_materials(self):
+        sources = fixture_sources(seminar=seminar_fixture())
+        original = copy.deepcopy(sources["resources"]["items"][0])
+        sources["resources"]["items"].append({
+            "id": "another-library", "name": "Another library", "kind": "Software library",
+            "description": "An independent resource.", "summary_lines": [],
+            "url": "https://example.org/library", "link_label": "Visit another library",
+            "materials": [{
+                "id": "examples", "title": "Examples", "description": "Examples for this library.",
+                "url": "https://example.org/library/examples", "link_label": "Browse examples", "images": [],
+            }],
+        })
+        build.validate_content(sources)
+        plan = build.plan_seminar(sources["seminar"], date(2026, 10, 9))
+        document = render_page("resources", "../", sources, plan)
+        main = document.split('<main id="main"', 1)[1].split("</main>", 1)[0]
+        first = main.split('id="resource-sdot"', 1)[1].split('</article>', 1)[0]
+        second = main.split('id="resource-another-library"', 1)[1].split('</article>', 1)[0]
+        self.assertEqual(main.count('<article class="resource-project"'), 2)
+        self.assertIn('id="resource-sdot-examples-title"', first)
+        self.assertNotIn('id="resource-another-library-examples-title"', first)
+        self.assertIn('id="resource-another-library-examples-title"', second)
+        self.assertNotIn('id="resource-sdot-examples-title"', second)
+        self.assertEqual(sources["resources"]["items"][0], original)
+        ids = [attrs["id"] for _, attrs in Elements(main).elements if "id" in attrs]
+        self.assertEqual(len(ids), len(set(ids)))
+        for conflicting_id in ("sdot", "sdot-examples", "sdot-title"):
+            with self.subTest(resource_id=conflicting_id):
+                sources["resources"]["items"][1]["id"] = conflicting_id
+                with self.assertRaises(build.BuildError):
+                    build.validate_content(sources)
 
     def test_asset_updates_refresh_cached_styles_on_every_route(self):
         sources = fixture_sources(seminar=seminar_fixture())

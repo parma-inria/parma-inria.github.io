@@ -51,7 +51,7 @@
       "id": "resources",
       "path": "resources/",
       "title": "Resources",
-      "description": "SDot software library and semi-discrete optimal transport examples.",
+      "description": "Open-source software, documentation and examples from the ParMA team.",
       "hero": {
         "eyebrow": "SOFTWARE · DOCUMENTATION · EXAMPLES",
         "title_lines": [

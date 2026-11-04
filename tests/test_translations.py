@@ -34,10 +34,16 @@ def fixture():
                  "abstract": ["We study $\\lambda$ with Alice Example."]},
             ]}],
         },
-        "resources": {"sections": [{"title": "Software", "items": [
-            {"name": "pysdot", "kind": "Python", "description": "Python tools.",
-             "url": "https://example.org", "links": [{"label": "Examples", "url": "https://example.org/code"}]},
-        ]}]},
+        "resources": {"items": [{
+            "id": "pysdot", "name": "pysdot", "kind": "Python", "description": "Python tools.",
+            "summary_lines": ["Array-based calculations."],
+            "url": "https://example.org", "link_label": "Open library",
+            "materials": [{
+                "id": "examples", "title": "Examples", "description": "Worked examples.",
+                "url": "https://example.org/code", "link_label": "View examples",
+                "images": [{"url": "https://example.org/image.png", "caption": "Power diagrams"}],
+            }],
+        }]},
         "contact": {"contacts": [{"role": "Team leader", "name": "Alice Example",
                                    "email": "alice@example.org"}],
                     "location": {"title": "Institut de Mathématique d’Orsay",
@@ -153,6 +159,28 @@ class TranslationTests(unittest.TestCase):
                       "photo.jpg", "A scientific title", "Original scientific title",
                       "An Author", "A scientific journal", "Building 307, rue Michel Magat"):
             self.assertNotIn(value, selected)
+
+    def test_nested_resource_text_translates_but_names_and_urls_stay_original(self):
+        sources = fixture()
+        original = copy.deepcopy(sources)
+        resource = sources["resources"]["items"][0]
+        cache = translations.empty_cache("it")
+        cache["translations"] = {text: "Translated " + text for text in translations.collect_texts(sources)}
+        cache["translations"][resource["name"]] = "WRONG RESOURCE NAME"
+        cache["translations"][resource["url"]] = "WRONG URL"
+        localized = translations.localize_sources(sources, "it", cache)
+        target = localized["resources"]["items"][0]
+        self.assertEqual(target["name"], resource["name"])
+        self.assertEqual(target["url"], resource["url"])
+        self.assertEqual(target["id"], resource["id"])
+        self.assertEqual(target["summary_lines"], ["Translated Array-based calculations."])
+        self.assertEqual(target["link_label"], "Translated Open library")
+        material = target["materials"][0]
+        self.assertEqual(material["title"], "Translated Examples")
+        self.assertEqual(material["link_label"], "Translated View examples")
+        self.assertEqual(material["images"][0]["caption"], "Translated Power diagrams")
+        self.assertEqual(material["images"][0]["url"], resource["materials"][0]["images"][0]["url"])
+        self.assertEqual(sources, original)
 
     def test_publication_ui_labels_translate_but_publication_records_remain_original(self):
         sources = fixture()

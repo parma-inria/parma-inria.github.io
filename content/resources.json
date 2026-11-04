@@ -1,56 +1,40 @@
 {
-  "source_name": "SDot",
-  "source_url": "https://sdot-team.github.io/sdot/",
-  "repository_label": "Visit the resource",
-  "sections": [
+  "items": [
     {
-      "id": "sdot-library",
-      "title": "Software library",
-      "items": [
+      "id": "sdot",
+      "name": "SDot",
+      "kind": "Software library",
+      "description": "A fast, differentiable library for semi-discrete optimal transport.",
+      "summary_lines": [
+        "Computes semi-discrete Optimal Transport between discrete measures and continuous densities.",
+        "Includes power diagrams and distributions such as images, Gaussian mixtures, meshes and polytopes.",
+        "Supports NumPy, JAX, PyTorch and CuPy, with CPU and GPU backends."
+      ],
+      "url": "https://sdot-team.github.io/sdot/",
+      "link_label": "Visit the SDot library",
+      "materials": [
         {
-          "name": "SDot",
-          "kind": "Software library",
-          "description": "A fast, differentiable library for semi-discrete optimal transport.",
-          "summary_lines": [
-            "Computes semi-discrete Optimal Transport between discrete measures and continuous densities.",
-            "Includes power diagrams and distributions such as images, Gaussian mixtures, meshes and polytopes.",
-            "Supports NumPy, JAX, PyTorch and CuPy, with CPU and GPU backends."
-          ],
-          "link_label": "Visit the SDot library",
-          "url": "https://sdot-team.github.io/sdot/",
-          "links": [],
-          "images": []
-        }
-      ]
-    },
-    {
-      "id": "sdot-examples",
-      "title": "Examples",
-      "items": [
-        {
-          "name": "SDot examples gallery",
-          "kind": "Interactive gallery",
+          "id": "examples",
+          "title": "Examples",
           "description": "Explore features and applications of semi-discrete optimal transport through the SDot examples gallery.",
-          "summary_lines": [],
-          "link_label": "Browse all examples",
           "url": "https://sdot-team.github.io/sdot/examples/",
-          "links": [],
+          "link_label": "Browse all examples",
           "images": [
             {
               "url": "https://sdot-team.github.io/sdot/examples/img/polytope.png",
-              "alt": "Convex Polytopes"
+              "caption": "Convex Polytopes"
             },
             {
               "url": "https://sdot-team.github.io/sdot/examples/img/image.png",
-              "alt": "Images and Splines"
+              "caption": "Images and Splines"
             },
             {
               "url": "https://sdot-team.github.io/sdot/examples/img/sum_gaussians.png",
-              "alt": "Sums of Gaussians"
+              "caption": "Sums of Gaussians"
             },
             {
               "url": "https://sdot-team.github.io/sdot/examples/img/mesh.png",
-              "alt": "Meshes"
+              "caption": "Meshes"
             }
           ]
         }
