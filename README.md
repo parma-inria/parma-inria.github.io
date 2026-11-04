@@ -4,11 +4,15 @@ Website for the ParMA research team at Inria Saclay, CNRS and Université Paris-
 
 **Live site:** [parma-inria.github.io](https://parma-inria.github.io/) · **Project:** [GitHub](https://github.com/parma-inria/parma-inria.github.io)
 
+**Edit English once.** Update text and data in `content/`, page structure in `pages/`, and shared styles in `assets/css/site.css`. French and Italian are generated automatically when you push your changes. You do not need to maintain separate pages for each language. Use the optional `content/glossary.json` for preferred translations of recurring terms.
+
+Generated pages and translation caches are hidden in VS Code so the Explorer shows the files you edit. Preview your changes, run the site check, then commit and push.
+
 ## Which file should I start with?
 
 | I want to change… | Open… |
 | --- | --- |
-| Home introduction and seminar summary | `content/home.json` |
+| Home introduction | `content/home.json` |
 | Recent papers and HAL settings | `content/publications.json` (updated automatically) |
 | Members' names, roles, institutions, personal websites and photographs | `content/team.json` |
 | Seminar dates, programme, abstracts and archive | `content/seminar.json` |
@@ -23,6 +27,7 @@ Website for the ParMA research team at Inria Saclay, CNRS and Université Paris-
 | Header, footer, member cards or archive layout | The relevant complete HTML file in `pages/` |
 | Member search and mobile menu | `assets/js/site.js` |
 | Languages | Edit the same English JSON and HTML sources; translations are automatic |
+| Preferred translations of recurring terms | `content/glossary.json` |
 
 For data updates, start with **`content/`**. For page layout and HTML, start with **`pages/`**. Pages in **`public/`** are generated automatically: any changes made there will be overwritten the next time the site is generated.
 
@@ -189,19 +194,35 @@ The original team logo is `assets/images/parma-logo.png`. It remains complete in
 
 ## Three languages, one editable source
 
-**Write and edit only the English source files** in `content/` and the five complete layouts in `pages/`. The **EN / FR / IT** links open the equivalent page in the selected language. English uses the root URLs; French and Italian use `/fr/` and `/it/`. The existing `/en/` URLs remain usable English aliases.
+There are **five editable HTML pages**, shared by all languages. Write text in English in `content/` or `pages/`; GitHub translates new or changed text into French and Italian when you push. The **EN / FR / IT** links open the equivalent page in the selected language. English uses the root URLs, French uses `/fr/`, Italian uses `/it/`, and `/en/` remains an English alias.
 
-Every pushed change triggers GitHub to translate new or changed English text into French and Italian before building and publishing all pages. The free Helsinki-NLP Marian models run on GitHub's CPU runner. No API key, translation account or service subscription is needed. Models and translations are cached, so unchanged paragraphs are reused. The first run takes longer because it downloads the models and translates the existing text.
+### Optional terminology glossary
 
-The workflow also saves the generated translations to `content/translations/fr.json` and `it.json`. **Do not edit these generated files to maintain the site.** Pull the latest changes from GitHub to bring those snapshots into your local clone. Local previews read the snapshots without downloading models or installing translation packages; a newly edited English phrase temporarily appears in English until the next publication generates its translations.
+Use `content/glossary.json` only when you want a preferred translation for a recurring term. Each entry gives its English, French and Italian wording. Ordinary text still belongs in the English content or HTML files; you do not need to add every sentence to the glossary.
 
-The current French and Italian prose has been reviewed for natural wording and scientific terminology. Editorial corrections live in `content/translations/reviewed.fr.json` and `reviewed.it.json`; they are source files, separate from the generated snapshots. They take priority in previews and publishing and are never overwritten by the bot. Each correction is tied to its exact English source: when that source changes, the new text is translated automatically. New machine-generated scientific text can still benefit from review. You can continue maintaining only the English content. Italian translations use `trasporto ottimo` for `optimal transport`; this preference also applies to newly generated text.
+```json
+[
+  {
+    "en": "optimal transport",
+    "fr": "transport optimal",
+    "it": "trasporto ottimo"
+  }
+]
+```
 
-Publication titles and seminar talk titles always stay in their original language, including archived talks. Names, email addresses, URLs, identifiers, dates, software names and protected mathematical notation stay intact. Historical abstracts already supplied in French remain in their original language. Lorem ipsum placeholders are preserved. Machine translation can need refinement for scientific prose; the editable source remains the English file.
+To add a term, add another object to the list. Keep the `en`, `fr` and `it` keys and write the wording you want in each language.
 
-Edit repeated data and prose in the English JSON files, or add plain English text directly inside the body of a complete HTML page. Both are collected automatically for translation, together with shared interface messages and month names. In HTML, `aria-label`, `title` and `placeholder` text is translated too; markup, comments, code, scripts and styles are preserved. Use `translate="no"` on an element to preserve it and its contents in their original language. The scientific title elements already use this marker. When a sentence mixes template placeholders with prose, keep that sentence in JSON and insert its placeholder into HTML.
+### Previewing and publishing translations
 
-To check translation completeness without running a model, use `python tools/update_translations.py --check`. A publication fails before deployment if the translation step fails, so it does not replace the live site with a partially translated version.
+Local previews use saved translations without installing translation packages or downloading models. After you change English text, that new text may temporarily appear in English in the French and Italian previews. Push your changes to generate its translations, then pull the latest GitHub changes to update your local preview.
+
+Generated snapshots are stored in `content/translations/fr.json` and `it.json`. Previously reviewed wording is preserved in the machine-managed `tools/translation-memory.json`: it applies while the English source is unchanged, and new English text is translated automatically. **These files require no manual maintenance** and are hidden in VS Code. Maintain English text and the optional small glossary instead.
+
+Publication titles and seminar talk titles stay in their original language, including archived talks. Names, email addresses, URLs, identifiers, dates, software names and protected mathematical notation stay intact. Historical abstracts already supplied in French and Lorem ipsum placeholders also remain unchanged.
+
+For HTML edits, interface text and the `aria-label`, `title` and `placeholder` attributes are collected automatically for translation. Use `translate="no"` on an element to preserve its contents in their original language. When a sentence mixes template placeholders with prose, keep the sentence in JSON and insert its placeholder into HTML.
+
+No API key, translation account or subscription is needed. To check saved translation completeness without running a model, use `python tools/update_translations.py --check`. If translation fails during publication, deployment stops and the live site remains available.
 
 ## How are the folders organised?
 
@@ -216,7 +237,8 @@ parma-site/
 │   ├── resources.html
 │   └── contact.html
 ├── content/                  ← editable English JSON data and text
-│   └── translations/         ← generated French and Italian snapshots
+│   ├── glossary.json         ← optional EN / FR / IT terminology
+│   └── translations/         ← generated snapshots, hidden in VS Code
 ├── assets/
 │   ├── css/site.css          ← shared styling
 │   ├── js/site.js            ← menu, portraits and member search
@@ -227,10 +249,11 @@ parma-site/
 │   ├── preview.py            ← starts the preview
 │   ├── update_publications.py ← refreshes the three recent HAL papers
 │   ├── update_translations.py ← refreshes French and Italian on GitHub
+│   ├── translation-memory.json ← preserved reviewed wording, no manual edits
 │   └── translation-requirements.txt ← GitHub-only translation packages
 ├── docs/sources/             ← original imported materials
 ├── tests/                    ← checks for pages, seminar data and portraits
-├── public/                   ← generated site, excluded from Git
+├── public/                   ← generated site, hidden in VS Code and excluded from Git
 ├── .vscode/                  ← project tasks and settings
 └── .github/workflows/        ← automatic publishing
 ```

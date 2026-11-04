@@ -892,7 +892,8 @@ def main(argv=None):
     arguments = parser.parse_args(argv)
     try:
         build(arguments.output)
-    except (BuildError, update_translations.TranslationError, OSError, UnicodeError) as error:
+    except (BuildError, update_translations.TranslationError, update_translations.GlossaryError,
+            OSError, UnicodeError) as error:
         print(f"Error: {error}", file=sys.stderr)
         return 1
     return 0

@@ -15,11 +15,17 @@ import subprocess
 import sys
 from pathlib import Path
 
+from translation_glossary import (
+    GlossaryError, read_glossary, validate_glossary, matched_terms, terminology_segments, preferred_case,
+)
+from translation_context import translate_plans
+
 ROOT = Path(__file__).resolve().parents[1]
 CACHE_DIRECTORY = ROOT / "content" / "translations"
+MEMORY_PATH = ROOT / "tools" / "translation-memory.json"
 SCHEMA_VERSION = 1
 # Bump when segmentation or generation behavior changes, so old outputs regenerate.
-ENGINE_VERSION = 2
+ENGINE_VERSION = 3
 MODELS = {
     "fr": {
         "id": "Helsinki-NLP/opus-mt-en-fr",
@@ -134,6 +140,8 @@ def validate_cache(cache, language):
         raise TranslationError(f"Invalid cache schema or language for {language}.")
     if not isinstance(cache.get("model"), dict) or not isinstance(cache.get("translations"), dict):
         raise TranslationError(f"Missing model or translations in {language} cache.")
+    if "glossary" in cache:
+        validate_glossary(cache["glossary"])
     if cache.get("engine_version") != ENGINE_VERSION or cache["model"] != MODELS[language]:
         return empty_cache(language)
     for source, translated in cache["translations"].items():
@@ -163,9 +171,11 @@ def read_cache(language):
     return validate_cache(cache, language)
 
 
-def preferred_terminology(text, language):
-    """Use the team's Italian terminology in translated prose, preserving code/math."""
-    if language != "it":
+def preferred_terminology(text, language, glossary=None):
+    """Normalize a common model variant using the preference in the glossary."""
+    glossary = read_glossary() if glossary is None else glossary
+    term = next((entry for entry in glossary if entry["en"].casefold() == "optimal transport"), None)
+    if language != "it" or term is None:
         return text
     protected = (
         r"(```[\s\S]*?```|`[^`]*`|\$\$[\s\S]*?\$\$|\$(?:\\.|[^$])*\$|"
@@ -173,12 +183,10 @@ def preferred_terminology(text, language):
         r"https?://[^\s<>]+|[\w.+-]+@[\w.-]+\.[A-Za-z]{2,})"
     )
     def replace_term(match):
-        adjective = match[3]
-        preferred = "OTTIMO" if adjective.isupper() else "Ottimo" if adjective[0].isupper() else "ottimo"
-        return match[1] + match[2] + preferred
+        return preferred_case(match.group(), term[language])
     parts = re.split(protected, text)
     return "".join(
-        part if index % 2 else re.sub(r"\b(trasporto)(\s+)(ottimale)\b", replace_term, part, flags=re.IGNORECASE)
+        part if index % 2 else re.sub(r"\btrasporto\s+(?:ottimale|ottimo)\b", replace_term, part, flags=re.IGNORECASE)
         for index, part in enumerate(parts)
     )
 
@@ -212,33 +220,93 @@ def validate_reviewed(reviewed, language):
     return copy.deepcopy(reviewed["translations"])
 
 
-def read_reviewed(language):
-    """Reviewed sources are editable corrections, separate from generated caches."""
-    path = CACHE_DIRECTORY / f"reviewed.{language}.json"
+def read_memory():
+    """Retain reviewed wording independently of model/cache upgrades.
+
+    This is an internal archive, not another set of pages to maintain. A changed
+    English sentence gets a new automatic translation, never a stale old review.
+    """
+    path = MEMORY_PATH
     if not path.exists():
-        return {}
+        return {"schema_version": 1, "languages": {}, "glossary": []}
     def unique_keys(pairs):
         result = {}
         for key, value in pairs:
             if key in result:
-                raise TranslationError(f"Duplicate reviewed translation key in {path}.")
+                raise TranslationError(f"Duplicate translation memory key in {path}.")
             result[key] = value
         return result
     try:
-        reviewed = json.loads(path.read_text(encoding="utf-8"), object_pairs_hook=unique_keys)
-        return validate_reviewed(reviewed, language)
+        memory = json.loads(path.read_text(encoding="utf-8"), object_pairs_hook=unique_keys)
+        if (not isinstance(memory, dict) or set(memory) != {"schema_version", "languages", "glossary"}
+                or memory["schema_version"] != 1 or not isinstance(memory["languages"], dict)
+                or set(memory["languages"]) - set(MODELS)):
+            raise TranslationError("Invalid translation memory schema.")
+        validate_glossary(memory["glossary"])
+        for language, entries in memory["languages"].items():
+            validate_reviewed({"language": language, "translations": entries}, language)
+        return memory
     except (OSError, json.JSONDecodeError) as error:
         raise TranslationError(f"Cannot read {path}: {error}") from error
 
 
-def current_reviews(sources, language, reviewed=None):
-    """A correction applies only while its exact English source is still eligible."""
-    reviewed = read_reviewed(language) if reviewed is None else validate_reviewed(
-        {"language": language, "translations": reviewed}, language,
+def read_reviewed(language):
+    """Read saved exact-source wording; ordinary site edits never change this file."""
+    return read_memory()["languages"].get(language, {})
+
+
+def _replace_term(text, old, new):
+    """Replace a complete translated term outside math, code and addresses."""
+    immutable = (
+        r"(```[\s\S]*?```|`[^`]*`|\$\$[\s\S]*?\$\$|\$(?:\\.|[^$])*\$|"
+        r"\\\([\s\S]*?\\\)|\\\[[\s\S]*?\\\]|"
+        r"https?://[^\s<>]+|[\w.+-]+@[\w.-]+\.[A-Za-z]{2,})"
     )
+    pattern = re.compile(r"(?<!\w)" + re.escape(old) + r"(?!\w)", re.IGNORECASE)
+    count = 0
+    parts = re.split(immutable, text)
+    for index in range(0, len(parts), 2):
+        parts[index], replaced = pattern.subn(lambda match: preferred_case(match.group(), new), parts[index])
+        count += replaced
+    return "".join(parts), count
+
+
+def adapt_review(source, target, language, sources, previous, glossary):
+    """Apply changed terminology without retranslating unrelated reviewed prose."""
+    old_terms = {term["en"].casefold(): term for term in previous}
+    for term in matched_terms(source, sources, protected_segments, glossary):
+        old = old_terms.get(term["en"].casefold())
+        if old and old[language] == term[language]:
+            continue
+        # A preference already present in the saved wording needs no change.
+        if _replace_term(target, term[language], term[language])[1]:
+            continue
+        if old is None:
+            return None
+        target, count = _replace_term(target, old[language], term[language])
+        if not count:
+            # Regenerate this one sentence rather than guess at an inflection.
+            return None
+    return target
+
+
+def current_reviews(sources, language, reviewed=None, glossary=None):
+    """A correction applies only while its exact English source is still eligible."""
+    glossary = read_glossary() if glossary is None else glossary
+    if reviewed is None:
+        reviewed = read_reviewed(language)
+        previous = read_memory()["glossary"]
+    else:
+        reviewed = validate_reviewed({"language": language, "translations": reviewed}, language)
+        previous = glossary
     eligible = set(collect_texts(sources))
-    return {original: preferred_terminology(target, language)
-            for original, target in reviewed.items() if original in eligible}
+    current = {}
+    for original, target in reviewed.items():
+        if original in eligible:
+            adapted = adapt_review(original, target, language, sources, previous, glossary)
+            if adapted is not None:
+                current[original] = preferred_terminology(adapted, language, glossary)
+    return current
 
 
 def _matches(path, pattern):
@@ -285,18 +353,25 @@ def collect_texts(sources):
     ))
 
 
-def localize_sources(sources, language, cache=None, reviewed=None):
+def localize_sources(sources, language, cache=None, reviewed=None, glossary=None):
     """Return a deep copy; cache misses keep English until the next deployment."""
     localized = copy.deepcopy(sources)
     if language == "en":
         return localized
+    glossary = read_glossary() if glossary is None else glossary
     cache = read_cache(language) if cache is None else validate_cache(cache, language)
-    translations = {**cache["translations"], **current_reviews(sources, language, reviewed)}
+    translations = {}
+    previous = cache.get("glossary", read_memory()["glossary"])
+    for source, target in cache["translations"].items():
+        adapted = adapt_review(source, target, language, sources, previous, glossary)
+        if adapted is not None:
+            translations[source] = adapted
+    translations.update(current_reviews(sources, language, reviewed, glossary))
     for path, source in _text_locations(localized):
         parent = localized
         for part in path[:-1]:
             parent = parent[part]
-        parent[path[-1]] = preferred_terminology(translations[source], language) if source in translations else source
+        parent[path[-1]] = preferred_terminology(translations[source], language, glossary) if source in translations else source
     return localized
 
 
@@ -464,11 +539,23 @@ class MarianTranslator:
         return [" ".join(parts) for parts in result]
 
 
-def update_cache(sources, language, translator=None, cache=None, reviewed=None):
+def _term_choices(text, sources, language, glossary):
+    """Only a preference used by this English text can invalidate its cache."""
+    return [(term["en"].casefold(), term[language])
+            for term in matched_terms(text, sources, protected_segments, glossary)]
+
+
+def update_cache(sources, language, translator=None, cache=None, reviewed=None, glossary=None):
     """Translate only cache misses; reject bad output before changing any cache file."""
     cache = read_cache(language) if cache is None else validate_cache(cache, language)
+    glossary = read_glossary() if glossary is None else validate_glossary(glossary)
     texts = collect_texts(sources)
-    corrections = current_reviews(sources, language, reviewed)
+    previous = cache.get("glossary", read_memory()["glossary"])
+    for text in texts:
+        if (_term_choices(text, sources, language, previous)
+                != _term_choices(text, sources, language, glossary)):
+            cache["translations"].pop(text, None)
+    corrections = current_reviews(sources, language, reviewed, glossary)
     # Apply canonical month formatting only when the English UI uses that month.
     # This also repairs a previous cache produced before calendar overrides existed.
     ui_months = sources.get("ui", {}).get("months", [])
@@ -480,43 +567,39 @@ def update_cache(sources, language, translator=None, cache=None, reviewed=None):
     missing = [text for text in texts if text not in cache["translations"]]
     print(f"{language}: {len(texts)} source texts, {len(missing)} new or changed", flush=True)
     if missing:
-        plans = {text: protected_segments(text, sources) for text in missing}
-        pieces = list(dict.fromkeys(
-            _prose_piece(part)[1]
-            for plan in plans.values()
-            for protected, part in plan
-            if not protected and _needs_translation(_prose_piece(part)[1])
-        ))
-        if translator is None and pieces:
-            translator = MarianTranslator(language)
-        output = translator(pieces) if pieces else []
-        if not isinstance(output, list) or len(output) != len(pieces):
-            raise TranslationError("Translator must return one result per source fragment.")
-        if any(not isinstance(value, str) or not value.strip() for value in output):
-            raise TranslationError("Translator returned an empty or invalid translation.")
-        lookup = dict(zip(pieces, output))
-        for text, plan in plans.items():
-            parts = []
-            for protected, part in plan:
-                left, body, right = _prose_piece(part)
-                parts.append(part if protected or body not in lookup else left + lookup[body].strip() + right)
-            cache["translations"][text] = "".join(parts)
+        plans = {text: terminology_segments(text, sources, language, protected_segments, glossary)
+                 for text in missing}
+        def infer(pieces):
+            nonlocal translator
+            if translator is None:
+                translator = MarianTranslator(language)
+            return translator(pieces)
+        try:
+            cache["translations"].update(translate_plans(plans, infer, _needs_translation, _prose_piece))
+        except ValueError as error:
+            raise TranslationError(str(error)) from error
     for text in texts:
-        cache["translations"][text] = preferred_terminology(cache["translations"][text], language)
+        cache["translations"][text] = preferred_terminology(cache["translations"][text], language, glossary)
+    cache["glossary"] = copy.deepcopy(glossary)
     cache["source_sha256"] = hashlib.sha256(
         json.dumps(texts, ensure_ascii=False, separators=(",", ":")).encode("utf-8")
     ).hexdigest()
-    require_complete(sources, language, cache, reviewed=corrections)
+    require_complete(sources, language, cache, reviewed=corrections, glossary=glossary)
     return cache
 
 
-def require_complete(sources, language, cache=None, reviewed=None):
+def require_complete(sources, language, cache=None, reviewed=None, glossary=None):
     """CI must never deploy a locale with untranslated cache misses."""
     cache = read_cache(language) if cache is None else validate_cache(cache, language)
+    glossary = read_glossary() if glossary is None else glossary
     missing = [text for text in collect_texts(sources) if text not in cache["translations"]]
     if missing:
         raise TranslationError(f"{language}: {len(missing)} source texts have no cached translation.")
-    corrections = current_reviews(sources, language, reviewed)
+    previous = cache.get("glossary", read_memory()["glossary"])
+    if any(_term_choices(text, sources, language, previous) != _term_choices(text, sources, language, glossary)
+           for text in collect_texts(sources)):
+        raise TranslationError(f"{language}: cached terminology needs an automatic refresh.")
+    corrections = current_reviews(sources, language, reviewed, glossary)
     if any(cache["translations"].get(original) != target for original, target in corrections.items()):
         raise TranslationError(f"{language}: cached translations do not include the current reviewed corrections.")
     return True
@@ -582,7 +665,7 @@ def main(argv=None):
         if arguments.save_to_git:
             save_to_git()
         return 0
-    except (TranslationError, OSError, subprocess.CalledProcessError) as error:
+    except (TranslationError, ValueError, OSError, subprocess.CalledProcessError) as error:
         print(f"Translation update failed: {error}", file=sys.stderr)
         return 1
 

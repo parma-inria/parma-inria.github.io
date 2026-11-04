@@ -67,17 +67,22 @@ class TranslationTests(unittest.TestCase):
         loader = patch.object(translations, "read_reviewed", return_value={})
         loader.start()
         self.addCleanup(loader.stop)
+        glossary = patch.object(translations, "read_glossary", return_value=[])
+        glossary.start()
+        self.addCleanup(glossary.stop)
 
     def test_italian_optimal_transport_term_applies_to_new_text_and_keeps_scientific_titles(self):
         title = "Trasporto Ottimale: an original scientific title"
         sources = {"home": {"introduction": ["A new discussion of optimal transport."]},
                    "publications": {"items": [{"title": title}]}}
         target = "Trasporto Ottimale; trasporto ottimale; TRASPORTO OTTIMALE; `trasporto ottimale`"
-        expected = "Trasporto Ottimo; trasporto ottimo; TRASPORTO OTTIMO; `trasporto ottimale`"
-        cache = translations.update_cache(sources, "it", lambda pieces: [target for _ in pieces], reviewed={})
-        self.assertEqual(cache["translations"][sources["home"]["introduction"][0]], expected)
-        localized = translations.localize_sources(sources, "it", cache, reviewed={})
-        self.assertEqual(localized["home"]["introduction"], [expected])
+        expected = "Trasporto ottimo; trasporto ottimo; TRASPORTO OTTIMO; `trasporto ottimale`"
+        glossary = [{"en": "optimal transport", "fr": "transport optimal", "it": "trasporto ottimo"}]
+        self.assertEqual(translations.preferred_terminology(target, "it", glossary), expected)
+        cache = translations.update_cache(sources, "it", lambda pieces: ["TR:" + value for value in pieces], reviewed={}, glossary=glossary)
+        self.assertIn("trasporto ottimo", cache["translations"][sources["home"]["introduction"][0]])
+        localized = translations.localize_sources(sources, "it", cache, reviewed={}, glossary=glossary)
+        self.assertEqual(localized["home"]["introduction"], [cache["translations"][sources["home"]["introduction"][0]]])
         self.assertEqual(localized["publications"]["items"][0]["title"], title)
         self.assertEqual(translations.preferred_terminology(target, "fr"), target)
         self.assertEqual(translations.localize_sources(sources, "en"), sources)
@@ -140,13 +145,13 @@ class TranslationTests(unittest.TestCase):
         self.assertEqual(translations.localize_sources(sources, "fr", reviewed=reviewed), sources)
 
     def test_reviewed_loader_rejects_duplicate_keys_and_missing_files_are_optional(self):
-        with tempfile.TemporaryDirectory() as directory, patch.object(translations, "CACHE_DIRECTORY", Path(directory)):
+        with tempfile.TemporaryDirectory() as directory, patch.object(translations, "MEMORY_PATH", Path(directory) / "memory.json"):
             self.assertEqual(self.real_review_loader("fr"), {})
-            path = Path(directory) / "reviewed.fr.json"
-            path.write_text('{"language":"fr","translations":{"Team":"A","Team":"B"}}', encoding="utf-8")
+            path = Path(directory) / "memory.json"
+            path.write_text('{"schema_version":1,"languages":{"fr":{"Team":"A","Team":"B"}},"glossary":[]}', encoding="utf-8")
             with self.assertRaises(translations.TranslationError):
                 self.real_review_loader("fr")
-            path.write_text('{"language":"fr","translations":{"Team":"Equipe"}}', encoding="utf-8")
+            path.write_text('{"schema_version":1,"languages":{"fr":{"Team":"Equipe"}},"glossary":[]}', encoding="utf-8")
             self.assertEqual(self.real_review_loader("fr"), {"Team": "Equipe"})
 
     def test_allowlist_protects_bibliography_people_and_addresses(self):

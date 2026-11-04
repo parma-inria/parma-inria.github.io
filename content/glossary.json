@@ -1,0 +1,62 @@
+[
+  {
+    "en": "optimal transport",
+    "fr": "transport optimal",
+    "it": "trasporto ottimo"
+  },
+  {
+    "en": "semi-discrete optimal transport",
+    "fr": "transport optimal semi-discret",
+    "it": "trasporto ottimo semi-discreto"
+  },
+  {
+    "en": "particle methods",
+    "fr": "méthodes particulaires",
+    "it": "metodi particellari"
+  },
+  {
+    "en": "power diagram",
+    "fr": "diagramme de puissance",
+    "it": "diagramma di potenza"
+  },
+  {
+    "en": "power diagrams",
+    "fr": "diagrammes de puissance",
+    "it": "diagrammi di potenza"
+  },
+  {
+    "en": "Wasserstein distance",
+    "fr": "distance de Wasserstein",
+    "it": "distanza di Wasserstein"
+  },
+  {
+    "en": "Wasserstein distances",
+    "fr": "distances de Wasserstein",
+    "it": "distanze di Wasserstein"
+  },
+  {
+    "en": "gradient flow",
+    "fr": "flot de gradient",
+    "it": "flusso di gradiente"
+  },
+  {
+    "en": "gradient flows",
+    "fr": "flots de gradient",
+    "it": "flussi di gradiente"
+  },
+  {
+    "en": "machine learning",
+    "fr": "apprentissage automatique",
+    "it": "apprendimento automatico"
+  },
+  {
+    "en": "partial differential equation",
+    "fr": "équation aux dérivées partielles",
+    "it": "equazione alle derivate parziali"
+  },
+  {
+    "en": "partial differential equations",
+    "fr": "équations aux dérivées partielles",
+    "it": "equazioni alle derivate parziali"
+  }
+]

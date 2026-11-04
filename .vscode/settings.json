@@ -6,10 +6,20 @@
   "editor.insertSpaces": true,
   "editor.wordWrap": "on",
   "files.exclude": {
-    "**/__pycache__": true
+    "public": true,
+    "**/__pycache__": true,
+    "**/*.pyc": true,
+    "content/translations/fr.json": true,
+    "content/translations/it.json": true,
+    "tools/translation-memory.json": true
   },
   "search.exclude": {
     "public": true,
+    "**/__pycache__": true,
+    "**/*.pyc": true,
+    "content/translations/fr.json": true,
+    "content/translations/it.json": true,
+    "tools/translation-memory.json": true,
     "docs/sources": true
   },
   "[python]": {
