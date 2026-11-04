@@ -256,7 +256,7 @@
       "sequence": 0
     },
     "gdt-2026-11-16": {
-      "modified": "20261104T140956Z",
+      "modified": "20261104T141827Z",
       "payload": {
         "all_day": false,
         "cancelled": false,
@@ -270,9 +270,10 @@
         ],
         "start_time": "10:00",
         "summary": "GdT OT-PDE-ML — ParMA",
+        "test_reminder": "20261104T142055Z",
         "url": "https://parma-inria.github.io/gdt-ot-pde-ml/"
       },
-      "sequence": 1
+      "sequence": 2
     },
     "gdt-2026-12-14": {
       "modified": "20261104T140956Z",

@@ -31,6 +31,12 @@ DEFAULTS = {
 ID_PATTERN = re.compile(r"[a-z0-9]+(?:-[a-z0-9]+)*")
 TIME_PATTERN = re.compile(r"(?:[01]\d|2[0-3]):[0-5]\d")
 
+
+def utc_instant(value):
+    if not isinstance(value, str) or not re.fullmatch(r"\d{8}T\d{6}Z", value):
+        raise ValueError("A calendar test timestamp must be a UTC date and time.")
+    return datetime.strptime(value, "%Y%m%dT%H%M%SZ").replace(tzinfo=timezone.utc)
+
 # Self-contained Paris daylight-saving rules, also usable on Windows without
 # the optional tzdata package. All published seminar dates are after 1996.
 PARIS_TIMEZONE = (
@@ -73,6 +79,12 @@ def settings(seminar):
         if not isinstance(first, str) or not re.fullmatch(r"\d{4}-\d{2}-\d{2}", first):
             raise ValueError("calendar.reminders.from_date must use YYYY-MM-DD.")
         date.fromisoformat(first)
+    test = values.get("test_reminder")
+    if test is not None:
+        if not isinstance(test, dict) or not isinstance(test.get("session_id"), str):
+            raise ValueError("calendar.test_reminder needs a session_id and UTC timestamps.")
+        if utc_instant(test.get("expires_utc")) <= utc_instant(test.get("trigger_utc")):
+            raise ValueError("The calendar test must expire after its reminder.")
     return values
 
 
@@ -146,9 +158,12 @@ def validate_calendar(seminar):
             if type(session.get(flag, False)) is not bool:
                 raise ValueError("Session " + flag + " must be true or false.")
         reminder_triggers(session, config)
+    test = config.get("test_reminder")
+    if test and test["session_id"] not in seen:
+        raise ValueError("The calendar test must refer to an existing session.")
 
 
-def event_payload(seminar, session):
+def event_payload(seminar, session, now=None):
     """Use original scientific titles and prose, independently of page language."""
     config = settings(seminar)
     start, end = session_times(session, config)
@@ -178,6 +193,10 @@ def event_payload(seminar, session):
     reminders = reminder_triggers(session, config)
     if reminders:
         payload["reminders"] = reminders
+    test = config.get("test_reminder")
+    if (test and test["session_id"] == session_id(session) and not payload["cancelled"]
+            and (now or datetime.now(timezone.utc)) <= utc_instant(test["expires_utc"])):
+        payload["test_reminder"] = test["trigger_utc"]
     return payload
 
 
@@ -207,6 +226,8 @@ def read_state(path=STATE):
             if not isinstance(trigger, str) or not re.fullmatch(r"\d{8}T\d{6}Z", trigger):
                 raise ValueError("Saved reminders must contain UTC timestamps.")
             datetime.strptime(trigger, "%Y%m%dT%H%M%SZ")
+        if "test_reminder" in payload:
+            utc_instant(payload["test_reminder"])
     return state
 
 
@@ -218,7 +239,8 @@ def update_state(seminar, previous, now=None):
     if instant.tzinfo is None:
         raise ValueError("Calendar revision time must include a timezone.")
     modified = instant.astimezone(timezone.utc).strftime("%Y%m%dT%H%M%SZ")
-    desired = {session_id(session): event_payload(seminar, session) for session in seminar["sessions"]}
+    desired = {session_id(session): event_payload(seminar, session, now=instant)
+               for session in seminar["sessions"]}
     for identifier, event in previous["events"].items():
         if identifier not in desired:
             desired[identifier] = {**event["payload"], "cancelled": True}
@@ -293,6 +315,12 @@ def render_feed(state, identifiers, name):
                     "TRIGGER;VALUE=DATE-TIME:" + trigger,
                     "DESCRIPTION:" + escape_text(payload["summary"] + " - " + payload["date"]),
                     "END:VALARM",
+                ))
+            if payload.get("test_reminder"):
+                lines.extend((
+                    "BEGIN:VALARM", "ACTION:DISPLAY",
+                    "TRIGGER;VALUE=DATE-TIME:" + payload["test_reminder"],
+                    "DESCRIPTION:ParMA - reminder test", "END:VALARM",
                 ))
         lines.append("END:VEVENT")
     lines.append("END:VCALENDAR")
