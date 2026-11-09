@@ -275,12 +275,12 @@
       "sequence": 4
     },
     "gdt-2026-12-14": {
-      "modified": "20261104T140956Z",
+      "modified": "20261109T124331Z",
       "payload": {
         "all_day": false,
         "cancelled": false,
         "date": "2026-12-14",
-        "description": "GdT OT-PDE-ML — ParMA\n\n10:00 — Sofiane Cherf\nTBA\nTBA\n\n11:00 — TBA\nTBA\nTBA\n\nhttps://parma-inria.github.io/gdt-ot-pde-ml/",
+        "description": "GdT OT-PDE-ML — ParMA\n\n10:00 — Sofiane Cherf\nTBA\nTBA\n\n11:00 — Samuel Hurault\nTBA\nTBA\n\nhttps://parma-inria.github.io/gdt-ot-pde-ml/",
         "end_time": "12:00",
         "location": "Institut de Mathématique d’Orsay (IMO), Building 307, Room 3L15, Orsay, France",
         "reminders": [
@@ -291,7 +291,7 @@
         "summary": "GdT OT-PDE-ML — ParMA",
         "url": "https://parma-inria.github.io/gdt-ot-pde-ml/"
       },
-      "sequence": 1
+      "sequence": 2
     },
     "gdt-2027-01-18": {
       "modified": "20261104T140956Z",
