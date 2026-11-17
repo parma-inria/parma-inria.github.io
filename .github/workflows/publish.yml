@@ -6,9 +6,15 @@ on:
   pull_request:
     branches: [main]
   workflow_dispatch:
-  # Refresh HAL, missing translations and the seminar calendar every morning, in UTC.
+  # Refresh date-dependent pages after midnight in Paris, with a morning retry.
   schedule:
+    - cron: '17 0 * * *'
+      timezone: Europe/Paris
     - cron: '17 5 * * *'
+
+# The page builder must choose today's programme using the team's local date.
+env:
+  TZ: Europe/Paris
 
 permissions:
   contents: read
