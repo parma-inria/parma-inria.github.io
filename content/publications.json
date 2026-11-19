@@ -5,8 +5,21 @@
   "link_label": "Read the paper",
   "empty_message": "Recent publications will appear here after the next update.",
   "hal_structure_id": 1184761,
-  "updated_on": "2026-11-02",
+  "updated_on": "2026-11-19",
   "items": [
+    {
+      "id": "hal-05871821",
+      "title": "Moment approximations in optimal transport: geometric estimates and a semiclassical limit",
+      "authors": [
+        "Luca Nenna",
+        "Luigi de Pascale",
+        "Igor Pinheiro"
+      ],
+      "venue": "Preprint",
+      "date": "2026-11-18",
+      "url": "https://hal.science/hal-05871821",
+      "doi": ""
+    },
     {
       "id": "hal-05788044",
       "title": "Embedding large subsets of Wasserstein spaces into Banach spaces",
@@ -31,19 +44,6 @@
       "venue": "Preprint",
       "date": "2026-10-01",
       "url": "https://hal.science/hal-05774627",
-      "doi": ""
-    },
-    {
-      "id": "hal-05751291",
-      "title": "Toland duality and particle approximations for signed Wasserstein barycenters",
-      "authors": [
-        "Thomas O. Gallouët",
-        "Andrea Natale",
-        "Gabriele Todeschi"
-      ],
-      "venue": "Preprint",
-      "date": "2026-09-15",
-      "url": "https://hal.science/hal-05751291",
       "doi": ""
     }
   ]
