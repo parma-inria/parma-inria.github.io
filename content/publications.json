@@ -5,14 +5,14 @@
   "link_label": "Read the paper",
   "empty_message": "Recent publications will appear here after the next update.",
   "hal_structure_id": 1184761,
-  "updated_on": "2026-11-19",
+  "updated_on": "2026-11-23",
   "items": [
     {
       "id": "hal-05871821",
       "title": "Moment approximations in optimal transport: geometric estimates and a semiclassical limit",
       "authors": [
-        "Luca Nenna",
         "Luigi de Pascale",
+        "Luca Nenna",
         "Igor Pinheiro"
       ],
       "venue": "Preprint",
