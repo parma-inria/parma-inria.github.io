@@ -95,9 +95,24 @@
     },
     {
       "calendar_id": "gdt-2027-01-18",
-      "date": "2027-01-18",
+      "date": "2027-01-25",
       "room": "3L15",
-      "talks": []
+      "talks": [{
+          "time": "10:00",
+          "speaker": "Lorenzo Dello Schiavo",
+          "title": "TBA",
+          "abstract": [
+            "TBA"
+          ]
+        },
+        {
+          "time": "11:00",
+          "speaker": "TBA",
+          "title": "TBA",
+          "abstract": [
+            "TBA"
+          ]
+        }]
     },
     {
       "calendar_id": "gdt-2026-12-14",
