@@ -5,8 +5,20 @@
   "link_label": "Read the paper",
   "empty_message": "Recent publications will appear here after the next update.",
   "hal_structure_id": 1184761,
-  "updated_on": "2026-11-23",
+  "updated_on": "2026-11-24",
   "items": [
+    {
+      "id": "hal-05878100",
+      "title": "Small noise limit for Entropic Variational Mean-Field Games",
+      "authors": [
+        "Alessandro Cosenza",
+        "Luca Nenna"
+      ],
+      "venue": "Preprint",
+      "date": "2026-11-23",
+      "url": "https://hal.science/hal-05878100",
+      "doi": ""
+    },
     {
       "id": "hal-05871821",
       "title": "Moment approximations in optimal transport: geometric estimates and a semiclassical limit",
@@ -30,20 +42,6 @@
       "venue": "Preprint",
       "date": "2026-10-08",
       "url": "https://hal.science/hal-05788044",
-      "doi": ""
-    },
-    {
-      "id": "hal-05774627",
-      "title": "First-order Γ-expansion for entropic optimal transport with non-degenerate costs",
-      "authors": [
-        "Luca Nenna",
-        "Brendan Pass",
-        "Paul Pegon",
-        "Louis Tocquec"
-      ],
-      "venue": "Preprint",
-      "date": "2026-10-01",
-      "url": "https://hal.science/hal-05774627",
       "doi": ""
     }
   ]
