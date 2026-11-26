@@ -129,7 +129,7 @@
         {
           "time": "11:00",
           "speaker": "Samuel Hurault",
-          "title": "How data geometry shapes flow-based generative models ? From tessellations in semi-discrete flow matching to discretization error",
+          "title": "How data geometry shapes flow-based generative models? From tessellations in semi-discrete flow matching to discretization error",
           "abstract": [
             "In this talk, I’ll present two works on how data geometry shapes generative flows when the velocity field / score is known exactly. With exact velocity field, a flow matching model memorizes the training set and its flow maps (almost) every Gaussian input to a training sample. The inputs mapped to the same sample form a cell. The resulting tessellation resembles the Laguerre diagram of semi-discrete optimal transport (OT). We show that the flow matching (FM) cells are open and simply connected and, under an additional assumption, homeomorphic to an open ball. A planar four-point example shows that, contrary to OT, FM cells can be nonconvex and have curved boundaries. The two tessellations also differ in which cells are unbounded and which pairs of cells share a boundary. In the second part of the talk, I’ll discuss discretization error in flow-based generative models. For Gaussian data, we derive explicit formulas showing how this error explicitly depends on the covariance spectrum and on sampling parameters. These formulas let us tune the sampler to the geometry of the data, as captured by its covariance spectrum. On real image datasets, predictions from Gaussian theory using empirical covariance spectra well capture how optimal parameters vary across datasets."
           ]
