@@ -561,6 +561,58 @@ ul, ol {
 }
 
 
+/* Compact citation summary for the ParMA works indexed in HAL. */
+.citation-panel {
+  margin-top: 28px;
+  padding: clamp(18px, 4vw, 30px);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: var(--surface);
+}
+
+.citation-panel h2 {
+  margin: 0;
+  font-size: 1.15rem;
+}
+
+.citation-metrics {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 15px 30px;
+  margin: 17px 0 0;
+}
+
+.citation-metrics > div {
+  padding-left: 13px;
+  border-left: 2px solid var(--line);
+}
+
+.citation-metrics dt {
+  color: var(--muted);
+  font-size: .9rem;
+}
+
+.citation-metrics dd {
+  margin: 3px 0 0;
+  color: var(--blue-deep);
+  font-size: clamp(1.3rem, 3vw, 1.85rem);
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+
+.citation-source {
+  margin: 15px 0 0;
+  color: var(--muted);
+  font-size: .85rem;
+}
+
+@media (max-width: 540px) {
+  .citation-metrics {
+    grid-template-columns: 1fr;
+  }
+}
+
+
 .jump-nav {
   display: flex;
   flex-wrap: wrap;

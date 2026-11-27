@@ -101,7 +101,7 @@ def validate_data(data):
 
 
 # Fetch all pages so filtering or duplicate records cannot hide eligible papers.
-def fetch_records(structure):
+def fetch_records(structure, fields=FIELDS):
     documents = []
     start = 0
     while True:
@@ -109,7 +109,7 @@ def fetch_records(structure):
             "q": "*",
             "fq": f"structId_i:{structure}",
             "sort": "publicationDate_tdate desc",
-            "rows": 200, "start": start, "wt": "json", "fl": FIELDS,
+            "rows": 200, "start": start, "wt": "json", "fl": fields,
         }
         request = Request(API + "?" + urlencode(parameters), headers={
             "User-Agent": "ParMA-website-publications/1.0",

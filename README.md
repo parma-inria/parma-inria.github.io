@@ -130,6 +130,12 @@ Dates retain HAL's precision: a record containing only a year is shown as a year
 
 If HAL is temporarily unavailable or returns fewer than three eligible papers, the previously saved cards remain available. Local builds and previews read this saved JSON and do not need a network connection. To refresh it manually, run `python tools/update_publications.py`.
 
+### ParMA citation counts
+
+The home page shows total citations, citations received in the year shown, and the share of ParMA works covered. The full HAL list for structure **1184761** defines the team corpus. The refresh matches each work to [OpenAlex](https://help.openalex.org/data/works/citations/) and counts each matched work once, including papers with several ParMA co-authors. Unmatched works are included in the coverage denominator.
+
+GitHub refreshes `content/citations.json` on the first publishing run after seven days. It keeps the last successful snapshot if a source is unavailable. Run `python tools/update_citations.py` to refresh it manually. The block appears after the first successful refresh and local previews use the saved counts offline.
+
 ### Introductions and maps
 
 The paragraph under each page title is edited in `content/site.json` → `pages` → `hero.lead`. The repeated introduction boxes have been removed. The unique, longer home introduction remains in `content/home.json`.
