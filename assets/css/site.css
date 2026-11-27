@@ -561,53 +561,42 @@ ul, ol {
 }
 
 
-/* Compact citation summary for the ParMA works indexed in HAL. */
-.citation-panel {
-  width: fit-content;
-  max-width: 100%;
-  margin-top: 20px;
-  padding: 11px 16px;
-  border: 1px solid var(--line);
-  border-radius: var(--radius);
-  background: var(--surface);
-}
-
-.citation-panel h2 {
-  margin: 0;
-  font-size: .95rem;
-  line-height: 1.4;
-}
-
+/* Keep the citation summary in line under the publication cards. */
+.citation-summary,
 .citation-metrics {
   display: flex;
   flex-wrap: wrap;
-  gap: 4px 20px;
-  margin: 5px 0 0;
+  align-items: baseline;
+  gap: 2px 16px;
+}
+
+.citation-summary {
+  margin-top: 13px;
+  color: var(--muted);
+  font-size: .875rem;
+}
+
+.citation-summary h2,
+.citation-metrics,
+.citation-metrics dd,
+.citation-source {
+  margin: 0;
+  font-size: inherit;
+}
+
+.citation-summary h2,
+.citation-metrics dd {
+  font-weight: 650;
 }
 
 .citation-metrics > div {
   display: flex;
   align-items: baseline;
-  gap: 6px;
+  gap: 5px;
 }
 
-.citation-metrics dt {
-  color: var(--muted);
-  font-size: .875rem;
-}
-
-.citation-metrics dd {
-  margin: 0;
-  color: var(--blue-deep);
-  font-size: 1rem;
-  font-weight: 700;
-  font-variant-numeric: tabular-nums;
-}
-
-.citation-source {
-  margin: 4px 0 0;
-  color: var(--muted);
-  font-size: .8125rem;
+.citation-source a {
+  color: inherit;
 }
 
 
