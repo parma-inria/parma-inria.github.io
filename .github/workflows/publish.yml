@@ -50,6 +50,9 @@ jobs:
           python -m pip install -r tools/translation-requirements.txt
       - name: Aggiorna le pubblicazioni da HAL
         run: python tools/update_publications.py --allow-stale
+      - name: Aggiorna le citazioni ParMA se necessario
+        if: github.ref == 'refs/heads/main' && github.event_name != 'pull_request'
+        run: python tools/update_citations.py --weekly --allow-stale
       # Stable calendar revisions let subscribers receive edits and cancellations.
       - name: Aggiorna gli abbonamenti al calendario
         run: python tools/update_calendar.py
@@ -72,6 +75,7 @@ jobs:
           name: generated-content
           path: |
             content/publications.json
+            content/citations.json
             content/calendar-state.json
             content/translations/fr.json
             content/translations/it.json
@@ -108,6 +112,9 @@ jobs:
           python tools/update_translations.py --save-to-git
           python tools/update_publications.py --save-to-git
           python tools/update_calendar.py --save-to-git
+          if ! git diff --quiet -- content/citations.json; then
+            git -c user.name=github-actions[bot] -c user.email=41898282+github-actions[bot]@users.noreply.github.com commit -m "Update ParMA citation counts" -- content/citations.json
+          fi
           git push origin HEAD:main
 
   deploy:

@@ -17,6 +17,7 @@ from html.parser import HTMLParser
 from datetime import date
 from urllib.parse import urlsplit
 
+import update_citations
 import update_publications
 import update_translations
 import update_calendar
@@ -163,6 +164,8 @@ def translation_sources(sources):
         "ui": {
             "language_label": "Language",
             "publications_more": "See more",
+            "citation_year": "Citations in {year}",
+            "citation_updated": "Updated {date}",
             "calendar_hint": "Open available programmes by selecting a date.",
             "calendar_next": "Next session",
             "calendar_past": "Past session",
@@ -751,6 +754,30 @@ def prepare_publications(publications, months=MONTH_NAMES):
     return {**publications, "items": items}
 
 
+def prepare_citations(snapshot, ui, language):
+    """Format the saved counts and date for the current Home language."""
+    if not snapshot or not snapshot["updated_on"]:
+        return {"updated_on": ""}
+
+    updated = date.fromisoformat(snapshot["updated_on"])
+    month = ui["months"][updated.month - 1]
+    date_label = (f"{month} {updated.day}, {updated.year}" if language == "en"
+                  else f"{updated.day} {month} {updated.year}")
+    separator = {"en": ",", "fr": "\u202f", "it": "."}[language]
+
+    def number(value):
+        return f"{value:,}".replace(",", separator)
+
+    return {
+        "updated_on": snapshot["updated_on"],
+        "total_label": number(snapshot["citations_total"]),
+        "this_year_label": number(snapshot["citations_this_year"]),
+        "year_label": ui["citation_year"].format(year=updated.year),
+        "works_label": f"{number(snapshot['works_matched'])} / {number(snapshot['works_total'])}",
+        "updated_label": ui["citation_updated"].format(date=date_label),
+    }
+
+
 def asset_url(relative_path, prefix):
     """Include a content version so browsers reload an asset after edits."""
     version = hashlib.sha256((ROOT / relative_path).read_bytes()).hexdigest()[:12]
@@ -803,6 +830,7 @@ def page_context(page, prefix, sources, seminar_plan, language="en", route_langu
             for item in site["pages"]
         ],
         "publications": prepare_publications(sources["publications"], ui["months"]),
+        "citations": prepare_citations(sources.get("citations"), ui, language),
         "team": {
             **team,
             "count_text": ui["member_count"].format(count=team["member_count"]),
@@ -835,6 +863,11 @@ def build(output=DEFAULT_OUTPUT, today=None):
     # Validate all data before generating any files.
     sources = {name: read_json(name) for name in ("site", "home", "team", "contact", "seminar", "publications", "resources")}
     validate_content(sources)
+    sources["citations"] = read_json("citations")
+    try:
+        update_citations.validate_snapshot(sources["citations"])
+    except (ValueError, TypeError, KeyError) as error:
+        raise BuildError(f"content/citations.json: {error}") from error
     try:
         calendar_state = update_calendar.update_state(
             sources["seminar"], update_calendar.read_state(CONTENT / "calendar-state.json"),
