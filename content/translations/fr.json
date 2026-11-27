@@ -68,7 +68,7 @@
     "revision": "dd7f6540a7a48a7f4db59e5c0b9c42c8eea67f18"
   },
   "schema_version": 1,
-  "source_sha256": "28f1397fad3e2d7a8e93fe0d95df9cdab4a25545d13ca156d532aed8f47aa54f",
+  "source_sha256": "2536b59870447d506311a2f685d01fa98fbbf9e7d577de1d61c40c2df850edf1",
   "translations": {
     "A cloud of particles forming our logo": "Un nuage de particules formant notre logo",
     "A library for semi-discrete optimal transport": "Une bibliothèque pour le transport optimal semi-discret",
