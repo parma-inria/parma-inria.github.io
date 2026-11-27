@@ -773,7 +773,6 @@ def prepare_citations(snapshot, ui, language):
         "total_label": number(snapshot["citations_total"]),
         "this_year_label": number(snapshot["citations_this_year"]),
         "year_label": ui["citation_year"].format(year=updated.year),
-        "works_label": f"{number(snapshot['works_matched'])} / {number(snapshot['works_total'])}",
         "updated_label": ui["citation_updated"].format(date=date_label),
     }
 

@@ -68,7 +68,7 @@
     "revision": "dd7f6540a7a48a7f4db59e5c0b9c42c8eea67f18"
   },
   "schema_version": 1,
-  "source_sha256": "34197a2c10eb04efd7ed72795fea895afe0fe6b522769c14957e1d9c29d53267",
+  "source_sha256": "28f1397fad3e2d7a8e93fe0d95df9cdab4a25545d13ca156d532aed8f47aa54f",
   "translations": {
     "A cloud of particles forming our logo": "Un nuage de particules formant notre logo",
     "A library for semi-discrete optimal transport": "Une bibliothèque pour le transport optimal semi-discret",
@@ -112,7 +112,6 @@
     "GdT page": "Page du GdT",
     "Generative models aim to learn—and sample from—the probability distribution underlying observed data. I’ll give a quick tour of what’s out there, then show how to build a generative model with optimal transport: we move any distribution towards the Gaussian by following the Wasserstein gradient flow of some free energy and we implement it using the JKO scheme. In practice, we are unable to exactly compute the next measure in the scheme, so we linearly parametrize the associated Kantorovich potential and learn its weights by SGD; the semi-discrete case drops out as a special, very interpretable instance. I’ll present the construction and current results (no full error bounds yet) and show some animations that reveal the model’s generative behavior.": "Les modèles génératifs visent à apprendre la loi de probabilité sous-jacente aux données observées et à en produire des échantillons. Après un bref panorama des approches existantes, je montrerai comment construire un modèle génératif à l’aide du transport optimal : nous faisons évoluer une loi quelconque vers la loi gaussienne en suivant le flot de gradient de Wasserstein d’une énergie libre, mis en œuvre par le schéma JKO. En pratique, nous ne pouvons pas calculer exactement la mesure suivante du schéma. Nous paramétrons donc linéairement le potentiel de Kantorovich associé et en apprenons les poids par SGD ; le cas semi-discret apparaît alors comme un cas particulier très interprétable. Je présenterai la construction et les résultats actuels, pour lesquels nous ne disposons pas encore de bornes d’erreur complètes, ainsi que quelques animations illustrant le comportement génératif du modèle.",
     "Geogram is a programming library with geometric algorithms.": "Geogram est une bibliothèque logicielle proposant des algorithmes géométriques.",
-    "HAL works covered": "Travaux HAL couverts",
     "History of Sessions": "Archives des séances",
     "Home": "Accueil",
     "INRIA SACLAY · CNRS · UNIVERSITÉ PARIS-SACLAY": "INRIA SACLAY · CNRS · UNIVERSITÉ PARIS-SACLAY",
